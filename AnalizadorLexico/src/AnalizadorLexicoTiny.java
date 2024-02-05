@@ -5,6 +5,7 @@ import AFD.Estado;
 import componentesLexicos.ClaseLexica;
 import componentesLexicos.UnidadLexica;
 import componentesLexicos.UnidadLexicaMultivaluada;
+import componentesLexicos.UnidadLexicaUnivaluada;
 
 public class AnalizadorLexicoTiny {
 	private Reader input; // Flujo de entrada
@@ -57,8 +58,44 @@ public class AnalizadorLexicoTiny {
 		
 		while(true) {
 			switch(estado) {
-			
+				case REC_ID:
+					if(hayLetra() || hayDigito()) transita(Estado.REC_ID);
+					else unidadID();
+					break;
+				case EXPONENCIAL:
+					if(hayDigitoPositivo()) transita(Estado.REC_EXP);
+					else if(hayMas() || hayMenos()) transita(Estado.EXP_SIGNO);
+					else if(hayCero()) transita(Estado.REC_EXP_0);
+					else error();
+					break;
+				case _0_DECIMAL:
+					if(hayCero()) transita(Estado._0_DECIMAL);
+					else if(hayDigitoPositivo()) transita(Estado.REC_DECIMAL);
+					else error();
+					break;
+				case REC_MAS:
+					if(hayCero()) transita(Estado.REC_CERO);
+					else if(hayDigitoPositivo()) transita(Estado.REC_ENTERO);
+					else unidadSUMA();
+				case INI_TERMINACION:
+					if(hayAmpersand()) transita(Estado.REC_TERMINACION);
+					else error();
+					break;
+				case REC_L_APERTURA:
+					unidadLLAVE_APERTURA();
+					break;
+				case REC_DISTINTO:
+					unidadDESIGUAL();
+					break;
+				case REC_MENOR:
+					if(hayIgual()) transita(Estado.REC_MENOR_IGUAL);
+					else unidadMENOR();
+					break;
+				case REC_MUL:
+					unidadMULTIPLICACION();
+					break;
 			}
+			
 		}
 	}
 	
@@ -75,27 +112,328 @@ public class AnalizadorLexicoTiny {
 		estado = sig;
 	}
 	
+//*******************************************************************
+//Métodos auxiliares
+	
+	/**
+	 * Indica si el siguiente carácter es una letra ([a-z, A-Z] | _)
+	 * 
+	 * @return True si el siguiente carácter es una letra
+	 */
+	private boolean hayLetra() {
+		return sigCar >= 'a' && sigCar <= 'z' || sigCar >= 'A' && sigCar <= 'z' || sigCar == '_';
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es un dígito positivo [1-9]
+	 * 
+	 * @return True si el siguiente carácter es un dígitio positivo
+	 */
+	private boolean hayDigitoPositivo() {
+		//49: representación del 1 en ASCCI 
+		//57: representación del 9 en ASCCI
+		return sigCar >= 49 && sigCar <= 57;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es un dígito [0-9]
+	 * 
+	 * @return True si el siguiente carácter es un dígitio
+	 */
+	private boolean hayDigito() {
+		//48: representación del 0 en ASCCI 
+		//57: representación del 9 en ASCCI
+		return sigCar >= 48 && sigCar <= 57;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el 0
+	 * 
+	 * @return True si el siguiente carácter el 0
+	 */
+	private boolean hayCero() {
+		//48: representación del 0 en ASCCI 
+		return sigCar == 48;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el +
+	 * 
+	 * @return True si el siguiente carácter es el +
+	 */
+	private boolean hayMas() {
+		//43: representación del + en ASCCI
+		return sigCar == 43;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el -
+	 * 
+	 * @return True si el siguiente carácter es el -
+	 */
+	private boolean hayMenos() {
+		//45: representación del - en ASCCI
+		return sigCar == 45;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el *
+	 * 
+	 * @return True si el siguiente carácter es el *
+	 */
+	private boolean hayMultiplicacion() {
+		//42: representación del * en ASCCI
+		return sigCar == 42;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el /
+	 * 
+	 * @return True si el siguiente carácter es el /
+	 */
+	private boolean hayDivision() {
+		//47: representación del / en ASCCI
+		return sigCar == 47;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el &
+	 * 
+	 * @return True si el siguiente carácter es el &
+	 */
+	private boolean hayAmpersand() {
+		//38: representación del & en ASCCI
+		return sigCar == 38;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el =
+	 * 
+	 * @return True si el siguiente carácter es el =
+	 */
+	private boolean hayIgual() {
+		//61: representación del = en ASCCI
+		return sigCar == 61;
+	}
+	
+//*******************************************************************
+//Identificación de las clases léxicas
+	
+	
+	/**
+	 * Constructor del componente léxico SUMA
+	 * 
+	 * @return componente léxico SUMA
+	 */
+	private UnidadLexica unidadSUMA() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.SUMA);
+	}
+	
+	/**
+	 * Constructor del componente léxico RESTA
+	 * 
+	 * @return componente léxico RESTA
+	 */
+	private UnidadLexica unidadRESTA() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.RESTA);
+	}
+	
+	/**
+	 * Constructor del componente léxico MULTIPLICACION
+	 * 
+	 * @return componente léxico MULTIPLICACION
+	 */
+	private UnidadLexica unidadMULTIPLICACION() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.MULTIPLICACION);
+	}
+	
+	/**
+	 * Constructor del componente léxico DIVISION
+	 * 
+	 * @return componente léxico DIVISION
+	 */
+	private UnidadLexica unidadDIVISION() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.DIVISION);
+	}
+	
+	/**
+	 * Constructor del componente léxico ASIGNACION
+	 * 
+	 * @return componente léxico ASIGNACION
+	 */
+	private UnidadLexica unidadASIGNACION() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.ASIGNACION);
+	}
+	
+	/**
+	 * Constructor del componente léxico MENOR
+	 * 
+	 * @return componente léxico MENOR
+	 */
+	private UnidadLexica unidadMENOR() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.MENOR);
+	}
+	
+	/**
+	 * Constructor del componente léxico MAYOR
+	 * 
+	 * @return componente léxico MAYOR
+	 */
+	private UnidadLexica unidadMAYOR() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.MAYOR);
+	}
+	
+	/**
+	 * Constructor del componente léxico MENOR_IGUAL
+	 * 
+	 * @return componente léxico MENOR_IGUAL
+	 */
+	private UnidadLexica unidadMENOR_IGUAL() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.MENOR_IGUAL);
+	}
+	
+	/**
+	 * Constructor del componente léxico MAYOR_IGUAL
+	 * 
+	 * @return componente léxico MAYOR_IGUAL
+	 */
+	private UnidadLexica unidadMAYOR_IGUAL() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.MAYOR_IGUAL);
+	}
+	
+	/**
+	 * Constructor del componente léxico DESIGUAL
+	 * 
+	 * @return componente léxico DESIGUAL
+	 */
+	private UnidadLexica unidadDESIGUAL() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.DESIGUAL);
+	}
+	
+	/**
+	 * Constructor del componente léxico IGUAL
+	 * 
+	 * @return componente léxico IGUAL
+	 */
+	private UnidadLexica unidadIGUAL() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.IGUAL);
+	}
+	
+	/**
+	 * Constructor del componente léxico PARENTESIS_APERTURA
+	 * 
+	 * @return componente léxico PARENTESIS_APERTURA
+	 */
+	private UnidadLexica unidadPARENTESIS_APERTURA() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.PARENTESIS_APERTURA);
+	}
+	
+	/**
+	 * Constructor del componente léxico PARENTESIS_CIERRE
+	 * 
+	 * @return componente léxico PARENTESIS_CIERRE
+	 */
+	private UnidadLexica unidadPARENTESIS_CIERRE() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.PARENTESIS_CIERRE);
+	}
+	
+	/**
+	 * Constructor del componente léxico LLAVE_APERTURA
+	 * 
+	 * @return componente léxico LLAVE_APERTURA
+	 */
+	private UnidadLexica unidadLLAVE_APERTURA() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.LLAVE_APERTURA);
+	}
+	
+	/**
+	 * Constructor del componente léxico LLAVE_CIERRE
+	 * 
+	 * @return componente léxico LLAVE_CIERRE
+	 */
+	private UnidadLexica unidadLLAVE_CIERRE() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.LLAVE_CIERRE);
+	}
+	
+	/**
+	 * Constructor del componente léxico PUNTO_Y_COMA
+	 * 
+	 * @return componente léxico PUNTO_Y_COMA
+	 */
+	private UnidadLexica unidadPUNTO_Y_COMA() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.PUNTO_Y_COMA);
+	}
+	
+	
+	/**
+	 * Constructor del componente léxico TERMINACION
+	 * 
+	 * @return componente léxico TERMINACION
+	 */
+	private UnidadLexica unidadTERMINACION() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.TERMINACION);
+	}
+	
+	/**
+	 * Constructor del componente léxico INI_NOMBRE
+	 * 
+	 * @return componente léxico INI_NOMBRE
+	 */
+	private UnidadLexica unidadINI_NOMBRE() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.INI_NOMBRE);
+	}
+	
 	
 	/**
 	 * Constructor del componente léxico INT
 	 * 
 	 * @return componente léxico INT
 	 */
-	private UnidadLexica unidadInt() {
+	private UnidadLexica unidadINT() {
 		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.INT, lex.toString());
 	}
 	
 	/**
-	 * Determinación del componente léxico asociado con el reconocimiento de un identificador
-	 * @return
+	 * Constructor del componente léxico REAL
+	 * 
+	 * @return componente léxico REAL
 	 */
-	private UnidadLexica unidadId() {
-		switch(lex.toString()) {
-		
-		}
-		
-		return null;
+	private UnidadLexica unidadREAL() {
+		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.REAL, lex.toString());
 	}
+	
+	/**
+	 * Determinación del componente léxico asociado con el reconocimiento de un identificador
+	 * 
+	 * @return componente léxico asociado a una palabra reservada o un identificador
+	 */
+	private UnidadLexica unidadID() {
+		//El leguaje no distingue entre minúsculas y mayúsculas en las palabras reservadas
+		switch(lex.toString().toUpperCase()) {
+			case "INT":
+				return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.INT);
+			case "REAL":
+				return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.REAL);
+			case "BOOL":
+				return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.BOOL);
+			case "TRUE":
+				return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.TRUE);
+			case "FALSE":
+				return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.FALSE);
+			case "AND":
+				return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.AND);
+			case "OR":
+				return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.OR);
+			case "NOT":
+				return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.NOT);
+			default://En los identificadores si que se distingue entre mayúsculas y minúsculas
+				return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.IDENTIFICADOR, lex.toString());
+		}
+	}
+	
+//*******************************************************************
+//Tratamiento de errores
+	
 	
 	/**
 	 * Tratamiento de error léxico (tratamiento de errores simple)
