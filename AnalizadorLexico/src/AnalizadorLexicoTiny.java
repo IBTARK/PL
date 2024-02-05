@@ -20,6 +20,7 @@ public class AnalizadorLexicoTiny {
 	// Secuencia de caracteres que representan el fin de línea en la plataforma (LF en Unix,
 		// CR+LF en MS Windows ...)
 	private static String NL = System.getProperty("line.separator");
+	private static final int EOF = -1;
 	
 	public AnalizadorLexicoTiny(Reader input) throws IOException {
 		this.input = input;
@@ -146,9 +147,12 @@ public class AnalizadorLexicoTiny {
 				case REC_NOMBRE:
 					return unidadINI_NOMBRE();
 				case REC_COMENTARIO:
-					if (haySaltoLinea()) transitaIgnorando(Estado.INICIO);
+					if (hayEOF()) transita(Estado.REC_EOF);
+					else if (haySaltoLinea()) transitaIgnorando(Estado.INICIO);
 					else transitaIgnorando(Estado.REC_COMENTARIO);
 					break;
+				case REC_EOF:
+					return unidadEOF();
 			}
 			
 		}
@@ -296,6 +300,15 @@ public class AnalizadorLexicoTiny {
 	 */
 	private boolean hayExponente() {
 		return sigCar == 'e' || sigCar == 'E';
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es EOF
+	 * 
+	 * @return True si el siguiente carácter es EOF
+	 */
+	private boolean hayEOF() {
+		return sigCar == EOF;
 	}
 	
 //*******************************************************************
@@ -482,6 +495,15 @@ public class AnalizadorLexicoTiny {
 	 */
 	private UnidadLexica unidadREAL() {
 		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.REAL, lex.toString());
+	}
+	
+	/**
+	 * Constructor del componente léxico EOF
+	 * 
+	 * @return componente léxico EOF
+	 */
+	private UnidadLexica unidadEOF() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.EOF);
 	}
 	
 	/**
