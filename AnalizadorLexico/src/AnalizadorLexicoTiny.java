@@ -62,6 +62,14 @@ public class AnalizadorLexicoTiny {
 					if(hayLetra() || hayDigito()) transita(Estado.REC_ID);
 					else unidadID();
 					break;
+				case REC_EXP:
+					if(hayDigito()) transita(Estado.REC_EXP);
+					else unidadREAL();
+					break;
+				case DECIMAL:
+					if(hayDigitoPositivo()) transita(Estado.REC_DECIMAL);
+					else if(hayCero()) transita(Estado.REC_0_DECIMAL);
+					break;
 				case EXPONENCIAL:
 					if(hayDigitoPositivo()) transita(Estado.REC_EXP);
 					else if(hayMas() || hayMenos()) transita(Estado.EXP_SIGNO);
@@ -77,12 +85,21 @@ public class AnalizadorLexicoTiny {
 					if(hayCero()) transita(Estado.REC_CERO);
 					else if(hayDigitoPositivo()) transita(Estado.REC_ENTERO);
 					else unidadSUMA();
+					break;
+				case REC_MENOS:
+					if(hayCero()) transita(Estado.REC_CERO);
+					else if(hayDigitoPositivo()) transita(Estado.REC_ENTERO);
+					else unidadRESTA();
+					break;
 				case INI_TERMINACION:
 					if(hayAmpersand()) transita(Estado.REC_TERMINACION);
 					else error();
 					break;
 				case REC_L_APERTURA:
 					unidadLLAVE_APERTURA();
+					break;
+				case REC_L_CIERRE:
+					unidadLLAVE_CIERRE();
 					break;
 				case REC_DISTINTO:
 					unidadDESIGUAL();
@@ -91,8 +108,21 @@ public class AnalizadorLexicoTiny {
 					if(hayIgual()) transita(Estado.REC_MENOR_IGUAL);
 					else unidadMENOR();
 					break;
+				case REC_MENOR_IGUAL:
+					unidadMENOR_IGUAL();
+					break;
+				case EXCLAMACION:
+					if(hayIgual()) transita(Estado.REC_DISTINTO);
+					else error();
+					break;
 				case REC_MUL:
 					unidadMULTIPLICACION();
+					break;
+				case REC_DIV:
+					unidadDIVISION();
+					break;
+				case REC_PUNTO_COMA:
+					unidadPUNTO_Y_COMA();
 					break;
 			}
 			
