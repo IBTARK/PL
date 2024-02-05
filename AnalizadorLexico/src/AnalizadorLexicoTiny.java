@@ -60,11 +60,27 @@ public class AnalizadorLexicoTiny {
 			switch(estado) {
 				case REC_ID:
 					if(hayLetra() || hayDigito()) transita(Estado.REC_ID);
-					else unidadID();
+					else return unidadID();
+					break;
+				case REC_CERO:
+					if (hayDecimal()) transita(Estado.DECIMAL);
+					else if (hayExponente()) transita(Estado.EXPONENCIAL);
+					else return unidadINT();
+					break;
+				case REC_ENTERO:
+					if (hayDigito()) transita(Estado.REC_ENTERO);
+					else if (hayDecimal()) transita(Estado.DECIMAL);
+					else if (hayExponente()) transita(Estado.EXPONENCIAL);
+					else return unidadINT();
+					break;
+				case EXP_SIGNO:
+					if (hayCero()) transita(Estado.REC_EXP_0);
+					else if (hayDigitoPositivo()) transita(Estado.REC_EXP);
+					else error();
 					break;
 				case REC_EXP:
 					if(hayDigito()) transita(Estado.REC_EXP);
-					else unidadREAL();
+					else return unidadREAL();
 					break;
 				case DECIMAL:
 					if(hayDigitoPositivo()) transita(Estado.REC_DECIMAL);
@@ -84,45 +100,54 @@ public class AnalizadorLexicoTiny {
 				case REC_MAS:
 					if(hayCero()) transita(Estado.REC_CERO);
 					else if(hayDigitoPositivo()) transita(Estado.REC_ENTERO);
-					else unidadSUMA();
+					else return unidadSUMA();
 					break;
 				case REC_MENOS:
 					if(hayCero()) transita(Estado.REC_CERO);
 					else if(hayDigitoPositivo()) transita(Estado.REC_ENTERO);
-					else unidadRESTA();
+					else return unidadRESTA();
 					break;
 				case INI_TERMINACION:
 					if(hayAmpersand()) transita(Estado.REC_TERMINACION);
 					else error();
 					break;
 				case REC_L_APERTURA:
-					unidadLLAVE_APERTURA();
-					break;
+					return unidadLLAVE_APERTURA();
 				case REC_L_CIERRE:
-					unidadLLAVE_CIERRE();
-					break;
+					return unidadLLAVE_CIERRE();
 				case REC_DISTINTO:
-					unidadDESIGUAL();
-					break;
+					return unidadDESIGUAL();
 				case REC_MENOR:
 					if(hayIgual()) transita(Estado.REC_MENOR_IGUAL);
-					else unidadMENOR();
+					else return unidadMENOR();
 					break;
 				case REC_MENOR_IGUAL:
-					unidadMENOR_IGUAL();
-					break;
+					return unidadMENOR_IGUAL();
 				case EXCLAMACION:
 					if(hayIgual()) transita(Estado.REC_DISTINTO);
 					else error();
 					break;
 				case REC_MUL:
-					unidadMULTIPLICACION();
-					break;
+					return unidadMULTIPLICACION();
 				case REC_DIV:
-					unidadDIVISION();
-					break;
+					return unidadDIVISION();
 				case REC_PUNTO_COMA:
-					unidadPUNTO_Y_COMA();
+					return unidadPUNTO_Y_COMA();
+				case REC_IGUAL:
+					if (hayIgual()) transita(Estado.REC_IGUAL_IGUAL);
+					else error();
+					break;
+				case REC_MAYOR:
+					if (hayIgual()) transita(Estado.REC_MAYOR_IGUAL);
+					else return unidadMAYOR();
+					break;
+				case REC_P_APERTURA:
+					return unidadPARENTESIS_APERTURA();
+				case REC_NOMBRE:
+					return unidadINI_NOMBRE();
+				case REC_COMENTARIO:
+					if (haySaltoLinea()) transitaIgnorando(Estado.INICIO);
+					else transitaIgnorando(Estado.REC_COMENTARIO);
 					break;
 			}
 			
@@ -244,6 +269,33 @@ public class AnalizadorLexicoTiny {
 	private boolean hayIgual() {
 		//61: representación del = en ASCCI
 		return sigCar == 61;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es un salto de línea
+	 * 
+	 * @return True si el siguiente carácter es un salto de línea
+	 */
+	private boolean haySaltoLinea() {
+		return sigCar == '\n';
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es un salto de línea
+	 * 
+	 * @return True si el siguiente carácter es un salto de línea
+	 */
+	private boolean hayDecimal() {
+		return sigCar == '.';
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es un salto de línea
+	 * 
+	 * @return True si el siguiente carácter es un salto de línea
+	 */
+	private boolean hayExponente() {
+		return sigCar == 'e' || sigCar == 'E';
 	}
 	
 //*******************************************************************
