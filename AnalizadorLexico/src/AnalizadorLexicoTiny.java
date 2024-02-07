@@ -136,8 +136,8 @@ public class AnalizadorLexicoTiny {
 					return unidadPUNTO_Y_COMA();
 				case REC_IGUAL:
 					if (hayIgual()) transita(Estado.REC_IGUAL_IGUAL);
-					else error();
-					break;
+					else error();//deberia reconocer igual(asignacion)
+					break; 
 				case REC_MAYOR:
 					if (hayIgual()) transita(Estado.REC_MAYOR_IGUAL);
 					else return unidadMAYOR();
@@ -150,9 +150,53 @@ public class AnalizadorLexicoTiny {
 					if (hayEOF()) transita(Estado.REC_EOF);
 					else if (haySaltoLinea()) transitaIgnorando(Estado.INICIO);
 					else transitaIgnorando(Estado.REC_COMENTARIO);
-					break;
+					break;//no se si deberia de haber un return del comentario
 				case REC_EOF:
 					return unidadEOF();
+				case REC_EXP_0:
+					return unidadREAL();
+				case REC_DECIMAL:
+					if (hayDigitoPositivo()) transita(Estado.REC_DECIMAL);
+					return unidadDECIMAL();
+				case REC_0_DECIMAL:
+					if(hayDigitoPositivo()) transita(Estado._0_DECIMAL);
+					return unidadDECIMAL();
+				case INI_COMENTARIO:
+					if(hayAlmohadilla()) transita(Estado.REC_COMENTARIO);
+					else error();
+					break;
+				case REC_TERMINACION:
+					return unidadCOMENTARIO();
+				case REC_P_CIERRE:
+					return unidadPARENTESIS_CIERRE();
+				case REC_MAYOR_IGUAL: 
+					return unidadMAYOR_IGUAL();
+				case REC_IGUAL_IGUAL:
+					return unidadIGUAL();
+				case INICIO:
+					if(hayLetra()) transita(Estado.REC_ID);
+					else if(hayMultiplicacion()) transita(Estado.REC_MUL);
+					else if(hayDivision()) transita(Estado.REC_DIV);
+					else if(hayIgual()) transita(Estado.REC_IGUAL);
+					else if(hayMenor()) transita(Estado.REC_MENOR);
+					else if(hayMayor()) transita(Estado.REC_MAYORL);
+					else if(hayExclamacion()) transita(Estado.EXCLAMACION);
+					else if(hayPApertura()) transita(Estado.REC_P_APERTURA);
+					else if(hayPCierre()) transita(Estado.REC_P_CIERRE);
+					else if(hayLApertura()) transita(Estado.REC_L_APERTURA);
+					else if(hayLCierre()) transita(Estado.REC_L_CIERRE);
+					else if(hayArroba()) transita(Estado.REC_NOMBRE);
+					else if(hayAmpersand()) transita(Estado.REC_INI_TERMINACION);
+					else if(hayPuntoYComa()) transita(Estado.REC_PUNTO_COMA);
+					else if(hayAlmohadilla()) transita(Estado.REC_INI_COMENTARIO);
+					else if(hayMas()) transita(Estado.REC_MAS);
+					else if(hayMenos()) transita(Estado.REC_MENOS);
+					else if(hayCero()) transita(Estado.REC_CERO);
+					else if(hayDigitoPositivo()) transita(Estado.REC_ENTERO);
+					else if(hayTabulador() || haySaltoDeLinea() || hayRetorno()
+							|| hayBlackspace || hayBlanco()) transita(Estado.INICIO);
+					else error();
+					break;				
 			}
 			
 		}
@@ -266,6 +310,16 @@ public class AnalizadorLexicoTiny {
 	}
 	
 	/**
+	 * Indica si el siguiente carácter es el #
+	 * 
+	 * @return True si el siguiente carácter es el #
+	 */
+	private boolean hayAlmohadilla() {
+		//35: representación del # en ASCCI
+		return sigCar == 35;
+	}
+	
+	/**
 	 * Indica si el siguiente carácter es el =
 	 * 
 	 * @return True si el siguiente carácter es el =
@@ -273,6 +327,86 @@ public class AnalizadorLexicoTiny {
 	private boolean hayIgual() {
 		//61: representación del = en ASCCI
 		return sigCar == 61;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el <
+	 * 
+	 * @return True si el siguiente carácter es el <
+	 */
+	private boolean hayMenor() {
+		//60: representación del < en ASCCI
+		return sigCar == 60;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el >
+	 * 
+	 * @return True si el siguiente carácter es el >
+	 */
+	private boolean hayMenor() {
+		//62: representación del > en ASCCI
+		return sigCar == 62;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el !
+	 * 
+	 * @return True si el siguiente carácter es el !
+	 */
+	private boolean hayExclamacion() {
+		//33: representación del ! en ASCCI
+		return sigCar == 33;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el (
+	 * 
+	 * @return True si el siguiente carácter es el (
+	 */
+	private boolean hayPApertura() {
+		//40: representación del ( en ASCCI
+		return sigCar == 40;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el )
+	 * 
+	 * @return True si el siguiente carácter es el )
+	 */
+	private boolean hayPCierre() {
+		//41: representación del ) en ASCCI
+		return sigCar == 41;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el {
+	 * 
+	 * @return True si el siguiente carácter es el {
+	 */
+	private boolean hayLApertura() {
+		//123: representación del { en ASCCI
+		return sigCar == 123;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el }
+	 * 
+	 * @return True si el siguiente carácter es el }
+	 */
+	private boolean hayLCierre() {
+		//125: representación del } en ASCCI
+		return sigCar == 125;
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es el @
+	 * 
+	 * @return True si el siguiente carácter es el @
+	 */
+	private boolean hayArroba() {
+		//64: representación del @ en ASCCI
+		return sigCar == 64;
 	}
 	
 	/**
@@ -285,18 +419,63 @@ public class AnalizadorLexicoTiny {
 	}
 	
 	/**
-	 * Indica si el siguiente carácter es un salto de línea
+	 * Indica si el siguiente carácter es un tabulador
 	 * 
-	 * @return True si el siguiente carácter es un salto de línea
+	 * @return True si el siguiente carácter es un tabulador
+	 */
+	private boolean hayTabulador() {
+		return sigCar == '\t';
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es un retorno
+	 * 
+	 * @return True si el siguiente carácter es un retorno
+	 */
+	private boolean hayRetorno() {
+		return sigCar == '\r';
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es un blackspace
+	 * 
+	 * @return True si el siguiente carácter es un blackspace
+	 */
+	private boolean hayBlackspace() {
+		return sigCar == '\b';
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es un blanco
+	 * 
+	 * @return True si el siguiente carácter es un blanco
+	 */
+	private boolean hayBlanco() {
+		return sigCar == " ";
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es un .
+	 * 
+	 * @return True si el siguiente carácter es un .
 	 */
 	private boolean hayDecimal() {
 		return sigCar == '.';
 	}
 	
 	/**
-	 * Indica si el siguiente carácter es un salto de línea
+	 * Indica si el siguiente carácter es un ;
 	 * 
-	 * @return True si el siguiente carácter es un salto de línea
+	 * @return True si el siguiente carácter es un ;
+	 */
+	private boolean hayPuntoYComa() {
+		return sigCar == ';';
+	}
+	
+	/**
+	 * Indica si el siguiente carácter es un Exponente
+	 * 
+	 * @return True si el siguiente carácter es un Exponente
 	 */
 	private boolean hayExponente() {
 		return sigCar == 'e' || sigCar == 'E';
@@ -478,6 +657,14 @@ public class AnalizadorLexicoTiny {
 		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.INI_NOMBRE);
 	}
 	
+	/**
+	 * Constructor del componente léxico COMENTARIO
+	 *     
+	 * @return componente léxico COMENTARIO
+	 */
+	private UnidadLexica unidadCOMENTARIO() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.COMENTARIO);
+	}
 	
 	/**
 	 * Constructor del componente léxico INT
@@ -495,6 +682,15 @@ public class AnalizadorLexicoTiny {
 	 */
 	private UnidadLexica unidadREAL() {
 		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.REAL, lex.toString());
+	}
+	
+	/**
+	 * Constructor del componente léxico DECIMAL
+	 * 
+	 * @return componente léxico DECIMAL
+	 */
+	private UnidadLexica unidadDECIMAL() {
+		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.DECIMAL, lex.toString());
 	}
 	
 	/**
