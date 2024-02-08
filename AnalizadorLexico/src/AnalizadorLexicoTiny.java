@@ -136,7 +136,7 @@ public class AnalizadorLexicoTiny {
 					return unidadPUNTO_Y_COMA();
 				case REC_IGUAL:
 					if (hayIgual()) transita(Estado.REC_IGUAL_IGUAL);
-					else error();//deberia reconocer igual(asignacion)
+					else return unidadASIGNACION();
 					break; 
 				case REC_MAYOR:
 					if (hayIgual()) transita(Estado.REC_MAYOR_IGUAL);
@@ -150,7 +150,7 @@ public class AnalizadorLexicoTiny {
 					if (hayEOF()) transita(Estado.REC_EOF);
 					else if (haySaltoLinea()) transitaIgnorando(Estado.INICIO);
 					else transitaIgnorando(Estado.REC_COMENTARIO);
-					break;//no se si deberia de haber un return del comentario
+					break;
 				case REC_EOF:
 					return unidadEOF();
 				case REC_EXP_0:
@@ -159,7 +159,7 @@ public class AnalizadorLexicoTiny {
 					if (hayDigitoPositivo()) transita(Estado.REC_DECIMAL);
 					else if (hayCero()) transita(Estado._0_DECIMAL);
 					else if (hayExponente()) transita(Estado.EXPONENCIAL);
-					else return unidadDECIMAL();
+					else return unidadREAL();
 				case INI_COMENTARIO:
 					if(hayAlmohadilla()) transitaIgnorando(Estado.REC_COMENTARIO);
 					else error();
@@ -581,6 +581,15 @@ public class AnalizadorLexicoTiny {
 	 * 
 	 * @return componente léxico IGUAL
 	 */
+	private UnidadLexica unidadASIGNACION() {
+		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.ASIGNACION);
+	}
+	
+	/**
+	 * Constructor del componente léxico IGUAL
+	 * 
+	 * @return componente léxico IGUAL
+	 */
 	private UnidadLexica unidadIGUAL() {
 		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.IGUAL);
 	}
@@ -664,15 +673,6 @@ public class AnalizadorLexicoTiny {
 	 * @return componente léxico REAL
 	 */
 	private UnidadLexica unidadREAL() {
-		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.REAL, lex.toString());
-	}
-	
-	/**
-	 * Constructor del componente léxico DECIMAL
-	 * 
-	 * @return componente léxico DECIMAL
-	 */
-	private UnidadLexica unidadDECIMAL() {
 		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.LITERAL_REAL, lex.toString());
 	}
 	
