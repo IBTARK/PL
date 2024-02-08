@@ -157,16 +157,15 @@ public class AnalizadorLexicoTiny {
 					return unidadREAL();
 				case REC_DECIMAL:
 					if (hayDigitoPositivo()) transita(Estado.REC_DECIMAL);
-					return unidadDECIMAL();
-				case REC_0_DECIMAL:
-					if(hayDigitoPositivo()) transita(Estado._0_DECIMAL);
-					return unidadDECIMAL();
+					else if (hayCero()) transita(Estado._0_DECIMAL);
+					else if (hayExponente()) transita(Estado.EXPONENCIAL);
+					else return unidadDECIMAL();
 				case INI_COMENTARIO:
-					if(hayAlmohadilla()) transita(Estado.REC_COMENTARIO);
+					if(hayAlmohadilla()) transitaIgnorando(Estado.REC_COMENTARIO);
 					else error();
 					break;
 				case REC_TERMINACION:
-					return unidadCOMENTARIO();
+					return unidadTERMINACION();
 				case REC_P_CIERRE:
 					return unidadPARENTESIS_CIERRE();
 				case REC_MAYOR_IGUAL: 
@@ -179,24 +178,26 @@ public class AnalizadorLexicoTiny {
 					else if(hayDivision()) transita(Estado.REC_DIV);
 					else if(hayIgual()) transita(Estado.REC_IGUAL);
 					else if(hayMenor()) transita(Estado.REC_MENOR);
-					else if(hayMayor()) transita(Estado.REC_MAYORL);
+					else if(hayMayor()) transita(Estado.REC_MAYOR);
 					else if(hayExclamacion()) transita(Estado.EXCLAMACION);
 					else if(hayPApertura()) transita(Estado.REC_P_APERTURA);
 					else if(hayPCierre()) transita(Estado.REC_P_CIERRE);
 					else if(hayLApertura()) transita(Estado.REC_L_APERTURA);
 					else if(hayLCierre()) transita(Estado.REC_L_CIERRE);
 					else if(hayArroba()) transita(Estado.REC_NOMBRE);
-					else if(hayAmpersand()) transita(Estado.REC_INI_TERMINACION);
+					else if(hayAmpersand()) transita(Estado.INI_TERMINACION);
 					else if(hayPuntoYComa()) transita(Estado.REC_PUNTO_COMA);
-					else if(hayAlmohadilla()) transita(Estado.REC_INI_COMENTARIO);
+					else if(hayAlmohadilla()) transitaIgnorando(Estado.INI_COMENTARIO);
 					else if(hayMas()) transita(Estado.REC_MAS);
 					else if(hayMenos()) transita(Estado.REC_MENOS);
 					else if(hayCero()) transita(Estado.REC_CERO);
 					else if(hayDigitoPositivo()) transita(Estado.REC_ENTERO);
-					else if(hayTabulador() || haySaltoDeLinea() || hayRetorno()
-							|| hayBlackspace || hayBlanco()) transita(Estado.INICIO);
+					else if(hayTabulador() || haySaltoLinea() || hayRetorno()
+							|| hayBlackspace() || hayBlanco()) transitaIgnorando(Estado.INICIO);
 					else error();
-					break;				
+					break;	
+				default:
+					error();
 			}
 			
 		}
@@ -344,7 +345,7 @@ public class AnalizadorLexicoTiny {
 	 * 
 	 * @return True si el siguiente carácter es el >
 	 */
-	private boolean hayMenor() {
+	private boolean hayMayor() {
 		//62: representación del > en ASCCI
 		return sigCar == 62;
 	}
@@ -451,7 +452,7 @@ public class AnalizadorLexicoTiny {
 	 * @return True si el siguiente carácter es un blanco
 	 */
 	private boolean hayBlanco() {
-		return sigCar == " ";
+		return sigCar == ' ';
 	}
 	
 	/**
@@ -528,15 +529,6 @@ public class AnalizadorLexicoTiny {
 	 */
 	private UnidadLexica unidadDIVISION() {
 		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.DIVISION);
-	}
-	
-	/**
-	 * Constructor del componente léxico ASIGNACION
-	 * 
-	 * @return componente léxico ASIGNACION
-	 */
-	private UnidadLexica unidadASIGNACION() {
-		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.ASIGNACION);
 	}
 	
 	/**
@@ -658,15 +650,6 @@ public class AnalizadorLexicoTiny {
 	}
 	
 	/**
-	 * Constructor del componente léxico COMENTARIO
-	 *     
-	 * @return componente léxico COMENTARIO
-	 */
-	private UnidadLexica unidadCOMENTARIO() {
-		return new UnidadLexicaUnivaluada(filaInicio, columnaInicio, ClaseLexica.COMENTARIO);
-	}
-	
-	/**
 	 * Constructor del componente léxico INT
 	 * 
 	 * @return componente léxico INT
@@ -690,7 +673,7 @@ public class AnalizadorLexicoTiny {
 	 * @return componente léxico DECIMAL
 	 */
 	private UnidadLexica unidadDECIMAL() {
-		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.DECIMAL, lex.toString());
+		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.LITERAL_REAL, lex.toString());
 	}
 	
 	/**
