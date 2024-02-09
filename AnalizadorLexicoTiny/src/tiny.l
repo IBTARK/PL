@@ -67,6 +67,21 @@ read = (r|R)(e|E)(a|A)(d|D)
 call = (c|C)(a|A)(l|L)(l|L)
 entero = [\+,\-]?{parteEntera}
 separador = [ \t\r\b\n]
+
+resta = \-
+menor = <
+desigual = !=
+parentesis_apertura = \(
+llave_apertura = \{
+punto_coma = \;
+int = (i|I)(n|N)(t|T)
+false = (f|F)(a|A)(l|L)(s|S)(e|E)
+if = (i|I)(f|F)
+new = (n|N)(e|E)(w|W) 
+or = (o|O)(r|R)
+nl = (n|N)(l|L)
+literal_cadena = " ([^\"])* "
+
 %%
 {comentario}              {}
 {evalua}                  {return ops.unidadEvalua();}
@@ -112,3 +127,17 @@ separador = [ \t\r\b\n]
 {call}						{return ops.unidadID_CALL();}
 {entero}					{return ops.unidadINT();}
 {separador}					{}
+
+{resta}                     {return ops.unidadRESTA();}
+{menor}						{return ops.unidadMENOR();}
+{desigual}					{return ops.unidadDESIGUAL();}
+{parentesis_apertura} 		{return ops.unidadPARENTESIS_APERTURA();}
+{llave_apertura} 			{return ops.unidadLLAVE_APERTURA();}
+{punto_coma} 				{return ops.unidadPUNTO_Y_COMA();}
+{int}						{return ops.unidadINT();}
+{false} 					{return ops.unidadFALSE();}
+{if}						{return ops.unidadID_IF();}
+{new} 						{return ops.unidadID_NEW();}
+{or}						{return ops.unidadID_OR();}
+{nl}						{return ops.unidadID_NL();}
+{literal_cadena}			{} //esto no se si debde devolver algo
