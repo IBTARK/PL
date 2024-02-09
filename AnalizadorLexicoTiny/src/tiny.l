@@ -54,19 +54,19 @@ type = (t|T)(y|Y)(p|P)(e|E)
 not = (n|N)(o|O)(t|T)
 identificador = {letra}({letra}|{digito})*
 
-DIVISION = /
-MENOR_IGUAL = <=
-MODULO = %
-CORCHETE_APERTURA = \[
-PUNTO = .
-TERMINACION = &&
-BOOL = (b|B)(o|O)(o|O)(l|L)
-NULL = (n|N)(u|U)(l|L)(l|L)
-WHILE = (w|W)(h|H)(i|I)(l|L)(e|E)
-READ = (r|R)(e|E)(a|A)(d|D)
-CALL = (c|C)(a|A)(l|L)(l|L)
-ENTERO = [\+,\-]?{parteEntera}
-SEPARADOR = [ \t\r\b\n]
+division = /
+menor_igual = <=
+modulo = %
+corchete_apertura = \[
+punto = .
+terminacion = &&
+bool = (b|B)(o|O)(o|O)(l|L)
+null = (n|N)(u|U)(l|L)(l|L)
+while = (w|W)(h|H)(i|I)(l|L)(e|E)
+read = (r|R)(e|E)(a|A)(d|D)
+call = (c|C)(a|A)(l|L)(l|L)
+entero = [\+,\-]?{parteEntera}
+separador = [ \t\r\b\n]
 %%
 {comentario}              {}
 {evalua}                  {return ops.unidadEvalua();}
@@ -99,16 +99,16 @@ SEPARADOR = [ \t\r\b\n]
 {not}						{return ops.unidadID_NOT();}
 {identificador}				{return ops.unidadID();}
 
-{DIVISION}        			{return ops.unidadDIVISION();}
-{MENOR_IGUAL}        		{return ops.unidadMENOR_IGUAL();}
-{MODULO}					{return ops.unidadMODULO();}
-{CORCHETE_APERTURA}			{return ops.unidadCORCHETE_APERTURA();}
-{PUNTO}						{return ops.unidadPUNTO();}
-{TERMINACION}				{return ops.unidadTERMINACION();}
-{BOOL}						{return ops.unidadID_BOOL();}
-{NULL}						{return ops.unidadID_NULL();}
-{WHILE}						{return ops.unidadID_WHILE();}
-{READ}						{return ops.unidadID_READ();}
-{CALL}						{return ops.unidadID_CALL();}
-{ENTERO}					{return ops.unidadINT();}
-{SEPARADOR}					{}
+{division}        			{return ops.unidadDIVISION();}
+{menor_igual}        		{return ops.unidadMENOR_IGUAL();}
+{modulo}					{return ops.unidadMODULO();}
+{corchete_apertura}			{return ops.unidadCORCHETE_APERTURA();}
+{punto}						{return ops.unidadPUNTO();}
+{terminacion}				{return ops.unidadTERMINACION();}
+{bool}						{return ops.unidadID_BOOL();}
+{null}						{return ops.unidadID_NULL();}
+{while}						{return ops.unidadID_WHILE();}
+{read}						{return ops.unidadID_READ();}
+{call}						{return ops.unidadID_CALL();}
+{entero}					{return ops.unidadINT();}
+{separador}					{}
