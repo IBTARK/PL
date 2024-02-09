@@ -1,13 +1,16 @@
+package alex;
 import java.io.IOException;
 import java.io.Reader;
 
-import AFD.Estado;
-import componentesLexicos.ClaseLexica;
-import componentesLexicos.UnidadLexica;
-import componentesLexicos.UnidadLexicaMultivaluada;
-import componentesLexicos.UnidadLexicaUnivaluada;
-
 public class AnalizadorLexicoTiny {
+    
+   @SuppressWarnings("serial")
+   public static class ECaracterInesperado extends RuntimeException {
+       public ECaracterInesperado(String msg) {
+           super(msg);
+       }
+   }; 
+   
 	private Reader input; // Flujo de entrada
 	private StringBuffer lex; // Lexema del componente que se está reconociendo
 	private int sigCar; // Siguiente carácter a procesar
@@ -84,8 +87,7 @@ public class AnalizadorLexicoTiny {
 					else return unidadREAL();
 					break;
 				case DECIMAL:
-					if(hayDigitoPositivo()) transita(Estado.REC_DECIMAL);
-					else if(hayCero()) transita(Estado.REC_0_DECIMAL);
+					if(hayDigito()) transita(Estado.REC_DECIMAL);
 					break;
 				case EXPONENCIAL:
 					if(hayDigitoPositivo()) transita(Estado.REC_EXP);
@@ -160,6 +162,7 @@ public class AnalizadorLexicoTiny {
 					else if (hayCero()) transita(Estado._0_DECIMAL);
 					else if (hayExponente()) transita(Estado.EXPONENCIAL);
 					else return unidadREAL();
+					break;
 				case INI_COMENTARIO:
 					if(hayAlmohadilla()) transitaIgnorando(Estado.REC_COMENTARIO);
 					else error();
@@ -720,10 +723,11 @@ public class AnalizadorLexicoTiny {
 	
 	/**
 	 * Tratamiento de error léxico (tratamiento de errores simple)
+	 * @throws IOException 
 	 */
-	private void error() {
-		System.err.println("("+filaActual+','+columnaActual+"):Caracter inexperado");
-		System.exit(1);
+	private void error() throws IOException {
+		sigCar();
+		throw new ECaracterInesperado("("+filaActual+','+columnaActual+")");
 	}
 }
 
