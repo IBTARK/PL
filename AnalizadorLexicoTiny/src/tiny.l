@@ -25,20 +25,6 @@ digitoPositivo = [1-9]
 digito = ({digitoPositivo}|0)
 parteEntera = {digitoPositivo}{digito}*
 parteDecimal = {digito}* {digitoPositivo}
-comentario = #[^\n]* 
-evalua = evalua
-donde = donde
-identificador = {letra}({letra}|{digito})*
-numeroReal = [\+,\-]?{parteEntera}\.{parteDecimal}
-operadorSuma = \+
-operadorResta = \-
-operadorMultiplicacion = \*
-parentesisApertura = \(
-parentesisCierre = \)
-igual = \=
-coma  = \,
-
-
 
 multiplicacion = \*
 mayor = >
@@ -83,22 +69,6 @@ nl = (n|N)(l|L)
 literal_cadena = " ([^\"])* "
 
 %%
-{comentario}              {}
-{evalua}                  {return ops.unidadEvalua();}
-{donde}                   {return ops.unidadDonde();}
-{identificador}           {return ops.unidadId();}
-{numeroEntero}            {return ops.unidadEnt();}
-{numeroReal}              {return ops.unidadReal();}
-{operadorSuma}            {return ops.unidadSuma();}
-{operadorResta}           {return ops.unidadResta();}
-{operadorMultiplicacion}  {return ops.unidadMul();}
-{parentesisApertura}      {return ops.unidadPAp();}
-{parentesisCierre}        {return ops.unidadPCierre();} 
-{igual}                   {return ops.unidadIgual();} 
-{coma}                    {return ops.unidadComa();}
-[^]                       {ops.error();} 
-
-
 
 {multiplicacion}			{return ops.unidadMULTIPLICACION();}
 {mayor}						{return ops.unidadMAYOR();}
@@ -141,3 +111,5 @@ literal_cadena = " ([^\"])* "
 {or}						{return ops.unidadID_OR();}
 {nl}						{return ops.unidadID_NL();}
 {literal_cadena}			{} //esto no se si debde devolver algo
+
+[^]                       {ops.error();} 

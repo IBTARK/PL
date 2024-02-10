@@ -1,3 +1,5 @@
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,7 +9,8 @@ import alex.AnalizadorLexicoTiny;
 import alex.ClaseLexica;
 import alex.UnidadLexica;
 
-public class DomJudge {
+public class Main {
+
 	private static void imprime(UnidadLexica unidad) {
 		try {
 			System.out.println(unidad.lexema());
@@ -17,7 +20,7 @@ public class DomJudge {
 	}	
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
-	    Reader input  = new InputStreamReader(System.in);
+	    Reader input  = new InputStreamReader(new FileInputStream(new File("./src/entrada.txt")));
 	    AnalizadorLexicoTiny al = new AnalizadorLexicoTiny(input);
 	    UnidadLexica unidad = null;
 	    do {
@@ -26,9 +29,9 @@ public class DomJudge {
 		        imprime(unidad);
 	    	}
 	    	catch(AnalizadorLexicoTiny.ECaracterInesperado e) {
-	            System.out.println("ERROR");
+	            System.out.println("ERROR: "+ e.getMessage());
 	    	}
 	    }
 	    while (unidad == null || unidad.clase() != ClaseLexica.EOF);
 	}        
-} 
+}

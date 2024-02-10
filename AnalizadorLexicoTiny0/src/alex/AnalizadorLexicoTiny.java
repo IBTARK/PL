@@ -88,6 +88,7 @@ public class AnalizadorLexicoTiny {
 					break;
 				case DECIMAL:
 					if(hayDigito()) transita(Estado.REC_DECIMAL);
+					else error();
 					break;
 				case EXPONENCIAL:
 					if(hayDigitoPositivo()) transita(Estado.REC_EXP);
@@ -176,7 +177,8 @@ public class AnalizadorLexicoTiny {
 				case REC_IGUAL_IGUAL:
 					return unidadIGUAL();
 				case INICIO:
-					if(hayLetra()) transita(Estado.REC_ID);
+					if (hayEOF()) transita(Estado.REC_EOF);
+					else if(hayLetra()) transita(Estado.REC_ID);
 					else if(hayMultiplicacion()) transita(Estado.REC_MUL);
 					else if(hayDivision()) transita(Estado.REC_DIV);
 					else if(hayIgual()) transita(Estado.REC_IGUAL);
