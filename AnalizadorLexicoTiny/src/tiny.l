@@ -68,6 +68,21 @@ or = (o|O)(r|R)
 nl = (n|N)(l|L)
 literal_cadena = " ([^\"])* "
 
+suma = \+
+asignacion = \=
+mayor_igual = \>=
+indireccion = \^
+corchete_cierre = \]
+coma = \,
+ini_nombre = \@
+true = (t|T)(r|R)(u|U)(e|E)
+proc = (p|P)(r|R)(o|O)(c|C)
+struct = (s|S)(t|T)(r|R)(u|U)(c|C)(t|T)
+write = (w|W)(r|R)(i|I)(t|T)(e|E)
+and = (a|A)(n|N)(d|D)
+literal_real = {literal_entero}(\.{parteDecimal}|((\.{parteDecimal})?(e|E){literalEntero}))
+comentario = ##([^\n])*
+
 %%
 
 {multiplicacion}			{return ops.unidadMULTIPLICACION();}
@@ -111,5 +126,20 @@ literal_cadena = " ([^\"])* "
 {or}						{return ops.unidadID_OR();}
 {nl}						{return ops.unidadID_NL();}
 {literal_cadena}			{} //esto no se si debde devolver algo
+
+{suma} 						{return ops.unidadSUMA();}
+{asignacion} 				{return ops.unidadASIGANACION();}
+{mayor_igual} 				{return ops.unidadMAYOR_IGUAL();}
+{indireccion} 				{return ops.unidadINDIRECCION();}
+{corchete_cierre}			{return ops.unidadCORCHETE_CIERRE();}
+{coma}						{return ops.unidadCOMA();}
+{ini_nombre}				{return ops.unidaININOMBRE();}
+{true}						{return ops.unidadTRUE();}
+{proc}						{return ops.unidadID_PROC();}
+{struct}					{return ops.unidadID_STRUCT();}
+{write}						{return ops.unidadID_WRITE();}
+{and}						{return ops.unidadID_AND();}
+{literal_real}				{return ops.unidadREAL();}
+{comentario}				{}
 
 [^]                       {ops.error();} 

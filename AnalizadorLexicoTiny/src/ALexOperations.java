@@ -91,6 +91,10 @@ public class ALexOperations {
 		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.PUNTO_Y_COMA);
 	}
 	
+	private UnidadLexica unidadCOMA() {
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.COMA);
+	}
+	
 	private UnidadLexica unidadREFERENCIA() {
 		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.REFERENCIA);
 	}
@@ -121,6 +125,10 @@ public class ALexOperations {
 	
 	private UnidadLexica unidadID_STRING() {
 		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.ID_STRING);
+	}
+	
+	private UnidadLexica unidadID_AND() {
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.ID_AND);
 	}
 	
 	private UnidadLexica unidadID_OR() {
@@ -155,6 +163,10 @@ public class ALexOperations {
 		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.FALSE);
 	}
 	
+	private UnidadLexica unidadTRUE() {
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.TRUE);
+	}
+	
 	private UnidadLexica unidadID_BOOL() {
 		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.ID_BOOL);
 	}
@@ -171,6 +183,18 @@ public class ALexOperations {
 		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.ID_READ);
 	}
 	
+	private UnidadLexica unidadID_PROC() {
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.ID_PROC);
+	}
+	
+	private UnidadLexica unidadID_STRUCT() {
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.ID_STRUCT);
+	}
+	
+	private UnidadLexica unidadID_WRITE() {
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.ID_WRITE);
+	}
+	
 	private UnidadLexica unidadID_CALL() {
 		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.ID_CALL);
 	}
@@ -181,6 +205,14 @@ public class ALexOperations {
 	
 	private UnidadLexica unidadID() {
 		return new UnidadLexicaMultivaluada(alex.fila(), alex.columna(), ClaseLexica.IDENTIFICADOR, alex.lexema());
+	}
+	
+	private UnidadLexica unidadINDIRECCION() {
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.INDIRECCION);
+	}
+	
+	private UnidadLexica unidaININOMBRE() {
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.INI_NOMBRE);
 	}
 	
 	private void error() {
