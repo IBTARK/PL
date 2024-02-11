@@ -1,0 +1,13 @@
+# esto_no_deberia_ser_comentario
+## esto_si_es_un_comentario
+	
+$ {
+ 	REa 1peso;
+ 	&&
+ 	@ 1peso = (45.0 * 12e$56) / +2.05;
+ }
+ {
+ 	bool pe_sa_do_
+ 	&
+ 	@ pe_sa_do = FALSE aND ( 15.0000 <= 0.000003	)
+ }

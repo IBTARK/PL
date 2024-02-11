@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import alex.ALexOperations.ECaracterInesperado;
 import alex.AnalizadorLexicoTiny;
 import alex.ClaseLexica;
 import alex.UnidadLexica;
@@ -25,10 +26,10 @@ public class Main {
 	    UnidadLexica unidad = null;
 	    do {
 	    	try {  
-		        unidad = al.sigToken();
+	    		unidad = al.yylex();
 		        imprime(unidad);
 	    	}
-	    	catch(AnalizadorLexicoTiny.ECaracterInesperado e) {
+	    	catch(ECaracterInesperado e) {
 	            System.out.println("ERROR: "+ e.getMessage());
 	    	}
 	    }

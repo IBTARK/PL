@@ -1,4 +1,4 @@
-package componentesLexicos;
+package alex;
 
 
 public abstract class UnidadLexica {

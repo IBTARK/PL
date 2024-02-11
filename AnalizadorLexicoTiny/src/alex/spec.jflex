@@ -1,9 +1,12 @@
+package alex;
+
 %%
 %line
 %column
 %class AnalizadorLexicoTiny
 %type  UnidadLexica
 %unicode
+%public
 
 %{
   private ALexOperations ops;
@@ -23,8 +26,8 @@
 letra  = ([A-Z]|[a-z]|_)
 digitoPositivo = [1-9]
 digito = ({digitoPositivo}|0)
-parteEntera = {digitoPositivo}{digito}*
-parteDecimal = {digito}* {digitoPositivo}
+parteEntera = {digitoPositivo}{digito}*|0
+parteDecimal = {digito}*{digitoPositivo}|0
 
 multiplicacion = \*
 mayor = >
@@ -40,23 +43,23 @@ type = (t|T)(y|Y)(p|P)(e|E)
 not = (n|N)(o|O)(t|T)
 identificador = {letra}({letra}|{digito})*
 
-division = /
+division = \/
 menor_igual = <=
 modulo = %
 corchete_apertura = \[
-punto = .
+punto = \.
 terminacion = &&
 bool = (b|B)(o|O)(o|O)(l|L)
 null = (n|N)(u|U)(l|L)(l|L)
 while = (w|W)(h|H)(i|I)(l|L)(e|E)
 read = (r|R)(e|E)(a|A)(d|D)
 call = (c|C)(a|A)(l|L)(l|L)
-entero = [\+,\-]?{parteEntera}
+literal_entero = [\+\-]?{parteEntera}
 separador = [ \t\r\b\n]
 
 resta = \-
 menor = <
-desigual = !=
+desigual = \!=
 parentesis_apertura = \(
 llave_apertura = \{
 punto_coma = \;
@@ -80,66 +83,67 @@ proc = (p|P)(r|R)(o|O)(c|C)
 struct = (s|S)(t|T)(r|R)(u|U)(c|C)(t|T)
 write = (w|W)(r|R)(i|I)(t|T)(e|E)
 and = (a|A)(n|N)(d|D)
-literal_real = {literal_entero}(\.{parteDecimal}|((\.{parteDecimal})?(e|E){literalEntero}))
+literal_real = {literal_entero}(\.{parteDecimal}|((\.{parteDecimal})?(e|E){literal_entero}))
 comentario = ##([^\n])*
 
 %%
-
-{multiplicacion}			{return ops.unidadMULTIPLICACION();}
-{mayor}						{return ops.unidadMAYOR();}
-{igual_igual}				{return ops.unidadIGUAL();}
-{parentesis_cierre}			{return ops.unidadPARENTESIS_CIERRE();}
-{llave_cierre}				{return ops.unidadLLAVE_CIERRE();}
-{referencia}				{return ops.unidadREFERENCIA();}
+{int}						{return ops.unidadINT();}
 {real}						{return ops.unidadID_REAL();}
 {string}					{return ops.unidadID_STRING();}
-{else}						{return ops.unidadID_ELSE();}
-{delete}					{return ops.unidadID_DELETE();}
-{type}						{return ops.unidadID_TYPE();}
-{not}						{return ops.unidadID_NOT();}
-{identificador}				{return ops.unidadID();}
-
-{division}        			{return ops.unidadDIVISION();}
-{menor_igual}        		{return ops.unidadMENOR_IGUAL();}
-{modulo}					{return ops.unidadMODULO();}
-{corchete_apertura}			{return ops.unidadCORCHETE_APERTURA();}
-{punto}						{return ops.unidadPUNTO();}
-{terminacion}				{return ops.unidadTERMINACION();}
 {bool}						{return ops.unidadID_BOOL();}
+{true}						{return ops.unidadTRUE();}
+{false} 					{return ops.unidadFALSE();}
 {null}						{return ops.unidadID_NULL();}
 {while}						{return ops.unidadID_WHILE();}
-{read}						{return ops.unidadID_READ();}
-{call}						{return ops.unidadID_CALL();}
-{entero}					{return ops.unidadINT();}
-{separador}					{}
-
-{resta}                     {return ops.unidadRESTA();}
-{menor}						{return ops.unidadMENOR();}
-{desigual}					{return ops.unidadDESIGUAL();}
-{parentesis_apertura} 		{return ops.unidadPARENTESIS_APERTURA();}
-{llave_apertura} 			{return ops.unidadLLAVE_APERTURA();}
-{punto_coma} 				{return ops.unidadPUNTO_Y_COMA();}
-{int}						{return ops.unidadINT();}
-{false} 					{return ops.unidadFALSE();}
 {if}						{return ops.unidadID_IF();}
+{else}						{return ops.unidadID_ELSE();}
+{read}						{return ops.unidadID_READ();}
+{write}						{return ops.unidadID_WRITE();}
+{call}						{return ops.unidadID_CALL();}
+{delete}					{return ops.unidadID_DELETE();}
+{type}						{return ops.unidadID_TYPE();}
 {new} 						{return ops.unidadID_NEW();}
-{or}						{return ops.unidadID_OR();}
 {nl}						{return ops.unidadID_NL();}
-{literal_cadena}			{} //esto no se si debde devolver algo
-
-{suma} 						{return ops.unidadSUMA();}
-{asignacion} 				{return ops.unidadASIGANACION();}
-{mayor_igual} 				{return ops.unidadMAYOR_IGUAL();}
-{indireccion} 				{return ops.unidadINDIRECCION();}
-{corchete_cierre}			{return ops.unidadCORCHETE_CIERRE();}
-{coma}						{return ops.unidadCOMA();}
-{ini_nombre}				{return ops.unidaININOMBRE();}
-{true}						{return ops.unidadTRUE();}
 {proc}						{return ops.unidadID_PROC();}
 {struct}					{return ops.unidadID_STRUCT();}
-{write}						{return ops.unidadID_WRITE();}
+{not}						{return ops.unidadID_NOT();}
 {and}						{return ops.unidadID_AND();}
-{literal_real}				{return ops.unidadREAL();}
-{comentario}				{}
+{or}						{return ops.unidadID_OR();}
 
-[^]                       {ops.error();} 
+{literal_real}				{return ops.unidadREAL();}
+{literal_entero}			{return ops.unidadINT();}
+{literal_cadena}			{return ops.unidadCADENA();}
+{identificador}				{return ops.unidadID();}
+
+{suma} 						{return ops.unidadSUMA();}
+{resta}                     {return ops.unidadRESTA();}
+{multiplicacion}			{return ops.unidadMULTIPLICACION();}
+{division}        			{return ops.unidadDIVISION();}
+{modulo}					{return ops.unidadMODULO();}
+{indireccion} 				{return ops.unidadINDIRECCION();}
+{ini_nombre}				{return ops.unidaININOMBRE();}
+{referencia}				{return ops.unidadREFERENCIA();}
+{coma}						{return ops.unidadCOMA();}
+{punto_coma} 				{return ops.unidadPUNTO_Y_COMA();}
+{punto}						{return ops.unidadPUNTO();}
+
+{asignacion} 				{return ops.unidadASIGNACION();}
+{mayor}						{return ops.unidadMAYOR();}
+{menor}						{return ops.unidadMENOR();}
+{mayor_igual} 				{return ops.unidadMAYOR_IGUAL();}
+{menor_igual}        		{return ops.unidadMENOR_IGUAL();}
+{igual_igual}				{return ops.unidadIGUAL();}
+{desigual}					{return ops.unidadDESIGUAL();}
+
+{parentesis_apertura} 		{return ops.unidadPARENTESIS_APERTURA();}
+{parentesis_cierre}			{return ops.unidadPARENTESIS_CIERRE();}
+{corchete_apertura}			{return ops.unidadCORCHETE_APERTURA();}
+{corchete_cierre}			{return ops.unidadCORCHETE_CIERRE();}
+{llave_apertura} 			{return ops.unidadLLAVE_APERTURA();}
+{llave_cierre}				{return ops.unidadLLAVE_CIERRE();}
+
+{terminacion}				{return ops.unidadTERMINACION();}
+{comentario}				{}
+{separador}					{}
+
+[^]                         {ops.error();} 
