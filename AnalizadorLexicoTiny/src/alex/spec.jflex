@@ -69,7 +69,7 @@ if = (i|I)(f|F)
 new = (n|N)(e|E)(w|W) 
 or = (o|O)(r|R)
 nl = (n|N)(l|L)
-literal_cadena = " ([^\"])* "
+literal_cadena = \"([^\"])*\"
 
 suma = \+
 asignacion = \=
@@ -87,7 +87,7 @@ literal_real = {literal_entero}(\.{parteDecimal}|((\.{parteDecimal})?(e|E){liter
 comentario = ##([^\n])*
 
 %%
-{int}						{return ops.unidadINT();}
+{int}						{return ops.unidadID_INT();}
 {real}						{return ops.unidadID_REAL();}
 {string}					{return ops.unidadID_STRING();}
 {bool}						{return ops.unidadID_BOOL();}

@@ -123,7 +123,7 @@ public class ALexOperations {
 	}
 	
 	public UnidadLexica unidadID_INT() {
-		return new UnidadLexicaMultivaluada(alex.fila(), alex.columna(), ClaseLexica.ID_INT, alex.lexema());
+		return new UnidadLexicaUnivaluada(alex.fila(), alex.columna(), ClaseLexica.ID_INT);
 	}
 	
 	public UnidadLexica unidadID_REAL() {

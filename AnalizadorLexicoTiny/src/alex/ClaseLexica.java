@@ -47,7 +47,7 @@ public enum ClaseLexica {
 	ID_STRING("<string>"),
 	ID_NULL("<null>"),
 	ID_WHILE("<while>"),
-	ID_READ("<call>"),
+	ID_READ("<read>"),
 	ID_CALL("<call>"), 
 	ID_NL("<nl>"), 
 	ID_PROC("<proc>"), 

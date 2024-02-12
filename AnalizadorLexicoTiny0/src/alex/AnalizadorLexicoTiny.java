@@ -230,7 +230,7 @@ public class AnalizadorLexicoTiny {
 	 * @return True si el siguiente carácter es una letra
 	 */
 	private boolean hayLetra() {
-		return sigCar >= 'a' && sigCar <= 'z' || sigCar >= 'A' && sigCar <= 'z' || sigCar == '_';
+		return sigCar >= 'a' && sigCar <= 'z' || sigCar >= 'A' && sigCar <= 'Z' || sigCar == '_';
 	}
 	
 	/**
