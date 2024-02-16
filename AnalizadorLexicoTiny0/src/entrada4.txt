@@ -3,3 +3,4 @@
 	Int BOOl trUe fAlSe ReaL AND or noT;
 <><=>======!=
 ,.%"cadena"
+0.0e0
