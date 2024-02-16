@@ -1,0 +1,5 @@
++-(/)&&&##comentario
+#@iden_[0.0]{123 -8.03e+92}
+	Int BOOl trUe fAlSe ReaL AND or noT;
+<><=>======!=
+,.%"cadena"

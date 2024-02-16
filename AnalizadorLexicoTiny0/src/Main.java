@@ -20,18 +20,29 @@ public class Main {
 	}	
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
-	    Reader input  = new InputStreamReader(new FileInputStream(new File(args[0])));
-	    AnalizadorLexicoTiny al = new AnalizadorLexicoTiny(input);
-	    UnidadLexica unidad = null;
-	    do {
-	    	try {  
-		        unidad = al.sigToken();
-		        imprime(unidad);
-	    	}
-	    	catch(AnalizadorLexicoTiny.ECaracterInesperado e) {
-	            System.out.println("ERROR: "+ e.getMessage());
-	    	}
-	    }
-	    while (unidad == null || unidad.clase() != ClaseLexica.EOF);
+		int i = 1;
+		try {
+			while (true) {
+				String file = "./src/entrada"+i+".txt";
+			    Reader input  = new InputStreamReader(new FileInputStream(new File(file)));
+			    AnalizadorLexicoTiny al = new AnalizadorLexicoTiny(input);
+			    UnidadLexica unidad = null;
+			    
+			    System.out.println("\nExtrayendo tokens de "+file+"...\n");
+			    do {
+			    	try {  
+				        unidad = al.sigToken();
+				        imprime(unidad);
+			    	}
+			    	catch(AnalizadorLexicoTiny.ECaracterInesperado e) {
+			            System.out.println("ERROR: "+ e.getMessage());
+			    	}
+			    }
+			    while (unidad == null || unidad.clase() != ClaseLexica.EOF);
+			    ++i;
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("Fin de la ejecución");
+		}
 	}        
 }

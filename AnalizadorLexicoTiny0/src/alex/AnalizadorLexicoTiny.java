@@ -728,8 +728,9 @@ public class AnalizadorLexicoTiny {
 	 * @throws IOException 
 	 */
 	private void error() throws IOException {
+		int car = sigCar;
 		sigCar();
-		throw new ECaracterInesperado("("+filaActual+','+columnaActual+")");
+		throw new ECaracterInesperado("caracter inesperado '"+(char)car+"' ("+filaActual+','+columnaActual+")");
 	}
 }
 
