@@ -30,7 +30,7 @@ public enum ClaseLexica {
 	LITERAL_ENTERO, 
 	LITERAL_REAL, 
 	IDENTIFICADOR, 
-	EOF("EOF"), 
+	EOF("<EOF>"), 
 	;
 	
 	private String image;

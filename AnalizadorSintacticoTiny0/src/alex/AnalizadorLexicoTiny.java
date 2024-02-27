@@ -2,6 +2,8 @@ package alex;
 import java.io.IOException;
 import java.io.Reader;
 
+import errors.GestionErroresEval;
+
 public class AnalizadorLexicoTiny {
     
    @SuppressWarnings("serial")
@@ -25,8 +27,11 @@ public class AnalizadorLexicoTiny {
 	private static String NL = System.getProperty("line.separator");
 	private static final int EOF = -1;
 	
-	public AnalizadorLexicoTiny(Reader input) throws IOException {
+	private GestionErroresEval error;
+	
+	public AnalizadorLexicoTiny(Reader input, GestionErroresEval error) throws IOException {
 		this.input = input;
+		this.error = error;
 		lex = new StringBuffer();
 		sigCar = input.read();
 		filaActual=1;
@@ -725,12 +730,11 @@ public class AnalizadorLexicoTiny {
 	
 	/**
 	 * Tratamiento de error léxico (tratamiento de errores simple)
-	 * @throws IOException 
 	 */
 	private void error() throws IOException {
 		int car = sigCar;
 		sigCar();
-		throw new ECaracterInesperado("caracter inesperado '"+(char)car+"' ("+filaActual+','+columnaActual+")");
+		error.errorLexico(filaActual, columnaActual, (char)car);
 	}
 }
 

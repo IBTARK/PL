@@ -1,15 +1,14 @@
 package asint;
 
-import alex.UnidadLexica;
-import alex.AnalizadorLexicoTiny;
-import alex.ClaseLexica;
-import errors.GestionErroresEval;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import alex.AnalizadorLexicoTiny;
+import alex.ClaseLexica;
+import alex.UnidadLexica;
+import errors.GestionErroresEval;
 
 public class AnalizadorSintacticoTiny {
    private UnidadLexica anticipo;       // token adelantado
@@ -17,26 +16,20 @@ public class AnalizadorSintacticoTiny {
    private GestionErroresEval errores;  // gestor de errores
    private Set<ClaseLexica> esperados;  // clases léxicas esperadas
    
-   public AnalizadorSintacticoTiny(Reader input) {
+   public AnalizadorSintacticoTiny(Reader input) throws IOException {
 	   
-        // se crea el gestor de errores
-      errores = new GestionErroresEval();
-        // se crea el analizador léxico
-      alex = new AnalizadorLexicoTiny(input);
-        // se fija el gestor de errores en el analizador léxico
-        // (debe añadirse el método 'fijaGestionErrores' a
-        //  dicho analizador)
-      alex.fijaGestionErrores(errores);
-        // se crea el conjunto de clases léxicas esperadas
-        // (estará incializado a vacío)
-      esperados = EnumSet.noneOf(ClaseLexica.class);
-        // Se lee el primer token adelantado
-      sigToken();                      
+	   errores = new GestionErroresEval();
+	   alex = new AnalizadorLexicoTiny(input, errores);
+	   esperados = EnumSet.noneOf(ClaseLexica.class);
+       
+	   sigToken();                      
    }
+   
    public void analiza() {
       programa();
       empareja(ClaseLexica.EOF);
    }
+   
    private void programa() {
 	   bloque();
    }
@@ -64,10 +57,10 @@ public class AnalizadorSintacticoTiny {
 	       empareja(ClaseLexica.TERMINACION);
            break;
        default:
-          esperados(ClaseLexica.INT, 
-        		    ClaseLexica.REAL, 
-        		    ClaseLexica.BOOL);
-          break;
+    	   esperados(ClaseLexica.INT, 
+        		     ClaseLexica.REAL, 
+        		     ClaseLexica.BOOL);
+    	   break;
 	   }
    }
    
@@ -373,13 +366,16 @@ public class AnalizadorSintacticoTiny {
    }
    
    private void empareja(ClaseLexica claseEsperada) {
-      if (anticipo.clase() == claseEsperada)
+      if (anticipo.clase() == claseEsperada) {
+          traza_emparejamiento(anticipo);
           sigToken();
+      }
       else {
           esperados(claseEsperada);
           error();
       }
    }
+   
    private void sigToken() {
       try {
         anticipo = alex.sigToken();
@@ -394,4 +390,5 @@ public class AnalizadorSintacticoTiny {
         errores.errorSintactico(anticipo.fila(), anticipo.columna(), anticipo.clase(), esperados);
     }
   
+    protected void traza_emparejamiento(UnidadLexica anticipo) {} 
 }
