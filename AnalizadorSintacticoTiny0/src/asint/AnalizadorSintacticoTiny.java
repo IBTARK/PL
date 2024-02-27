@@ -158,15 +158,14 @@ public class AnalizadorSintacticoTiny {
    
    private void E0() {
 	   E1();
-	   REC0();
+	   RE0();
    }
    
-   private void REC0() {
+   private void RE0() {
 	   switch(anticipo.clase()) {
        case ASIGNACION: 
 		   empareja(ClaseLexica.ASIGNACION);
-		   E1();
-		   REC0();
+		   E0();
 		   break;
        default:
            esperados(ClaseLexica.ASIGNACION);
@@ -188,7 +187,8 @@ public class AnalizadorSintacticoTiny {
          case IGUAL:
          case DESIGUAL:
          	OP1();
-         	E1();
+         	E2();
+         	RE1();
          	break;
          default:
          	esperados(ClaseLexica.MENOR, 
@@ -197,6 +197,7 @@ public class AnalizadorSintacticoTiny {
          			  ClaseLexica.MAYOR_IGUAL,
          			  ClaseLexica.IGUAL, 
          			  ClaseLexica.DESIGUAL);
+         	break;
          }
    }
    
@@ -223,7 +224,8 @@ public class AnalizadorSintacticoTiny {
 	   switch(anticipo.clase()) {
        case SUMA:
 		   empareja(ClaseLexica.SUMA);
-		   E2();
+		   E3();
+		   REC2();
 		   break;
        default:
            esperados(ClaseLexica.SUMA);
@@ -248,7 +250,8 @@ public class AnalizadorSintacticoTiny {
 	     	E4();
 	     	break;
 	     default:
-	     	esperados(ClaseLexica.OR);
+	     	esperados(ClaseLexica.AND, ClaseLexica.OR);
+	     	break;
       }
    }
    
@@ -262,7 +265,8 @@ public class AnalizadorSintacticoTiny {
        case MULTIPLICACION:
        case DIVISION:
     	   OP4();
-    	   E4();
+    	   E5();
+    	   RE4();
     	   break; 
        default:
            esperados(ClaseLexica.MULTIPLICACION,ClaseLexica.DIVISION);
@@ -294,6 +298,7 @@ public class AnalizadorSintacticoTiny {
          			  ClaseLexica.TRUE,
          			  ClaseLexica.FALSE,
          			  ClaseLexica.PARENTESIS_APERTURA);
+         	break;
       }
    }
    

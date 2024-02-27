@@ -674,7 +674,7 @@ public class AnalizadorLexicoTiny {
 	 * @return componente léxico INT
 	 */
 	private UnidadLexica unidadINT() {
-		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.INT, lex.toString());
+		return new UnidadLexicaMultivaluada(filaInicio, columnaInicio, ClaseLexica.LITERAL_ENTERO, lex.toString());
 	}
 	
 	/**
