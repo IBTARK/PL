@@ -8,17 +8,17 @@ import java.util.Set;
 import alex.AnalizadorLexicoTiny;
 import alex.ClaseLexica;
 import alex.UnidadLexica;
-import errors.GestionErroresEval;
+import errors.GestionErroresTiny;
 
 public class AnalizadorSintacticoTiny {
    private UnidadLexica anticipo;       // token adelantado
    private AnalizadorLexicoTiny alex;   // analizador léxico 
-   private GestionErroresEval errores;  // gestor de errores
+   private GestionErroresTiny errores;  // gestor de errores
    private Set<ClaseLexica> esperados;  // clases léxicas esperadas
    
    public AnalizadorSintacticoTiny(Reader input) throws IOException {
 	   
-	   errores = new GestionErroresEval();
+	   errores = new GestionErroresTiny();
 	   alex = new AnalizadorLexicoTiny(input, errores);
 	   esperados = EnumSet.noneOf(ClaseLexica.class);
        

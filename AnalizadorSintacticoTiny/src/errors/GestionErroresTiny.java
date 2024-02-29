@@ -3,7 +3,7 @@ package errors;
 import alex.ClaseLexica;
 import java.util.Set;
 
-public class GestionErroresEval {
+public class GestionErroresTiny {
 	public static class ErrorLexico extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 		public ErrorLexico(String msg) {

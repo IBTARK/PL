@@ -1,0 +1,20 @@
+options  {
+  STATIC=false;
+  DEBUG_PARSER=true;
+}  
+PARSER_BEGIN(AnalizadorSintacticoTiny)
+package asint_desc;
+
+public class AnalizadorSintacticoTiny {
+    protected void newToken(Token t) {}
+}
+PARSER_END(AnalizadorSintacticoTiny)
+
+
+  TOKEN:{<#letra:["a"-"z","A"-"Z"]>}
+  TOKEN:{<#digitoPositivo:["1"-"9"]>}
+  TOKEN:{<#digito:<digitoPositivo>|"0">} 
+  TOKEN:{<#parteEntera:<digitoPositivo> (<digito>)* |"0">} 
+  TOKEN:{<#parteDecimal: (<digito>)* <digitoPositivo> | "0">}
+  SKIP:{<["\t"," ","\r","\b","\n"]>}  
+  SKIP:{<"##"(~["\n"])*>}  

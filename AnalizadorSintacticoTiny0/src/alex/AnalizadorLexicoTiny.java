@@ -2,7 +2,7 @@ package alex;
 import java.io.IOException;
 import java.io.Reader;
 
-import errors.GestionErroresEval;
+import errors.GestionErroresTiny;
 
 public class AnalizadorLexicoTiny {
     
@@ -27,9 +27,9 @@ public class AnalizadorLexicoTiny {
 	private static String NL = System.getProperty("line.separator");
 	private static final int EOF = -1;
 	
-	private GestionErroresEval error;
+	private GestionErroresTiny error;
 	
-	public AnalizadorLexicoTiny(Reader input, GestionErroresEval error) throws IOException {
+	public AnalizadorLexicoTiny(Reader input, GestionErroresTiny error) throws IOException {
 		this.input = input;
 		this.error = error;
 		lex = new StringBuffer();
