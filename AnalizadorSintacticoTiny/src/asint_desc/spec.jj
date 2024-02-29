@@ -11,7 +11,7 @@ public class AnalizadorSintacticoTiny {
 PARSER_END(AnalizadorSintacticoTiny)
 
 
-	TOKEN:{<#letra:["a"-"z","A"-"Z"]>}
+	TOKEN:{<#letra:["a"-"z","A"-"Z"]|"_">}
 	TOKEN:{<#digitoPositivo:["1"-"9"]>}
 	TOKEN:{<#digito:<digitoPositivo>|"0">} 
 	TOKEN:{<#parteEntera:<digitoPositivo> (<digito>)* |"0">} 
@@ -19,32 +19,43 @@ PARSER_END(AnalizadorSintacticoTiny)
 	SKIP:{<["\t"," ","\r","\b","\n"]>}  
 	SKIP:{<"##"(~["\n"])*>}  
  
-	TOKEN:{<terminación:"&&">}
-	TOKEN:{<asignación:"=">}
-	TOKEN:{<punto_coma:";">}
-	TOKEN:{<menor:"<">}
-	TOKEN:{<mayor:">">}
-	TOKEN:{<menor_igual:"<=">}
-	TOKEN:{<mayor_igual:">=">}
-	TOKEN:{<igual_igual:"==">}
-	TOKEN:{<desigual:"!=">}
-	TOKEN:{<corchete_apertura:"[">}
-	TOKEN:{<corchete_cierre:"]">}
 	TOKEN:{<literalEntero:(["+","-"])?<parteEntera>>}
+	TOKEN:{<int:"int">}
+	TOKEN:{<real:"real">}
+	TOKEN:{<bool:"bool">}
+	TOKEN:{<string:"string">}
+	TOKEN:{<struct:"struct">}
+	TOKEN:{<iden: <letra>(<letra>|<digito>)* >}
+	TOKEN:{<not:"not">}
   
 	void analiza() : {} {programa() <EOF> }
-	void declaraciones() : {} {lista_declaraciones() <terminación> | {}}
+	void declaraciones() : {} {lista_declaraciones() "&&" | {}}
 	void lista_declaraciones() : {} {declaración() r_lista_declaraciones()}
-	void r_lista_declaraciones() : {} {<punto_coma> declaración() r_lista_declaraciones() | {}}
+	void r_lista_declaraciones() : {} {";" declaración() r_lista_declaraciones() | {}}
+	void parametros_formales() : {} {"(" lista_parametros_formales_e() ")"}
+	void lista_parametros_formales_e() : {} {lista_parametros_formales() | {}}
+	void lista_parametros_formales() : {} {parametro_formal() r_lista_parametros_formales()}
+	void r_lista_parametros_formales() : {} {"," parametro_formal() r_lista_parametros_formales() | {}}
 	void tipo() : {} {T0()}
 	void T0() : {} {T1() RT0()}
-	void RT0() : {} {<corchete_apertura> <literalEntero> <corchete_cierre> RT0() | {}}
+	void RT0() : {} {"[" <literalEntero> "]" RT0() | {}}
+	void T2() : {} {<int> | <real> | <bool> | <string> | <iden> | <struct> "{" lista_campos() "}" }
 	void instrucciones() : {} {lista_instrucciones() | {}}
 	void lista_instrucciones() : {} {instrucción() r_lista_instrucciones()}
-	void r_lista_instrucciones() : {} {<punto_coma> instrucción() r_lista_instrucciones() | {}}
+	void r_lista_instrucciones() : {} {";" instrucción() r_lista_instrucciones() | {}}
+	void parametros_reales() : {} {"(" lista_expresiones_e() ")"}
+	void lista_expresiones_e() : {} {lista_expresiones() | {}}
+	void lista_expresiones() : {} {expresion() r_lista_expresiones()}
+	void r_lista_expresiones() : {} {"," expresion() r_lista_expresiones() | {}}
 	void E0() : {} {E1() RE0()}
-	void RE0() : {} {<asignación> E1() RE0() | {}}
+	void RE0() : {} {"=" E1() RE0() | {}}
+	void E2() : {} {E3() RE2() REC2()}
+	void RE2() : {} {"-" E3() | {}}
+	void REC2() : {} {"+" E3() REC2() | {}}
 	void E4() : {} {E5() RE4()}
 	void RE4() : {} {OP4() E5() RE4() | {}}
-	void OP0() : {} {<menor> | <mayor> | <menor_igual> | <mayor_igual> | <igual_igual> | <desigual>}
+	void E6() : {} {E7() RE6()}
+	void RE6() : {} {OP6() RE6() | {}}
+	void OP0() : {} {"<" | ">" | "<=" | ">=" | "==" | "!="}
+	void OP5() : {} {"-" | <not>}
 	

@@ -21,30 +21,57 @@ init with {:
 :};
 
 	terminal     TERMINACION, ASIGNACION, PUNTO_Y_COMA, MENOR, MAYOR, MENOR_IGUAL, MAYOR_IGUAL, 
-				 DESIGUAL, IGUAL, CORCHETE_APERTURA, CORCHETE_CIERRE, LITERAL_ENTERO;
+				 DESIGUAL, IGUAL, CORCHETE_APERTURA, CORCHETE_CIERRE, LITERAL_ENTERO,
+				 PARENTESIS_APERTURA, PARENTESIS_CIERRE, COMA, ID_INT, ID_REAL, ID_BOOL, ID_STRING,
+				 IDENTIFICADOR, ID_STRUCT, LLAVE_APERTURA, LLAVE_CIERRE, SUMA, RESTA, ID_NOT;
 
-	non terminal  declaraciones, lista_declaraciones, tipo, T0, instrucciones, lista_instrucciones,
-				  E0, E4, OP1;
+	non terminal  declaraciones, lista_declaraciones, tipo, T0, T1, T2, instrucciones, lista_instrucciones,
+				  parametros_formales, lista_parametros_formales_e, lista_parametros_formales, 
+				  parametro_formal, E0, E1, E2, E4, E5, E6, E7, OP1, OP5, lista_campos, parametros_reales, 
+				  lista_expresiones_e, lista_expresiones, expresion;
     
 	declaraciones ::= lista_declaraciones TERMINACION;
 	declaraciones ::= ;
 	lista_declaraciones ::= lista_declaraciones PUNTO_Y_COMA declaración;
 	lista_declaraciones ::= declaración;
+	parametros_formales ::= PARENTESIS_APERTURA lista_parametros_formales_e PARENTESIS_CIERRE;
+	lista_parametros_formales_e ::= lista_parametros_formales;
+	lista_parametros_formales_e ::= ;
+	lista_parametros_formales ::= lista_parametros_formales COMA parametro_formal;
+	lista_parametros_formales ::= parametro_formal;
 	tipo ::= T0;
 	T0 ::= T0 CORCHETE_APERTURA LITERAL_ENTERO CORCHETE_CIERRE;
 	T0 ::= T1;
+	T2 ::= ID_INT;
+	T2 ::= ID_REAL;
+	T2 ::= ID_BOOL;
+	T2 ::= ID_STRING;
+	T2 ::= IDENTIFICADOR;
+	T2 ::= ID_STRUCT LLAVE_APERTURA lista_campos LLAVE_CIERRE;
 	instrucciones ::= lista-instrucciones;
 	instrucciones ::= ;
 	lista_instrucciones ::= lista_instrucciones PUNTO_Y_COMA instrucción;
 	lista_instrucciones ::= instrucción;
+	parametros_reales ::= PARENTESIS_APERTURA lista_expresiones_e PARENTESIS_CIERRE;
+	lista_expresiones_e ::= lista_expresiones;
+	lista_expresiones_e ::= ;
+	lista_expresiones ::= lista_expresiones COMA expresion;
+	lista_expresiones ::= expresion;
 	E0 ::= E1 ASIGNACION  E0;
 	E0 ::= E1;
+	E2 ::= E2 SUMA E3;
+	E2 ::= E3 RESTA E3;
+	E2 ::= E3;
 	E4 ::= E4 OP4 E5;
 	E4 ::= E5;
+	E6 ::= E6 OP6;
+	E6 ::= E7;
 	OP1 ::= MENOR;
 	OP1 ::= MAYOR;
 	OP1 ::= MENOR_IGUAL;
 	OP1 ::= MAYOR_IGUAL;
 	OP1 ::= IGUAL;
 	OP1 ::= DESIGUAL;
+	OP5 ::= RESTA;
+	OP5 ::= ID_NOT;
 	

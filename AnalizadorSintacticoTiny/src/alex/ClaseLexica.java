@@ -23,7 +23,6 @@ public enum ClaseLexica {
 	ID_AND("<and>"), 
 	ID_OR("<or>"), 
 	ID_NOT("<not>"),
-	REAL("<real>"), 
 	ID_BOOL("<bool>"), 
 	TRUE("<true>"), 
 	FALSE("<false>"), 
