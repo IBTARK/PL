@@ -11,10 +11,40 @@ public class AnalizadorSintacticoTiny {
 PARSER_END(AnalizadorSintacticoTiny)
 
 
-  TOKEN:{<#letra:["a"-"z","A"-"Z"]>}
-  TOKEN:{<#digitoPositivo:["1"-"9"]>}
-  TOKEN:{<#digito:<digitoPositivo>|"0">} 
-  TOKEN:{<#parteEntera:<digitoPositivo> (<digito>)* |"0">} 
-  TOKEN:{<#parteDecimal: (<digito>)* <digitoPositivo> | "0">}
-  SKIP:{<["\t"," ","\r","\b","\n"]>}  
-  SKIP:{<"##"(~["\n"])*>}  
+	TOKEN:{<#letra:["a"-"z","A"-"Z"]>}
+	TOKEN:{<#digitoPositivo:["1"-"9"]>}
+	TOKEN:{<#digito:<digitoPositivo>|"0">} 
+	TOKEN:{<#parteEntera:<digitoPositivo> (<digito>)* |"0">} 
+	TOKEN:{<#parteDecimal: (<digito>)* <digitoPositivo> | "0">}
+	SKIP:{<["\t"," ","\r","\b","\n"]>}  
+	SKIP:{<"##"(~["\n"])*>}  
+ 
+	TOKEN:{<terminación:"&&">}
+	TOKEN:{<asignación:"=">}
+	TOKEN:{<punto_coma:";">}
+	TOKEN:{<menor:"<">}
+	TOKEN:{<mayor:">">}
+	TOKEN:{<menor_igual:"<=">}
+	TOKEN:{<mayor_igual:">=">}
+	TOKEN:{<igual_igual:"==">}
+	TOKEN:{<desigual:"!=">}
+	TOKEN:{<corchete_apertura:"[">}
+	TOKEN:{<corchete_cierre:"]">}
+	TOKEN:{<literalEntero:(["+","-"])?<parteEntera>>}
+  
+	void analiza() : {} {programa() <EOF> }
+	void declaraciones() : {} {lista_declaraciones() <terminación> | {}}
+	void lista_declaraciones() : {} {declaración() r_lista_declaraciones()}
+	void r_lista_declaraciones() : {} {<punto_coma> declaración() r_lista_declaraciones() | {}}
+	void tipo() : {} {T0()}
+	void T0() : {} {T1() RT0()}
+	void RT0() : {} {<corchete_apertura> <literalEntero> <corchete_cierre> RT0() | {}}
+	void instrucciones() : {} {lista_instrucciones() | {}}
+	void lista_instrucciones() : {} {instrucción() r_lista_instrucciones()}
+	void r_lista_instrucciones() : {} {<punto_coma> instrucción() r_lista_instrucciones() | {}}
+	void E0() : {} {E1() RE0()}
+	void RE0() : {} {<asignación> E1() RE0() | {}}
+	void E4() : {} {E5() RE4()}
+	void RE4() : {} {OP4() E5() RE4() | {}}
+	void OP0() : {} {<menor> | <mayor> | <menor_igual> | <mayor_igual> | <igual_igual> | <desigual>}
+	

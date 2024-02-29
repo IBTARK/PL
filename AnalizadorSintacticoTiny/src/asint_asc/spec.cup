@@ -20,3 +20,31 @@ init with {:
    alex.fijaGestionErrores(errores);
 :};
 
+	terminal     TERMINACION, ASIGNACION, PUNTO_Y_COMA, MENOR, MAYOR, MENOR_IGUAL, MAYOR_IGUAL, 
+				 DESIGUAL, IGUAL, CORCHETE_APERTURA, CORCHETE_CIERRE, LITERAL_ENTERO;
+
+	non terminal  declaraciones, lista_declaraciones, tipo, T0, instrucciones, lista_instrucciones,
+				  E0, E4, OP1;
+    
+	declaraciones ::= lista_declaraciones TERMINACION;
+	declaraciones ::= ;
+	lista_declaraciones ::= lista_declaraciones PUNTO_Y_COMA declaración;
+	lista_declaraciones ::= declaración;
+	tipo ::= T0;
+	T0 ::= T0 CORCHETE_APERTURA LITERAL_ENTERO CORCHETE_CIERRE;
+	T0 ::= T1;
+	instrucciones ::= lista-instrucciones;
+	instrucciones ::= ;
+	lista_instrucciones ::= lista_instrucciones PUNTO_Y_COMA instrucción;
+	lista_instrucciones ::= instrucción;
+	E0 ::= E1 ASIGNACION  E0;
+	E0 ::= E1;
+	E4 ::= E4 OP4 E5;
+	E4 ::= E5;
+	OP1 ::= MENOR;
+	OP1 ::= MAYOR;
+	OP1 ::= MENOR_IGUAL;
+	OP1 ::= MAYOR_IGUAL;
+	OP1 ::= IGUAL;
+	OP1 ::= DESIGUAL;
+	
