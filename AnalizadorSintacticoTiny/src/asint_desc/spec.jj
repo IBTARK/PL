@@ -27,10 +27,22 @@ PARSER_END(AnalizadorSintacticoTiny)
 	TOKEN:{<struct:"struct">}
 	TOKEN:{<iden: <letra>(<letra>|<digito>)* >}
 	TOKEN:{<not:"not">}
+	TOKEN:{<proc:"proc">}
+	TOKEN:{<type:"type">}
+	TOKEN:{<if:"if">}
+	TOKEN:{<call:"call">}
+	TOKEN:{<nl:"nl">}
+	TOKEN:{<new:"new">}
+	TOKEN:{<read:"read">}
+	TOKEN:{<write:"write">}
+	TOKEN:{<delete:"delete">}
+	TOKEN:{<while:"while">}
+	TOKEN:{<else:"else">}
   
 	void analiza() : {} {programa() <EOF> }
 	void declaraciones() : {} {lista_declaraciones() "&&" | {}}
 	void lista_declaraciones() : {} {declaración() r_lista_declaraciones()}
+	void declaracion() : {} { <proc> <iden> parametros_formales() bloque() | <type> tipo() <iden> | tipo() <iden> }
 	void r_lista_declaraciones() : {} {";" declaración() r_lista_declaraciones() | {}}
 	void parametros_formales() : {} {"(" lista_parametros_formales_e() ")"}
 	void lista_parametros_formales_e() : {} {lista_parametros_formales() | {}}
@@ -39,23 +51,30 @@ PARSER_END(AnalizadorSintacticoTiny)
 	void tipo() : {} {T0()}
 	void T0() : {} {T1() RT0()}
 	void RT0() : {} {"[" <literalEntero> "]" RT0() | {}}
+	void T1() : {} {"^" T1 | T2 }
 	void T2() : {} {<int> | <real> | <bool> | <string> | <iden> | <struct> "{" lista_campos() "}" }
 	void instrucciones() : {} {lista_instrucciones() | {}}
 	void lista_instrucciones() : {} {instrucción() r_lista_instrucciones()}
 	void r_lista_instrucciones() : {} {";" instrucción() r_lista_instrucciones() | {}}
+	void instruccion() : {} {"@" expresion() | <call> <iden> parametros_reales() | <nl> | <new> expresion() | <read> expresion() | <write> expresion() | <delete> expresion() | <while> expresion() bloque() | <if> expresion() bloque() r_instruccion_if() | bloque()}
+    void r_instruccion_if() : {} {<else> bloque() | {}}
 	void parametros_reales() : {} {"(" lista_expresiones_e() ")"}
 	void lista_expresiones_e() : {} {lista_expresiones() | {}}
 	void lista_expresiones() : {} {expresion() r_lista_expresiones()}
 	void r_lista_expresiones() : {} {"," expresion() r_lista_expresiones() | {}}
 	void E0() : {} {E1() RE0()}
 	void RE0() : {} {"=" E1() RE0() | {}}
+	void E1() : {} {E2() RE1()}
+	void RE1() : {} {OP1() E2() RE1() | {}}
 	void E2() : {} {E3() RE2() REC2()}
 	void RE2() : {} {"-" E3() | {}}
 	void REC2() : {} {"+" E3() REC2() | {}}
 	void E4() : {} {E5() RE4()}
 	void RE4() : {} {OP4() E5() RE4() | {}}
+	void E5() : {} { OP5() E5 | E6 }
 	void E6() : {} {E7() RE6()}
 	void RE6() : {} {OP6() RE6() | {}}
 	void OP0() : {} {"<" | ">" | "<=" | ">=" | "==" | "!="}
+	void OP4() : {} { "*" | "/" | "%" }
 	void OP5() : {} {"-" | <not>}
 	
