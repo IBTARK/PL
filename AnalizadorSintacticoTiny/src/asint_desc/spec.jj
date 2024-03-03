@@ -20,6 +20,8 @@ PARSER_END(AnalizadorSintacticoTiny)
 	SKIP:{<"##"(~["\n"])*>}  
  
 	TOKEN:{<literalEntero:(["+","-"])?<parteEntera>>}
+	TOKEN:{<literalReal:<literalEntero> ("." <parteDecimal> | (("." <parteDecimal>) ? (("e" | "E") <literalEntero>)))>}
+	TOKEN:{<literalCadena:(~["\""])*>}
 	TOKEN:{<int:"int">}
 	TOKEN:{<real:"real">}
 	TOKEN:{<bool:"bool">}
@@ -38,8 +40,15 @@ PARSER_END(AnalizadorSintacticoTiny)
 	TOKEN:{<delete:"delete">}
 	TOKEN:{<while:"while">}
 	TOKEN:{<else:"else">}
+	TOKEN:{<and:"and">}
+	TOKEN:{<or:"or">}
+  	TOKEN:{<true:"true">}
+  	TOKEN:{<false:"false">}
+  	TOKEN:{<null:"null">}
   
 	void analiza() : {} {programa() <EOF> }
+	void programa() : {} {bloque()}
+	void bloque() : {} {declaraciones() instrucciones()}
 	void declaraciones() : {} {lista_declaraciones() "&&" | {}}
 	void lista_declaraciones() : {} {declaración() r_lista_declaraciones()}
 	void declaracion() : {} { <proc> <iden> parametros_formales() bloque() | <type> tipo() <iden> | tipo() <iden> }
@@ -48,11 +57,16 @@ PARSER_END(AnalizadorSintacticoTiny)
 	void lista_parametros_formales_e() : {} {lista_parametros_formales() | {}}
 	void lista_parametros_formales() : {} {parametro_formal() r_lista_parametros_formales()}
 	void r_lista_parametros_formales() : {} {"," parametro_formal() r_lista_parametros_formales() | {}}
+	void parametro_formal() : {} {tipo()  r_parametro_formal()}
+	void r_parametro_formal() : {} {"&" <iden> | <iden>}
 	void tipo() : {} {T0()}
 	void T0() : {} {T1() RT0()}
 	void RT0() : {} {"[" <literalEntero> "]" RT0() | {}}
 	void T1() : {} {"^" T1 | T2 }
 	void T2() : {} {<int> | <real> | <bool> | <string> | <iden> | <struct> "{" lista_campos() "}" }
+	void lista_campos() : {} {campo() r_lista_campos()}
+	void r_lista_campos() : {} {campo() r_listacampos() | {}}
+	void campo() : {} {tipo() <iden>}
 	void instrucciones() : {} {lista_instrucciones() | {}}
 	void lista_instrucciones() : {} {instrucción() r_lista_instrucciones()}
 	void r_lista_instrucciones() : {} {";" instrucción() r_lista_instrucciones() | {}}
@@ -62,6 +76,7 @@ PARSER_END(AnalizadorSintacticoTiny)
 	void lista_expresiones_e() : {} {lista_expresiones() | {}}
 	void lista_expresiones() : {} {expresion() r_lista_expresiones()}
 	void r_lista_expresiones() : {} {"," expresion() r_lista_expresiones() | {}}
+	void expresion() : {} {E0()}
 	void E0() : {} {E1() RE0()}
 	void RE0() : {} {"=" E1() RE0() | {}}
 	void E1() : {} {E2() RE1()}
@@ -69,12 +84,16 @@ PARSER_END(AnalizadorSintacticoTiny)
 	void E2() : {} {E3() RE2() REC2()}
 	void RE2() : {} {"-" E3() | {}}
 	void REC2() : {} {"+" E3() REC2() | {}}
+	void E3() : {} {E4() RE3()}
+	void RE3() : {} {<and> E3() | <or> E4() | {}}
 	void E4() : {} {E5() RE4()}
 	void RE4() : {} {OP4() E5() RE4() | {}}
 	void E5() : {} { OP5() E5 | E6 }
 	void E6() : {} {E7() RE6()}
 	void RE6() : {} {OP6() RE6() | {}}
+	void E7() : {} {<literalEntero> | <literalReal> | <iden> |<true> | <false> | <literalCadena> | <null> | "(" E0() ")"}
 	void OP0() : {} {"<" | ">" | "<=" | ">=" | "==" | "!="}
 	void OP4() : {} { "*" | "/" | "%" }
 	void OP5() : {} {"-" | <not>}
+	void OP6() : {} {"[" E0() "]" | "." <iden> | "^"}
 	

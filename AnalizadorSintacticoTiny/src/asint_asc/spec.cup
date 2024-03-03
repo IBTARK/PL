@@ -24,14 +24,17 @@ init with {:
 				 DESIGUAL, IGUAL, CORCHETE_APERTURA, CORCHETE_CIERRE, LITERAL_ENTERO,
 				 PARENTESIS_APERTURA, PARENTESIS_CIERRE, COMA, ID_INT, ID_REAL, ID_BOOL, ID_STRING,
 				 IDENTIFICADOR, ID_STRUCT, LLAVE_APERTURA, LLAVE_CIERRE, SUMA, RESTA, MULTIPLICACION,
-				 DIVISION, MODULO, ID_NOT, ARROBA, IF, ELSE, PROC, TYPE, ELEVADO, CALL, READ, WRITE, 
-				 WHILE, NEW, DELETE, NL;
+				 DIVISION, MODULO, ID_NOT, INI_NOMBRE, IF, ELSE, PROC, TYPE, CALL, READ, WRITE, 
+				 WHILE, NEW, DELETE, NL, REFERENCIA,COMA, ID_AND, ID_OR, LITERAL_ENTERO, LITERAL_REAL, IDENTIFICADOR, LITERAL_CADENA,
+				 TRUE, FALSE, ID_NULL, INDIRECCION;
 
-	non terminal  declaraciones, lista_declaraciones, declaracion, tipo, T0, T1, T2, instrucciones, lista_instrucciones,
+	non terminal  programa, bloque, declaraciones, lista_declaraciones, declaracion, tipo, T0, T1, T2, instrucciones, lista_instrucciones,
 				  parametros_formales, lista_parametros_formales_e, lista_parametros_formales, 
 				  parametro_formal, E0, E1, E2, E4, E5, E6, E7, OP1, OP5, lista_campos, parametros_reales, 
 				  lista_expresiones_e, lista_expresiones, expresion;
     
+    programa ::= bloque;
+    bloque ::= LLAVE_APERTURA declaraciones instrucciones LLAVE_CIERRE;
 	declaraciones ::= lista_declaraciones TERMINACION;
 	declaraciones ::= ;
 	lista_declaraciones ::= lista_declaraciones PUNTO_Y_COMA declaración;
@@ -44,10 +47,12 @@ init with {:
 	lista_parametros_formales_e ::= ;
 	lista_parametros_formales ::= lista_parametros_formales COMA parametro_formal;
 	lista_parametros_formales ::= parametro_formal;
+	parametro_formal ::= tipo REFERENCIA IDENTIFICADOR;
+	parametro_formal ::= tipo IDENTIFICADOR;
 	tipo ::= T0;
 	T0 ::= T0 CORCHETE_APERTURA LITERAL_ENTERO CORCHETE_CIERRE;
 	T0 ::= T1;
-	T1 ::= ELEVADO T1;
+	T1 ::= INDIRECCION T1;
 	T1 ::= T2;
 	T2 ::= ID_INT;
 	T2 ::= ID_REAL;
@@ -55,11 +60,14 @@ init with {:
 	T2 ::= ID_STRING;
 	T2 ::= IDENTIFICADOR;
 	T2 ::= ID_STRUCT LLAVE_APERTURA lista_campos LLAVE_CIERRE;
+	lista_campos ::= lista_campos COMA campo;
+	lista_campos ::= campo;
+	campo ::= tipo IDENTIFICADOR;
 	instrucciones ::= lista-instrucciones;
 	instrucciones ::= ;
 	lista_instrucciones ::= lista_instrucciones PUNTO_Y_COMA instrucción;
 	lista_instrucciones ::= instrucción;
-	instruccion ::= ARROBA expresion;
+	instruccion ::= INI_NOMBRE expresion;
 	instruccion ::= CALL IDENTIFICADOR parametros_reales;
 	instruccion ::= NL;
 	instruccion ::= NEW expresion;
@@ -75,6 +83,7 @@ init with {:
 	lista_expresiones_e ::= ;
 	lista_expresiones ::= lista_expresiones COMA expresion;
 	lista_expresiones ::= expresion;
+	expresion ::= E0;
 	E0 ::= E1 ASIGNACION  E0;
 	E0 ::= E1;
 	E1 ::= E1 OP1 E2;
@@ -82,12 +91,23 @@ init with {:
 	E2 ::= E2 SUMA E3;
 	E2 ::= E3 RESTA E3;
 	E2 ::= E3;
+	E3 ::= E4 ID_AND E3;
+	E3 ::= E4 ID_OR E4;
+	E3 ::= E4;
 	E4 ::= E4 OP4 E5;
 	E4 ::= E5;
 	E5 ::= OP5 E5; 
 	E5 ::= E6;
 	E6 ::= E6 OP6;
 	E6 ::= E7;
+	E7 ::= LITERALREAL;
+	E7 ::= LITERALENTERO;
+	E7 ::= IDENTIFICADOR;
+	E7 ::= LITERALCADENA;
+	E7 ::= TRUE;
+	E7 ::= FALSE;
+	E7 ::= ID_NULL;
+	E7 ::= PARENTESIS_APERTURA E0 PARENTESIS_CIERRE;
 	OP1 ::= MENOR;
 	OP1 ::= MAYOR;
 	OP1 ::= MENOR_IGUAL;
@@ -99,4 +119,7 @@ init with {:
 	OP4 ::= MODULO;
 	OP5 ::= RESTA;
 	OP5 ::= ID_NOT;
+	OP6 ::= CORCHETE_APERTURA E0 CORCHETE_CIERRE;
+	OP6 ::= PUNTO IDENTIFICADOR;
+	OP6 ::= INDIRECCION;
 	
