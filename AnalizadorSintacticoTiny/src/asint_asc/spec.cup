@@ -21,24 +21,24 @@ init with {:
 :};
 
 	terminal     TERMINACION, ASIGNACION, PUNTO_Y_COMA, MENOR, MAYOR, MENOR_IGUAL, MAYOR_IGUAL, 
-				 DESIGUAL, IGUAL, CORCHETE_APERTURA, CORCHETE_CIERRE, LITERAL_ENTERO,
+				 DESIGUAL, IGUAL, CORCHETE_APERTURA, CORCHETE_CIERRE, LITERAL_ENTERO, PUNTO,
 				 PARENTESIS_APERTURA, PARENTESIS_CIERRE, COMA, ID_INT, ID_REAL, ID_BOOL, ID_STRING,
 				 IDENTIFICADOR, ID_STRUCT, LLAVE_APERTURA, LLAVE_CIERRE, SUMA, RESTA, MULTIPLICACION,
 				 DIVISION, MODULO, ID_NOT, INI_NOMBRE, IF, ELSE, PROC, TYPE, CALL, READ, WRITE, 
-				 WHILE, NEW, DELETE, NL, REFERENCIA,COMA, ID_AND, ID_OR, LITERAL_ENTERO, LITERAL_REAL, IDENTIFICADOR, LITERAL_CADENA,
+				 WHILE, NEW, DELETE, NL, REFERENCIA, ID_AND, ID_OR, LITERAL_REAL, LITERAL_CADENA,
 				 TRUE, FALSE, ID_NULL, INDIRECCION;
 
 	non terminal  programa, bloque, declaraciones, lista_declaraciones, declaracion, tipo, T0, T1, T2, instrucciones, lista_instrucciones,
-				  parametros_formales, lista_parametros_formales_e, lista_parametros_formales, 
-				  parametro_formal, E0, E1, E2, E4, E5, E6, E7, OP1, OP5, lista_campos, parametros_reales, 
+				  parametros_formales, lista_parametros_formales_e, lista_parametros_formales, campo, instruccion,
+				  parametro_formal, E0, E1, E2, E3, E4, E5, E6, E7, OP1, OP4, OP5, OP6, lista_campos, parametros_reales, 
 				  lista_expresiones_e, lista_expresiones, expresion;
     
     programa ::= bloque;
     bloque ::= LLAVE_APERTURA declaraciones instrucciones LLAVE_CIERRE;
 	declaraciones ::= lista_declaraciones TERMINACION;
 	declaraciones ::= ;
-	lista_declaraciones ::= lista_declaraciones PUNTO_Y_COMA declaración;
-	lista_declaraciones ::= declaración;
+	lista_declaraciones ::= lista_declaraciones PUNTO_Y_COMA declaracion;
+	lista_declaraciones ::= declaracion;
 	declaracion ::= PROC IDENTIFICADOR parametros_formales bloque;
 	declaracion ::= TYPE tipo IDENTIFICADOR;
 	declaracion ::= tipo IDENTIFICADOR;
@@ -63,10 +63,10 @@ init with {:
 	lista_campos ::= lista_campos COMA campo;
 	lista_campos ::= campo;
 	campo ::= tipo IDENTIFICADOR;
-	instrucciones ::= lista-instrucciones;
+	instrucciones ::= lista_instrucciones;
 	instrucciones ::= ;
-	lista_instrucciones ::= lista_instrucciones PUNTO_Y_COMA instrucción;
-	lista_instrucciones ::= instrucción;
+	lista_instrucciones ::= lista_instrucciones PUNTO_Y_COMA instruccion;
+	lista_instrucciones ::= instruccion;
 	instruccion ::= INI_NOMBRE expresion;
 	instruccion ::= CALL IDENTIFICADOR parametros_reales;
 	instruccion ::= NL;
@@ -100,10 +100,10 @@ init with {:
 	E5 ::= E6;
 	E6 ::= E6 OP6;
 	E6 ::= E7;
-	E7 ::= LITERALREAL;
-	E7 ::= LITERALENTERO;
+	E7 ::= LITERAL_REAL;
+	E7 ::= LITERAL_ENTERO;
 	E7 ::= IDENTIFICADOR;
-	E7 ::= LITERALCADENA;
+	E7 ::= LITERAL_CADENA;
 	E7 ::= TRUE;
 	E7 ::= FALSE;
 	E7 ::= ID_NULL;

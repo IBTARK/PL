@@ -3,7 +3,7 @@ package alex;
 import java_cup.runtime.Symbol;
 
 public abstract class UnidadLexica extends Symbol {
-	private ClaseLexica clase;
+	protected ClaseLexica clase;
 	private int fila;
 	private int columna;
 	

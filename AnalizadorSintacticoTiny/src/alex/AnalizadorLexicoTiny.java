@@ -4,6 +4,7 @@
 
 package alex;
 
+import errors.GestionErroresTiny;
 import java_cup.runtime.Scanner;
 import java_cup.runtime.Symbol;
 
@@ -584,15 +585,15 @@ public class AnalizadorLexicoTiny implements Scanner {
    *
    * @param errorCode the code of the error message to display.
    */
-  private static void zzScanError(int errorCode) {
-    String message;
-    try {
-      message = ZZ_ERROR_MSG[errorCode];
-    } catch (ArrayIndexOutOfBoundsException e) {
-      message = ZZ_ERROR_MSG[ZZ_UNKNOWN_ERROR];
-    }
-
-    throw new Error(message);
+  private void zzScanError(int errorCode) {
+//    String message;
+//    try {
+//      message = ZZ_ERROR_MSG[errorCode];
+//    } catch (ArrayIndexOutOfBoundsException e) {
+//      message = ZZ_ERROR_MSG[ZZ_UNKNOWN_ERROR];
+//    }
+    error.errorLexico(fila(), columna(), (char)yychar);
+    //throw new Error(message);
   }
 
 
@@ -1037,5 +1038,11 @@ public class AnalizadorLexicoTiny implements Scanner {
 	@Override
 	public Symbol next_token() throws Exception {
 		return yylex();
+	}
+	
+	GestionErroresTiny error;
+	
+	public void fijaGestionErrores(GestionErroresTiny err) {
+		error = err;
 	}
 }

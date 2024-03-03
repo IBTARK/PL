@@ -1,7 +1,6 @@
 package errors;
 
-import alex.ClaseLexica;
-import java.util.Set;
+import alex.UnidadLexica;
 
 public class GestionErroresTiny {
 	public static class ErrorLexico extends RuntimeException {
@@ -17,15 +16,10 @@ public class GestionErroresTiny {
         }
     } 
     public void errorLexico(int fila, int col, char car) {
-    	throw new ErrorLexico("ERROR fila "+fila+","+col+": Caracter inexperado: "+car); 
+    	throw new ErrorLexico("ERROR fila "+fila+","+col+": Caracter inesperado: "+car); 
     }  
-    public void errorSintactico(int fila, int col, ClaseLexica encontrada, 
-                               Set<ClaseLexica> esperadas) {
-    	StringBuilder sb = new StringBuilder();  
-     	sb.append("ERROR fila "+fila+","+col+": Encontrado "+encontrada+" Se esperada: ");
-     	for(ClaseLexica esperada: esperadas)
-     		sb.append(esperada+" ");
-     	throw new ErrorSintactico(sb.toString());
+    public void errorSintactico(UnidadLexica unidadLexica) {
+    	throw new ErrorSintactico("ERROR fila "+unidadLexica.fila()+", columna "+unidadLexica.columna()+" : Elemento inesperado "+unidadLexica.lexema());
     }
     public void errorFatal(Exception e) {
     	System.out.println(e);
