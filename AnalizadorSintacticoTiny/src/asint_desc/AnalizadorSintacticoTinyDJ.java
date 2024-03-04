@@ -27,8 +27,8 @@ public class AnalizadorSintacticoTinyDJ extends AnalizadorSintacticoTiny {
             case not_id:
             case null_id:
             case or_id:
-            case proc_id:
-            case EOF: System.out.println("<"+t.image+">"); break;
+            case proc_id: System.out.println("<"+t.image+">"); break;
+            case EOF: System.out.println("<EOF>"); break;
             default: System.out.println(t.image);
         }
     }

@@ -1,5 +1,5 @@
 ## Entrada sintacticamente valida para
-## los analizadores de Tiny 
+## los analizadores de Tiny
 {
 type
  ^^struct{
