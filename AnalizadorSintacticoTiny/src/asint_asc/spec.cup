@@ -24,8 +24,8 @@ init with {:
 				 DESIGUAL, IGUAL, CORCHETE_APERTURA, CORCHETE_CIERRE, LITERAL_ENTERO, PUNTO,
 				 PARENTESIS_APERTURA, PARENTESIS_CIERRE, COMA, ID_INT, ID_REAL, ID_BOOL, ID_STRING,
 				 IDENTIFICADOR, ID_STRUCT, LLAVE_APERTURA, LLAVE_CIERRE, SUMA, RESTA, MULTIPLICACION,
-				 DIVISION, MODULO, ID_NOT, INI_NOMBRE, IF, ELSE, PROC, TYPE, CALL, READ, WRITE, 
-				 WHILE, NEW, DELETE, NL, REFERENCIA, ID_AND, ID_OR, LITERAL_REAL, LITERAL_CADENA,
+				 DIVISION, MODULO, ID_NOT, INI_NOMBRE, ID_IF, ID_ELSE, ID_PROC, ID_TYPE, ID_CALL, ID_READ, ID_WRITE, 
+				 ID_WHILE, ID_NEW, ID_DELETE, ID_NL, REFERENCIA, ID_AND, ID_OR, LITERAL_REAL, LITERAL_CADENA,
 				 TRUE, FALSE, ID_NULL, INDIRECCION;
 
 	non terminal  programa, bloque, declaraciones, lista_declaraciones, declaracion, tipo, T0, T1, T2, instrucciones, lista_instrucciones,
@@ -39,8 +39,8 @@ init with {:
 	declaraciones ::= ;
 	lista_declaraciones ::= lista_declaraciones PUNTO_Y_COMA declaracion;
 	lista_declaraciones ::= declaracion;
-	declaracion ::= PROC IDENTIFICADOR parametros_formales bloque;
-	declaracion ::= TYPE tipo IDENTIFICADOR;
+	declaracion ::= ID_PROC IDENTIFICADOR parametros_formales bloque;
+	declaracion ::= ID_TYPE tipo IDENTIFICADOR;
 	declaracion ::= tipo IDENTIFICADOR;
 	parametros_formales ::= PARENTESIS_APERTURA lista_parametros_formales_e PARENTESIS_CIERRE;
 	lista_parametros_formales_e ::= lista_parametros_formales;
@@ -68,15 +68,15 @@ init with {:
 	lista_instrucciones ::= lista_instrucciones PUNTO_Y_COMA instruccion;
 	lista_instrucciones ::= instruccion;
 	instruccion ::= INI_NOMBRE expresion;
-	instruccion ::= CALL IDENTIFICADOR parametros_reales;
-	instruccion ::= NL;
-	instruccion ::= NEW expresion;
-	instruccion ::= READ expresion;
-	instruccion ::= WRITE expresion;
-	instruccion ::= DELETE expresion;
-	instruccion ::= WHILE expresion bloque;
-	instruccion ::= IF expresion bloque ELSE bloque;
-	instruccion ::= IF expresion bloque;
+	instruccion ::= ID_CALL IDENTIFICADOR parametros_reales;
+	instruccion ::= ID_NL;
+	instruccion ::= ID_NEW expresion;
+	instruccion ::= ID_READ expresion;
+	instruccion ::= ID_WRITE expresion;
+	instruccion ::= ID_DELETE expresion;
+	instruccion ::= ID_WHILE expresion bloque;
+	instruccion ::= ID_IF expresion bloque ID_ELSE bloque;
+	instruccion ::= ID_IF expresion bloque;
 	instruccion ::= bloque;
 	parametros_reales ::= PARENTESIS_APERTURA lista_expresiones_e PARENTESIS_CIERRE;
 	lista_expresiones_e ::= lista_expresiones;

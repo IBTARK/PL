@@ -3,7 +3,7 @@
 {
 type
  ^^struct{
- 	string x,
+ 	int x,
  bool y,
  real z,
  struct {
