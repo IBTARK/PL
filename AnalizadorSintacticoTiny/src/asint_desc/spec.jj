@@ -22,28 +22,28 @@ PARSER_END(AnalizadorSintacticoTiny)
 	TOKEN:{<literalEntero:(["+","-"])?<parteEntera>>}
 	TOKEN:{<literalReal:<literalEntero> ("." <parteDecimal> | (("." <parteDecimal>) ? (("e" | "E") <literalEntero>)))>}
 	TOKEN:{<literalCadena:"\""(~["\""])*"\"">}
-	TOKEN:{<int_id:"int">}
-	TOKEN:{<real_id:"real">}
-	TOKEN:{<bool_id:"bool">}
-	TOKEN:{<string_id:"string">}
-	TOKEN:{<struct_id:"struct">}
-	TOKEN:{<not_id:"not">}
-	TOKEN:{<proc_id:"proc">}
-	TOKEN:{<type_id:"type">}
-	TOKEN:{<if_id:"if">}
-	TOKEN:{<call_id:"call">}
-	TOKEN:{<nl_id:"nl">}
-	TOKEN:{<new_id:"new">}
-	TOKEN:{<read_id:"read">}
-	TOKEN:{<write_id:"write">}
-	TOKEN:{<delete_id:"delete">}
-	TOKEN:{<while_id:"while">}
-	TOKEN:{<else_id:"else">}
-	TOKEN:{<and_id:"and">}
-	TOKEN:{<or_id:"or">}
-  	TOKEN:{<true_id:"true">}
-  	TOKEN:{<false_id:"false">}
-  	TOKEN:{<null_id:"null">}
+	TOKEN:{<int_id:("i"|"I")("n"|"N")("t"|"T")>}
+	TOKEN:{<real_id:("r"|"R")("e"|"E")("a"|"A")("l"|"L")>}
+	TOKEN:{<bool_id:("b"|"B")("o"|"O")("o"|"O")("l"|"L")>}
+	TOKEN:{<string_id:("s"|"S")("t"|"T")("r"|"R")("i"|"I")("n"|"N")("g"|"G")>}
+	TOKEN:{<struct_id:("s"|"S")("t"|"T")("r"|"R")("u"|"U")("c"|"C")("t"|"T")>}
+	TOKEN:{<not_id:("n"|"N")("o"|"O")("t"|"T")>}
+	TOKEN:{<proc_id:("p"|"P")("r"|"R")("o"|"O")("c"|"C")>}
+	TOKEN:{<type_id:("t"|"T")("y"|"Y")("p"|"P")("e"|"E")>}
+	TOKEN:{<if_id:("i"|"I")("f"|"F")>}
+	TOKEN:{<call_id:("c"|"C")("a"|"A")("l"|"L")("l"|"L")>}
+	TOKEN:{<nl_id:("n"|"N")("l"|"L")>}
+	TOKEN:{<new_id:("n"|"N")("e"|"E")("w"|"W")>}
+	TOKEN:{<read_id:("r"|"R")("e"|"E")("a"|"A")("d"|"D")>}
+	TOKEN:{<write_id:("w"|"W")("r"|"R")("i"|"I")("t"|"T")("e"|"E")>}
+	TOKEN:{<delete_id:("d"|"D")("e"|"E")("l"|"L")("e"|"E")("t"|"T")("e"|"E")>}
+	TOKEN:{<while_id:("w"|"W")("h"|"H")("i"|"I")("l"|"L")("e"|"E")>}
+	TOKEN:{<else_id:("e"|"E")("l"|"L")("s"|"S")("e"|"E")>}
+	TOKEN:{<and_id:("a"|"A")("n"|"N")("d"|"D")>}
+	TOKEN:{<or_id:("o"|"O")("r"|"R")>}
+  	TOKEN:{<true_id:("t"|"T")("r"|"R")("u"|"U")("e"|"E")>}
+  	TOKEN:{<false_id:("f"|"F")("a"|"A")("l"|"L")("s"|"S")("e"|"E")>}
+  	TOKEN:{<null_id:("n"|"N")("u"|"U")("l"|"L")("l"|"L")>}
 	TOKEN:{<iden: <letra>(<letra>|<digito>)* >}
   
 	void analiza() : {} {programa() <EOF> }
@@ -96,4 +96,3 @@ PARSER_END(AnalizadorSintacticoTiny)
 	void OP4() : {} { "*" | "/" | "%" }
 	void OP5() : {} {"-" | <not_id>}
 	void OP6() : {} {"[" E0() "]" | "." <iden> | "^"}
-	
