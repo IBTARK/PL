@@ -1,5 +1,7 @@
 package alex;
 
+import errors.GestionErroresTiny; 
+
 %%
 %line
 %column
@@ -7,12 +9,17 @@ package alex;
 %type  UnidadLexica
 %unicode
 %public
+%cup
 
 %{
   private ALexOperations ops;
+  private GestionErroresTiny errores;
   public String lexema() {return yytext();}
   public int fila() {return yyline+1;}
   public int columna() {return yycolumn+1;}
+  public void fijaGestionErrores(GestionErroresTiny errores) {
+   this.errores = errores;
+  }
 %}
 
 %eofval{
@@ -146,4 +153,4 @@ comentario = ##([^\n])*
 {comentario}				{}
 {separador}					{}
 
-[^]                         {ops.error();} 
+[^]                         {errores.errorLexico(fila(), columna(), lexema());} 
