@@ -1,11 +1,10 @@
-package alex;
+package asint_asc;
 
 
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import asint_asc.AnalizadorSintacticoTiny;
-import asint_asc.AnalizadorSintacticoTinyDJ;
+import alex.AnalizadorLexicoTiny;
 import errors.GestionErroresTiny.ErrorLexico;
 import errors.GestionErroresTiny.ErrorSintactico;
 import java_cup.runtime.Scanner;

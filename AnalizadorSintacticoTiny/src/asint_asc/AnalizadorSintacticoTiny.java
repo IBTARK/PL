@@ -6,11 +6,10 @@
 
 package asint_asc;
 
-import java_cup.runtime.*;
 import alex.AnalizadorLexicoTiny;
 import alex.UnidadLexica;
 import errors.GestionErroresTiny;
-import java_cup.runtime.ComplexSymbolFactory.Location;
+import java_cup.runtime.Symbol;
 
 /** CUP v0.11b beta 20140220 generated parser.
   * @version Mon Mar 04 13:58:05 CET 2024

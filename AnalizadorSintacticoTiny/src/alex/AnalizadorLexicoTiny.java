@@ -8,7 +8,6 @@ import errors.GestionErroresTiny;
 
 
 // See https://github.com/jflex-de/jflex/issues/222
-@SuppressWarnings("FallThrough")
 public class AnalizadorLexicoTiny implements java_cup.runtime.Scanner {
 
   /** This character denotes the end of file. */

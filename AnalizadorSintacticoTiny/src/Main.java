@@ -4,41 +4,50 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import alex.AnalizadorLexicoTiny;
-import alex.ClaseLexica;
-import alex.UnidadLexica;
-import errors.GestionErroresTiny;
+import asint_desc.ParseException;
+import asint_desc.TokenMgrError;
+import errors.GestionErroresTiny.ErrorLexico;
+import errors.GestionErroresTiny.ErrorSintactico;
 
 public class Main {
    public static void main(String[] args) throws Exception {
-     if (args[0].equals("-lex")) {  
-         ejecuta_lexico(args[1]);
-     }
-     else {
-         if (args[0].equals("-asc"))
-            ejecuta_ascendente(args[1]);
-         else if(args[0].equals("-desc"))
-            ejecuta_descendente(args[1]);  
-         else 
-            ;
-     }
+     if (args[1].equals("-asc"))
+        ejecuta_ascendente(args[0]);
+     else if(args[1].equals("-desc"))
+        ejecuta_descendente(args[0]);  
+     else 
+        System.out.println("Error en los argumentos");;
    }
    
-   private static void ejecuta_lexico(String in) throws Exception {
-     Reader input = new InputStreamReader(new FileInputStream(in));
-     AnalizadorLexicoTiny alex = new AnalizadorLexicoTiny(input);
-     GestionErroresTiny errores = new GestionErroresTiny();
-     UnidadLexica t = (UnidadLexica) alex.next_token();
-     while (t.clase() != ClaseLexica.EOF) {
-         System.out.println(t);
-         t = (UnidadLexica) alex.next_token();   
-     }
-   }
    private static void ejecuta_ascendente(String in) throws Exception {       
      Reader input = new InputStreamReader(new FileInputStream(in));
      AnalizadorLexicoTiny alex = new AnalizadorLexicoTiny(input);
+     asint_asc.AnalizadorSintacticoTiny asint = new asint_asc.AnalizadorSintacticoTiny(alex);
+     try {    
+    	 asint.parse();
+         System.out.println("OK");
+      }
+      catch(ErrorLexico e) {
+         System.out.println(e.getMessage()); 
+      }
+      catch(ErrorSintactico e) {
+         System.out.println(e.getMessage()); 
+      }
   }
    private static void ejecuta_descendente(String in) throws Exception {
      Reader input = new InputStreamReader(new FileInputStream(in));
+     asint_desc.AnalizadorSintacticoTiny asint = new asint_desc.AnalizadorSintacticoTiny(input);
+     asint.disable_tracing();
+     try { 
+    	 asint.analiza();
+         System.out.println("OK");
+     }
+     catch(ParseException e) {
+        System.out.println(e.getMessage()); 
+     }
+     catch(TokenMgrError e) {
+        System.out.println(e.getMessage()); 
+     }
    }
 }   
    
