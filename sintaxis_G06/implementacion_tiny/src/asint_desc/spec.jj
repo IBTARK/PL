@@ -1,0 +1,98 @@
+options  {
+  STATIC=false;
+  DEBUG_PARSER=true;
+}  
+PARSER_BEGIN(AnalizadorSintacticoTiny)
+package asint_desc;
+
+public class AnalizadorSintacticoTiny {
+    protected void newToken(Token t) {}
+}
+PARSER_END(AnalizadorSintacticoTiny)
+
+
+	TOKEN:{<#letra:["a"-"z","A"-"Z"]|"_">}
+	TOKEN:{<#digitoPositivo:["1"-"9"]>}
+	TOKEN:{<#digito:<digitoPositivo>|"0">} 
+	TOKEN:{<#parteEntera:<digitoPositivo> (<digito>)* |"0">} 
+	TOKEN:{<#parteDecimal: (<digito>)* <digitoPositivo> | "0">}
+	SKIP:{<["\t"," ","\r","\b","\n"]>}  
+	SKIP:{<"##"(~["\n"])*>}  
+ 
+	TOKEN:{<literalEntero:(["+","-"])?<parteEntera>>}
+	TOKEN:{<literalReal:<literalEntero> ("." <parteDecimal> | (("." <parteDecimal>) ? (("e" | "E") <literalEntero>)))>}
+	TOKEN:{<literalCadena:"\""(~["\""])*"\"">}
+	TOKEN:{<int_id:("i"|"I")("n"|"N")("t"|"T")>}
+	TOKEN:{<real_id:("r"|"R")("e"|"E")("a"|"A")("l"|"L")>}
+	TOKEN:{<bool_id:("b"|"B")("o"|"O")("o"|"O")("l"|"L")>}
+	TOKEN:{<string_id:("s"|"S")("t"|"T")("r"|"R")("i"|"I")("n"|"N")("g"|"G")>}
+	TOKEN:{<struct_id:("s"|"S")("t"|"T")("r"|"R")("u"|"U")("c"|"C")("t"|"T")>}
+	TOKEN:{<not_id:("n"|"N")("o"|"O")("t"|"T")>}
+	TOKEN:{<proc_id:("p"|"P")("r"|"R")("o"|"O")("c"|"C")>}
+	TOKEN:{<type_id:("t"|"T")("y"|"Y")("p"|"P")("e"|"E")>}
+	TOKEN:{<if_id:("i"|"I")("f"|"F")>}
+	TOKEN:{<call_id:("c"|"C")("a"|"A")("l"|"L")("l"|"L")>}
+	TOKEN:{<nl_id:("n"|"N")("l"|"L")>}
+	TOKEN:{<new_id:("n"|"N")("e"|"E")("w"|"W")>}
+	TOKEN:{<read_id:("r"|"R")("e"|"E")("a"|"A")("d"|"D")>}
+	TOKEN:{<write_id:("w"|"W")("r"|"R")("i"|"I")("t"|"T")("e"|"E")>}
+	TOKEN:{<delete_id:("d"|"D")("e"|"E")("l"|"L")("e"|"E")("t"|"T")("e"|"E")>}
+	TOKEN:{<while_id:("w"|"W")("h"|"H")("i"|"I")("l"|"L")("e"|"E")>}
+	TOKEN:{<else_id:("e"|"E")("l"|"L")("s"|"S")("e"|"E")>}
+	TOKEN:{<and_id:("a"|"A")("n"|"N")("d"|"D")>}
+	TOKEN:{<or_id:("o"|"O")("r"|"R")>}
+  	TOKEN:{<true_id:("t"|"T")("r"|"R")("u"|"U")("e"|"E")>}
+  	TOKEN:{<false_id:("f"|"F")("a"|"A")("l"|"L")("s"|"S")("e"|"E")>}
+  	TOKEN:{<null_id:("n"|"N")("u"|"U")("l"|"L")("l"|"L")>}
+	TOKEN:{<iden: <letra>(<letra>|<digito>)* >}
+  
+	void analiza() : {} {programa() <EOF> }
+	void programa() : {} {bloque()}
+	void bloque() : {} {"{" declaraciones() instrucciones() "}"}
+	void declaraciones() : {} {lista_declaraciones() "&&" | {}}
+	void lista_declaraciones() : {} {declaracion() r_lista_declaraciones()}
+	void declaracion() : {} { <proc_id> <iden> parametros_formales() bloque() | <type_id> tipo() <iden> | tipo() <iden> }
+	void r_lista_declaraciones() : {} {";" declaracion() r_lista_declaraciones() | {}}
+	void parametros_formales() : {} {"(" lista_parametros_formales_e() ")"}
+	void lista_parametros_formales_e() : {} {lista_parametros_formales() | {}}
+	void lista_parametros_formales() : {} {parametro_formal() r_lista_parametros_formales()}
+	void r_lista_parametros_formales() : {} {"," parametro_formal() r_lista_parametros_formales() | {}}
+	void parametro_formal() : {} {tipo()  r_parametro_formal()}
+	void r_parametro_formal() : {} {"&" <iden> | <iden>}
+	void tipo() : {} {T0()}
+	void T0() : {} {T1() RT0()}
+	void RT0() : {} {"[" <literalEntero> "]" RT0() | {}}
+	void T1() : {} {"^" T1() | T2() }
+	void T2() : {} {<int_id> | <real_id> | <bool_id> | <string_id> | <iden> | <struct_id> "{" lista_campos() "}" }
+	void lista_campos() : {} {campo() r_lista_campos()}
+	void r_lista_campos() : {} {"," campo() r_lista_campos() | {}}
+	void campo() : {} {tipo() <iden>}
+	void instrucciones() : {} {lista_instrucciones() | {}}
+	void lista_instrucciones() : {} {instruccion() r_lista_instrucciones()}
+	void r_lista_instrucciones() : {} {";" instruccion() r_lista_instrucciones() | {}}
+	void instruccion() : {} {"@" expresion() | <call_id> <iden> parametros_reales() | <nl_id> | <new_id> expresion() | <read_id> expresion() | <write_id> expresion() | <delete_id> expresion() | <while_id> expresion() bloque() | <if_id> expresion() bloque() r_instruccion_if() | bloque()}
+    void r_instruccion_if() : {} {<else_id> bloque() | {}}
+	void parametros_reales() : {} {"(" lista_expresiones_e() ")"}
+	void lista_expresiones_e() : {} {lista_expresiones() | {}}
+	void lista_expresiones() : {} {expresion() r_lista_expresiones()}
+	void r_lista_expresiones() : {} {"," expresion() r_lista_expresiones() | {}}
+	void expresion() : {} {E0()}
+	void E0() : {} {E1() RE0()}
+	void RE0() : {} {"=" E1() RE0() | {}}
+	void E1() : {} {E2() RE1()}
+	void RE1() : {} {OP1() E2() RE1() | {}}
+	void E2() : {} {E3() RE2() REC2()}
+	void RE2() : {} {"-" E3() | {}}
+	void REC2() : {} {"+" E3() REC2() | {}}
+	void E3() : {} {E4() RE3()}
+	void RE3() : {} {<and_id> E3() | <or_id> E4() | {}}
+	void E4() : {} {E5() RE4()}
+	void RE4() : {} {OP4() E5() RE4() | {}}
+	void E5() : {} { OP5() E5() | E6() }
+	void E6() : {} {E7() RE6()}
+	void RE6() : {} {OP6() RE6() | {}}
+	void E7() : {} {<literalEntero> | <literalReal> | <iden> |<true_id> | <false_id> | <literalCadena> | <null_id> | "(" E0() ")"}
+	void OP1() : {} {"<" | ">" | "<=" | ">=" | "==" | "!="}
+	void OP4() : {} { "*" | "/" | "%" }
+	void OP5() : {} {"-" | <not_id>}
+	void OP6() : {} {"[" E0() "]" | "." <iden> | "^"}
