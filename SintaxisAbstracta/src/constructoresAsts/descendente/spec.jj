@@ -3,17 +3,13 @@ options  {
   DEBUG_PARSER=true;
 }  
 PARSER_BEGIN(ConstructorASTs)
-package c_ast_descendente;
-import asint.ClaseSemanticaEval;
-import asint.SintaxisAbstractaEval.Exp;
-import asint.SintaxisAbstractaEval.Decs;
-import asint.SintaxisAbstractaEval.LDecs;
-import asint.SintaxisAbstractaEval.Dec;
-import asint.SintaxisAbstractaEval.Prog;
-import c_ast_ascendente.UnidadLexica.StringLocalizado;
+package constructoresAsts.descendente;
+import constructoresAsts.asint.ClaseSemantica;
+import constructoresAsts.asint.SintaxisAbstracta*;
+import constructoresAsts.descendente.UnidadLexica.StringLocalizado;
 
 public class ConstructorASTs {
-   private ClaseSemanticaEval sem = new ClaseSemanticaEval();   
+   private ClaseSemantica sem = new ClaseSemantica();   
 }
 PARSER_END(ConstructorASTs)
   
@@ -59,7 +55,7 @@ PARSER_END(ConstructorASTs)
 			{return prog;} 
 		}
 	
-	Decs declaraciones() : 
+	Decs declaraciones(): 
 		{LDecs deca;} 
 		{
 			deca = lista_declaraciones() "&&"
@@ -68,14 +64,14 @@ PARSER_END(ConstructorASTs)
 			{return sem.noDecs();}
 		}
 		
-	LDecs lista_declaraciones() : 
+	LDecs lista_declaraciones(): 
 		{LDecs deca; Dec dec;} 
 		{
 			dec = declaracion() deca = r_lista_declaraciones(sem.unaDec(dec)) 
 			{return deca;}
 		}
        
-	LDecs r_lista_declaraciones(LDecs decah) : 
+	LDecs r_lista_declaraciones(LDecs decah): 
 		{LDecs deca; Dec dec;} 
 		{
 			";" dec = declaracion() deca = r_lista_declaraciones(sem.muchasDecs(decah,dec))  
@@ -91,3 +87,97 @@ PARSER_END(ConstructorASTs)
 			{return tipoa;}
 		}
 	
+	Tipo T0():
+		{Tipo tipo1a; Tipo tipoa;}
+		{
+			tipo1a = T1() tipoa = RT0(tipo1a)
+			{return tipoa;}
+		}
+	
+	Tipo RT0(Tipo tipoah):
+		{Tipo tipoa; Token t;}
+		{
+			"[" id = <literalEntero> "]" tipoa = RT0(sem.tArray(tipoah, id.image))
+			{return tipoa;}
+			|
+			{return tipoah;}
+		}
+		
+	Instrs instrucciones(): 
+		{LInstrs lInstra;} 
+		{
+			lInstra = lista_instrucciones()
+			{return sem.siInstrs(lInstra);} 
+			| 
+			{return sem.noInstrs();}
+		}
+	
+	Linstrs lista_instrucciones():
+		{LInstrs lInstrsa; Instr instra;}
+		{
+			instra = instruccion() lInstrsa = r_lista_instrucciones(sem.unaInstr(instra))
+			{return lInstrsa;}
+		}
+	
+	Linstrs r_lista_instrucciones(Linstrs instrah): 
+		{Linstrs lInstrsa; Instr instra;} 
+		{
+			";" instra = instruccion() lInstrsa = r_lista_instrucciones(sem.muchasInstrs(instrah,instra))  
+			{return lInstrsa;}
+			|
+			{return instrah;}
+		}
+	
+	Exp E0(): 
+		{Exp e1,e2;} 
+		{
+			e1 = E1() e2 = RE0(e1) 
+			{return e2;}
+		}
+        
+	Exp RE0(Exp eh): 
+		{Exp e1,e2;} 
+		{
+			"=" e1 = E1() e2 = E0() 
+			{return sem.asignacion(eh, e2);}
+			|
+			{return eh;}
+		}
+
+	Exp E4(): 
+		{Exp e5,e4;} 
+		{
+			e5 = E5() e4 = RE4(e5) 
+			{return e4;}
+		}
+
+	Exp RE4(Exp eh): 
+		{String op; Exp e5,e4;} 
+		{
+			op = OP4() e5 = E5() e4 = RE4(sem.mkop(op,eh,e5)) 
+			{return e4;}
+			|
+			{return eh;}
+		}
+
+	String op1():       
+		{} 
+		{
+			"<" 
+			{return "<";} 
+			|
+			">" 
+			{return ">";}
+			|
+			"<=" 
+			{return "<=";} 
+			|
+			">=" 
+			{return ">=";} 
+			|
+			"==" 
+			{return "==";} 
+			|
+			"!=" 
+			{return "!=";} 
+       }
