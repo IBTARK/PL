@@ -1,4 +1,4 @@
-package constructoresAsts.asint;
+package asint;
 
 public class SintaxisAbstracta {
 
