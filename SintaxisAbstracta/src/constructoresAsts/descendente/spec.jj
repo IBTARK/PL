@@ -79,6 +79,38 @@ PARSER_END(ConstructorASTs)
 			|
 			{return decah;}
 		}	
+		
+	ParamForm parametros_formales():
+		{ParamForm a;}
+		{
+			"(" a = lista_parametros_formales_e() ")"
+			{return a;}
+		}
+		
+	ParamForm lista_parametros_formales_e():
+		{LParam params;}
+		{
+			params = lista_parametros_formales()
+			{return sem.siParam(params);}
+			|
+			{return sem.noParam();}
+		}
+		
+	LParam lista_parametros_formales():
+		{LParam params; Param param;}
+		{
+			param = parametro_formal() params = r_lista_parametros_formales(sem.unParam(param))
+			{return params;}
+		}
+		
+	LParam r_lista_parametros_formales(LParam ah):
+		{LParam params; Param param;}
+		{
+			param = parametro_formal() params = r_lista_parametros_formales(sem.muchosParam(ah, param))
+			{return params;}
+			|
+			{return ah;}
+		}
 	
 	Tipo tipo():
 		{Tipo tipoa;}
@@ -103,6 +135,28 @@ PARSER_END(ConstructorASTs)
 			{return tipoah;}
 		}
 		
+	Tipo T2():
+		{}
+		{
+			<int>
+			{return sem.tInt()}
+			|
+			<real>
+			{return sem.tReal()}
+			|
+			<bool>
+			{return sem.tBool()}
+			|
+			<string>
+			{return sem.tString()}
+			|
+			id = <iden>
+			{return sem.tIden(id)}
+			|
+			<struct> "{" campos = lista_campos() "}"
+			{return sem.tStruct(campos)}
+		}
+		
 	Instrs instrucciones(): 
 		{LInstrs lInstra;} 
 		{
@@ -112,20 +166,52 @@ PARSER_END(ConstructorASTs)
 			{return sem.noInstrs();}
 		}
 	
-	Linstrs lista_instrucciones():
+	LInstrs lista_instrucciones():
 		{LInstrs lInstrsa; Instr instra;}
 		{
 			instra = instruccion() lInstrsa = r_lista_instrucciones(sem.unaInstr(instra))
 			{return lInstrsa;}
 		}
 	
-	Linstrs r_lista_instrucciones(Linstrs instrah): 
+	LInstrs r_lista_instrucciones(Linstrs instrah): 
 		{Linstrs lInstrsa; Instr instra;} 
 		{
 			";" instra = instruccion() lInstrsa = r_lista_instrucciones(sem.muchasInstrs(instrah,instra))  
 			{return lInstrsa;}
 			|
 			{return instrah;}
+		}
+		
+	ParamReales parametros_reales():
+		{ParamReales lista;}
+		{
+			"(" lista = lista_expresiones_e() ")"
+			{return lista;}
+		}
+		
+	ParamReales lista_expresiones_e():
+		{LExp lista;}
+		{
+			lista = lista_expresiones()
+			{return sem.siExp(lista);}
+			|
+			{return sem.noExp();}
+		}
+		
+	LExp lista_expresiones():
+		{LExp exps; Exp exp;}
+		{
+			exp = expresion() exps = r_lista_expresiones(sem.unaExp(exp))
+			{return exps;}
+		}
+		
+	LExp r_lista_expresiones(LExp ah):
+		{LExp exps; Exp exp;}
+		{
+			"," exp = expresion() exps = r_lista_expresiones(sem.muchasExp(ah, exp))
+			{return exps;}
+			|
+			{return ah;}
 		}
 	
 	Exp E0(): 
@@ -143,6 +229,31 @@ PARSER_END(ConstructorASTs)
 			|
 			{return eh;}
 		}
+		
+	Exp E2():
+		{Exp e3; Exp re2; Exp rec2;}
+		{
+			e3 = E3() re2 = RE2(e3) rec2 = REC2(re2)
+			{return rec2;}
+		}
+		
+	Exp RE2(Exp ah):
+		{Exp e3}
+		{
+			"-" e3 = E3()
+			{return sem.resta(ah, e3);}
+			|
+			{return ah;}
+		}
+		
+	Exp REC2(Exp ah):
+		{Exp e3; Exp rec2;}
+		{
+			"+" e3 = E3() rec2 = REC2(sem.suma(ah, e3))
+			{return rec2;}
+			|
+			{return ah;}
+		}
 
 	Exp E4(): 
 		{Exp e5,e4;} 
@@ -158,6 +269,22 @@ PARSER_END(ConstructorASTs)
 			{return e4;}
 			|
 			{return eh;}
+		}
+
+	Exp E6(): 
+		{Exp e7,re6;} 
+		{
+			e7 = E7() re6 = RE6(e7) 
+			{return re6;}
+		}
+
+	Exp RE6(Exp ah): 
+		{Op6 op; Exp re6;} 
+		{
+			op = op6() re6 = re6(sem.mkop(op.op(), op.a(), op.lex(), ah))
+			{return re6;}
+			|
+			{return ah;}
 		}
 
 	String op1():       
@@ -180,4 +307,14 @@ PARSER_END(ConstructorASTs)
 			|
 			"!=" 
 			{return "!=";} 
-       }
+       	}
+       
+	String op5():       
+		{} 
+		{
+			"-" 
+			{return "-";} 
+			|
+			<not> 
+			{return "not";}
+       	}
