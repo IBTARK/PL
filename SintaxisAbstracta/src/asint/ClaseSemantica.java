@@ -10,15 +10,6 @@ public class ClaseSemantica extends SintaxisAbstracta {
 			this.lex = lex;
 			this.a = a;
 		}
-		public String op() {
-			return op;
-		}
-		public String lex() {
-			return lex;
-		}
-		public Exp a() {
-			return a;
-		}
 	}
     
 	public ClaseSemantica() {
@@ -37,10 +28,10 @@ public class ClaseSemantica extends SintaxisAbstracta {
         }
     }
     
-    public Exp mkop(String op, Exp opa, String lex, Exp opnd) {
-        switch(op) {
-            case "[": return array(opnd,opa);
-            case ".": return expCampo(opnd,lex);
+    public Exp mkop(Op6 op, Exp opnd) {
+        switch(op.op) {
+            case "[": return array(opnd,op.a);
+            case ".": return expCampo(opnd,op.lex);
             case "^": return punt(opnd);
             default: throw new UnsupportedOperationException("Bad op");
         }

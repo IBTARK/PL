@@ -281,7 +281,7 @@ PARSER_END(ConstructorASTs)
 	Exp RE6(Exp ah): 
 		{Op6 op; Exp re6;} 
 		{
-			op = op6() re6 = re6(sem.mkop(op.op(), op.a(), op.lex(), ah))
+			op = op6() re6 = re6(sem.mkop(op, ah))
 			{return re6;}
 			|
 			{return ah;}
