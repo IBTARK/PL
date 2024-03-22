@@ -23,6 +23,7 @@ public class SintaxisAbstracta {
 		  return col; 
 	   }
 	   public abstract void imprime();
+	   public abstract void procesa(Procesamiento p);
     }
 
     public static abstract class Decs extends Nodo {
@@ -41,11 +42,16 @@ public class SintaxisAbstracta {
        	public SiDecs(LDecs decs) {
        		this.decs = decs;
        	}
+       	public LDecs ldecs() {return decs;}
 		@Override
 		public void imprime() {
 			decs.imprime();
 			System.out.println();
 			System.out.println("&&");
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
 		} 
     }
     public static class NoDecs extends Decs {
@@ -54,6 +60,10 @@ public class SintaxisAbstracta {
     	}
 		@Override
 		public void imprime() {} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
      	
     public static class MuchasDecs extends LDecs {
@@ -69,6 +79,10 @@ public class SintaxisAbstracta {
 			System.out.println(";");
 			dec.imprime();
 		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
     public static class UnaDec extends LDecs {
@@ -82,6 +96,10 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			dec.imprime();
+		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
 		} 
     }
 
@@ -112,6 +130,10 @@ public class SintaxisAbstracta {
 			params.imprime();
 			System.out.print(")");
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
     public static class NoParam extends ParamForm {
@@ -120,6 +142,10 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			System.out.print("()");
+		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
 		} 
     }
 
@@ -133,6 +159,10 @@ public class SintaxisAbstracta {
 		public void imprime() {
 			param.imprime();
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
     public static class MuchosParams extends LParam {
@@ -150,6 +180,10 @@ public class SintaxisAbstracta {
 			System.out.print(", ");
 			param.imprime();
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
     public static abstract class Tipo extends Nodo {
@@ -165,10 +199,16 @@ public class SintaxisAbstracta {
         	this.t = t;
         	this.litEnt = litEnt;
         }
+        public String num() {return litEnt;}
+        public Tipo tipo() {return t;}
 		@Override
 		public void imprime() {
 			t.imprime();
 			System.out.print("["+litEnt+"]");
+		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
 		} 
     }
 
@@ -179,6 +219,10 @@ public class SintaxisAbstracta {
  		public void imprime() {
  			System.out.print("<int>");
  		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
     public static class TReal extends Tipo {
@@ -188,6 +232,10 @@ public class SintaxisAbstracta {
  		public void imprime() {
  			System.out.print("<real>");
  		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
     public static class TBool extends Tipo {
@@ -197,6 +245,10 @@ public class SintaxisAbstracta {
  		public void imprime() {
  			System.out.print("<bool>");
  		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
     public static class TString extends Tipo {
@@ -206,6 +258,10 @@ public class SintaxisAbstracta {
  		public void imprime() {
  			System.out.print("<string>");
  		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
     public static class TIden extends Tipo {
@@ -218,6 +274,10 @@ public class SintaxisAbstracta {
  			System.out.print(iden);
  		} 
         public String iden() {return iden;}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
     public static class TStruct extends Tipo {
@@ -232,6 +292,10 @@ public class SintaxisAbstracta {
  			System.out.print("\n}");
  		} 
         public LCampos lcampos() {return campos;}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
      
     public static abstract class Instr extends Nodo {
@@ -330,6 +394,10 @@ public class SintaxisAbstracta {
 			exps.imprime();
 			System.out.print(")");
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
    	}
 
    	public static class NoExp extends ParamReales {
@@ -339,6 +407,10 @@ public class SintaxisAbstracta {
 		public void imprime() {
 			System.out.print("()");
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
    	}
 
    	public static class UnaExp extends LExp {
@@ -351,6 +423,10 @@ public class SintaxisAbstracta {
 		public void imprime() {
 			exp.imprime();
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
    	}
 
    	public static class MuchasExp extends LExp {
@@ -367,6 +443,10 @@ public class SintaxisAbstracta {
 			System.out.print(", ");
 			exp.imprime();
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
    	}
     
     private static abstract class ExpBin extends Exp {
@@ -384,7 +464,6 @@ public class SintaxisAbstracta {
         }
         public Exp opnd0() {return opnd0;}
         public Exp opnd1() {return opnd1;}
-        public abstract String op();
     }
     
     private static abstract class ExpUn extends Exp {
@@ -496,11 +575,13 @@ public class SintaxisAbstracta {
         	return 2;
         }
 		@Override
-		public String op() { return "+"; }
-		@Override
 		public void imprime() {
 			imprimeExpBin(opnd0,"+",opnd1,2,3);
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class Resta extends ExpBin {
@@ -512,11 +593,13 @@ public class SintaxisAbstracta {
         	return 2;
         }
 		@Override
-		public String op() { return "-"; }
-		@Override
 		public void imprime() {
 			imprimeExpBin(opnd0,"-",opnd1,3,3);
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class Array extends ExpUn {
@@ -538,6 +621,10 @@ public class SintaxisAbstracta {
         	imprimeOpnd(idx, 0);
         	System.out.print("]");
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class ExpCampo extends ExpUn {
@@ -557,6 +644,10 @@ public class SintaxisAbstracta {
 			imprimeOpnd(opnd, 6);
 			System.out.print("."+campo);
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class Punt extends ExpUn {
@@ -573,6 +664,10 @@ public class SintaxisAbstracta {
 			imprimeOpnd(opnd, 6);
 			System.out.print("^");
 		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     //constructoras

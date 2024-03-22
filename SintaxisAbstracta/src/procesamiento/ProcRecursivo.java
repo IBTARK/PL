@@ -9,6 +9,22 @@ public class ProcRecursivo extends SintaxisAbstracta {
         return o.getClass() == c;
     } 
     
+    private void imprimeOpnd(Exp opnd, int minPrior) {
+       	if(opnd.prioridad() < minPrior){
+       		System.out.print("(");
+       	}
+       	imprime(opnd);
+       	if(opnd.prioridad() < minPrior) {
+       		System.out.print(")");
+       	}
+    }
+
+    private void imprimeExpBin(Exp opnd0, String op, Exp opnd1, int np0, int np1) {
+    	imprimeOpnd(opnd0,np0);
+    	System.out.print(" " + op + " ");
+    	imprimeOpnd(opnd1,np1);
+    }
+    
     
     public void imprime(ParamForm params) {
     	System.out.print("(");
@@ -67,28 +83,12 @@ public class ProcRecursivo extends SintaxisAbstracta {
     	}
     }
     
-    private void imprimeOpnd(Exp opnd, int minPrior) {
-       	if(opnd.prioridad() < minPrior){
-       		System.out.print("(");
-       	}
-       	imprime(opnd);
-       	if(opnd.prioridad() < minPrior) {
-       		System.out.print(")");
-       	}
-    }
-
-    private void imprimeExpBin(Exp opnd0, String op, Exp opnd1, int np0, int np1) {
-    	imprimeOpnd(opnd0,np0);
-    	System.out.print(" " + op + " ");
-    	imprimeOpnd(opnd1,np1);
-    }
-    
     public void imprime(Exp exp) {
     	if (claseDe(exp, Suma.class)) {
-    		imprimeExpBin(((Suma) exp).opnd0(), ((Suma) exp).op(), ((Suma) exp).opnd1(), 2, 3);
+    		imprimeExpBin(((Suma) exp).opnd0(), "+", ((Suma) exp).opnd1(), 2, 3);
     	}
     	else if (claseDe(exp, Resta.class)) {
-    		imprimeExpBin(((Resta) exp).opnd0(), ((Resta) exp).op(), ((Resta) exp).opnd1(), 3, 3);
+    		imprimeExpBin(((Resta) exp).opnd0(), "-", ((Resta) exp).opnd1(), 3, 3);
     	}
     	else if (claseDe(exp, Array.class)) {
     		imprimeOpnd(((Array) exp).opnd(), 6);
