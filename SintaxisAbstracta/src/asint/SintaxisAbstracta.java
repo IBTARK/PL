@@ -22,6 +22,7 @@ public class SintaxisAbstracta {
 	   public int leeCol() {
 		  return col; 
 	   }
+	   public abstract void imprime();
     }
 
     public static abstract class Decs extends Nodo {
@@ -39,22 +40,20 @@ public class SintaxisAbstracta {
     	private LDecs decs; 
        	public SiDecs(LDecs decs) {
        		this.decs = decs;
-       	}   
-        public String toString() {
-        	String s = decs.toString();
-        	s += "\n";
-        	s += "&&";
-        	s += "\n";
-            return s;
-        } 
+       	}
+		@Override
+		public void imprime() {
+			decs.imprime();
+			System.out.println();
+			System.out.println("&&");
+		} 
     }
     public static class NoDecs extends Decs {
     	public NoDecs() {
     		super();
-    	}   
-    	public String toString() {
-            return "";
-        } 
+    	}
+		@Override
+		public void imprime() {} 
     }
      	
     public static class MuchasDecs extends LDecs {
@@ -64,484 +63,517 @@ public class SintaxisAbstracta {
         	this.dec = dec;
         	this.decs = decs;
         }
-        public String toString() {
-     	   	String s = decs.toString();
-     	   	s += ";";
-     	   	s += "\n";
-     	   	s += dec.toString();
-     	   	return s;
-        } 
+		@Override
+		public void imprime() {
+			decs.imprime();
+			System.out.println(";");
+			dec.imprime();
+		} 
     }
 
-     public static class UnaDec extends LDecs {
+    public static class UnaDec extends LDecs {
         private Dec dec;
         public UnaDec(Dec dec) {
            this.dec = dec;
         }
         public String toString() {
             return dec.toString();
-         } 
-     }
+        }
+		@Override
+		public void imprime() {
+			dec.imprime();
+		} 
+    }
 
-     public static abstract class ParamForm extends Nodo {
-    	 public ParamForm() {
-    	 }
-     }
+    public static abstract class ParamForm extends Nodo {
+    	public ParamForm() {
+    	}
+    }
 
-     public static abstract class Param extends Nodo {
-    	 public Param() {
-    	 }
-     }
+    public static abstract class Param extends Nodo {
+    	public Param() {
+    	}
+    }
 
-     public static abstract class LParam extends Nodo {
-    	 public LParam() {
-    	 }
-     }
+    public static abstract class LParam extends Nodo {
+    	public LParam() {
+    	}
+    }
 
-     public static class SiParam extends ParamForm {
-     	 LParam params;
-     	 public SiParam(LParam params) {
-     		 this.params = params;
-         }   
-         public String toString() {
-          	 String s = "(";
-          	 s += params.toString();
-          	 s += ")";
-             return s;
-         } 
-     }
+    public static class SiParam extends ParamForm {
+     	LParam params;
+     	public SiParam(LParam params) {
+     		this.params = params;
+        } 
+        public LParam lparam() { return params; }
+		@Override
+		public void imprime() {
+			System.out.print("(");
+			params.imprime();
+			System.out.print(")");
+		}
+    }
 
-     public static class NoParam extends ParamForm {
-     	 public NoParam() {
-         }   
-         public String toString() {
-          	 String s = "()";
-             return s;
-         } 
-     }
+    public static class NoParam extends ParamForm {
+     	public NoParam() {
+        }
+		@Override
+		public void imprime() {
+			System.out.print("()");
+		} 
+    }
 
-     public static class UnParam extends LParam {
-     	 Param param;
-     	 public UnParam(Param param) {
-     		 this.param = param;
-         }   
-         public String toString() {
-          	 String s = param.toString();
-             return s;
-         } 
-     }
+    public static class UnParam extends LParam {
+     	Param param;
+     	public UnParam(Param param) {
+     		this.param = param;
+        }
+        public Param param() {return param;}
+		@Override
+		public void imprime() {
+			param.imprime();
+		}
+    }
 
-     public static class MuchosParams extends LParam {
-     	 LParam params;
-     	 Param param;
-     	 public MuchosParams(LParam params, Param param) {
-     		 this.params = params;
-     		 this.param = param;
-         }   
-         public String toString() {
-          	 String s = params.toString();
-          	 s += ", ";
-          	 s += param.toString();
-             return s;
-         } 
-     }
+    public static class MuchosParams extends LParam {
+     	LParam params;
+     	Param param;
+     	public MuchosParams(LParam params, Param param) {
+     		this.params = params;
+     		this.param = param;
+        }
+        public LParam lparam() {return params;}
+        public Param param() {return param;}
+		@Override
+		public void imprime() {
+			params.imprime();
+			System.out.print(", ");
+			param.imprime();
+		}
+    }
 
-     public static abstract class Tipo extends Nodo {
+    public static abstract class Tipo extends Nodo {
      	public Tipo() {
      	}
-     }
+    }
      
-     public static class TArray extends Tipo {
-         private String litEnt;
-         private Tipo t;
-         public TArray(Tipo t, String litEnt) {
-        	 super();
-        	 this.t = t;
-        	 this.litEnt = litEnt;
-         }
-         public String toString() {
-        	 String s = t.toString();
-        	 s += "[";
-        	 s += litEnt;
-        	 s += "]";
-        	 return s;
-         } 
-     }
+    public static class TArray extends Tipo {
+        private String litEnt;
+        private Tipo t;
+        public TArray(Tipo t, String litEnt) {
+        	super();
+        	this.t = t;
+        	this.litEnt = litEnt;
+        }
+		@Override
+		public void imprime() {
+			t.imprime();
+			System.out.print("["+litEnt+"]");
+		} 
+    }
 
-     public static class TInt extends Tipo {
-     	 public TInt() {
-     	 } 
-         public String toString() {
-          	 String s = "<int>";
-             return s;
-         }
-     }
+    public static class TInt extends Tipo {
+     	public TInt() {
+     	}
+ 		@Override
+ 		public void imprime() {
+ 			System.out.print("<int>");
+ 		} 
+    }
 
-     public static class TReal extends Tipo {
-     	 public TReal() {
-     	 } 
-         public String toString() {
-          	 String s = "<real>";
-             return s;
-         }
-     }
+    public static class TReal extends Tipo {
+     	public TReal() {
+     	}
+ 		@Override
+ 		public void imprime() {
+ 			System.out.print("<real>");
+ 		} 
+    }
 
-     public static class TBool extends Tipo {
-     	 public TBool() {
-     	 } 
-         public String toString() {
-          	 String s = "<bool>";
-             return s;
-         }
-     }
+    public static class TBool extends Tipo {
+     	public TBool() {
+     	}
+ 		@Override
+ 		public void imprime() {
+ 			System.out.print("<bool>");
+ 		} 
+    }
 
-     public static class TString extends Tipo {
-     	 public TString() {
-     	 } 
-         public String toString() {
-          	 String s = "<string>";
-             return s;
-         }
-     }
+    public static class TString extends Tipo {
+     	public TString() {
+     	}
+ 		@Override
+ 		public void imprime() {
+ 			System.out.print("<string>");
+ 		} 
+    }
 
-     public static class TIden extends Tipo {
-     	 String iden;
-     	 public TIden(String iden) {
-     		 this.iden = iden;
-     	 } 
-         public String toString() {
-          	 String s = iden;
-             return s;
-         }
-     }
+    public static class TIden extends Tipo {
+     	String iden;
+     	public TIden(String iden) {
+     		this.iden = iden;
+     	}
+ 		@Override
+ 		public void imprime() {
+ 			System.out.print(iden);
+ 		} 
+        public String iden() {return iden;}
+    }
 
-     public static class TStruct extends Tipo {
-    	 LCampos campos;
-    	 public TStruct(LCampos campos) {
-    		 this.campos = campos;
-    	 } 
-         public String toString() {
-        	 String s = "<struct> {\n";
-        	 s += campos.toString();
-        	 s += "\n}";
-        	 return s;
-         }
-     }
+    public static class TStruct extends Tipo {
+    	LCampos campos;
+    	public TStruct(LCampos campos) {
+    		this.campos = campos;
+    	}
+ 		@Override
+ 		public void imprime() {
+ 			System.out.println("<struct> {");
+ 			campos.imprime();
+ 			System.out.print("\n}");
+ 		} 
+        public LCampos lcampos() {return campos;}
+    }
      
-     public static abstract class Instr extends Nodo {
-         public Instr() {
-         }
-      }
+    public static abstract class Instr extends Nodo {
+        public Instr() {
+        }
+     }
       
-      public static abstract class LInstrs extends Nodo {
-          public LInstrs() {
-   		   super();
-          }
-      }
+    public static abstract class LInstrs extends Nodo {
+        public LInstrs() {
+   		   	super();
+        }
+    }
       
-      public static class SiInstrs extends Instr {
-         private LInstrs instrs; 
-         public SiInstrs(LInstrs instrs) {
+    public static class SiInstrs extends Instr {
+        private LInstrs instrs; 
+        public SiInstrs(LInstrs instrs) {
             super();
             this.instrs = instrs;
-         }   
-          public String toString() {
+        }   
+        public String toString() {
             return instrs.toString();
-          } 
-      }
-      public static class NoInstrs extends Instr {
-         public NoInstrs() {
+        } 
+    }
+    public static class NoInstrs extends Instr {
+        public NoInstrs() {
             super();
-         }   
-         public String toString() {
-              return "";
-          } 
-      }
+        }   
+        public String toString() {
+            return "";
+        } 
+    }
        	
-      public static class MuchasInstrs extends LInstrs {
-    	  private LInstrs instrs;
-          private Instr instr;
-          public MuchasInstrs(LInstrs instrs, Instr instr) {
-             super();
-             this.instrs = instrs;
-             this.instr = instr;
-          }
-          public String toString() {
-       	   String s = instrs.toString();
-       	   s += ";";
+    public static class MuchasInstrs extends LInstrs {
+    	private LInstrs instrs;
+        private Instr instr;
+        public MuchasInstrs(LInstrs instrs, Instr instr) {
+            super();
+            this.instrs = instrs;
+            this.instr = instr;
+        }
+        public String toString() {
+       	    String s = instrs.toString();
+       	    s += ";";
        	   s += "\n";
        	   s += instr.toString();
        	   return s;
-           } 
-       }
+        } 
+    }
 
-       	public static class UnaInstr extends LInstrs {
-       		private Instr instr;
-    	   	public UnaInstr(Instr instr) {
-    	   		super();
-    	   		this.instr = instr;
-    	   	}
-    	   	public String toString() {
-    	   		return instr.toString();
-           	} 
+    public static class UnaInstr extends LInstrs {
+       	private Instr instr;
+    	public UnaInstr(Instr instr) {
+    	   	super();
+    	   	this.instr = instr;
+    	}
+    	public String toString() {
+    	   	return instr.toString();
+        } 
+    }
+
+    public static abstract class ParamReales extends Nodo {
+       	public ParamReales() {
        	}
+    }
 
-       	public static abstract class ParamReales extends Nodo {
-       		public ParamReales() {
-       		}
+    public static abstract class LExp extends Nodo {
+       	public LExp() {
        	}
+    }
 
-       	public static abstract class LExp extends Nodo {
-       		public LExp() {
-       		}
-       	}
+    public static abstract class Exp  extends  Nodo {
+        public Exp() {
+    		super();
+        }
+        public void imprimeOpnd(Exp opnd, int minPrior) {
+            if(opnd.prioridad() < minPrior){
+            	System.out.print("(");
+            }
+            opnd.imprime();
+            if(opnd.prioridad() < minPrior) {
+              	System.out.print(")");
+            }
+        }
+        public abstract int prioridad();
+    }
 
-        public static abstract class Exp  extends  Nodo {
-           public Exp() {
-    		   super();
-           }
-           public String imprimeOpnd(Exp opnd, int minPrior) {
-           	String s = "";
-           	if(opnd.prioridad() < minPrior){
-           		s += "(";
-           	}
-           	s += opnd.toString();
-           	if(opnd.prioridad() < minPrior) {
-           		s += ")";
-           	}
-           	return s;
-           }
-           public abstract int prioridad();
-        }
+   	public static class SiExp extends ParamReales {
+   		private LExp exps;
+	   	public SiExp(LExp exps) {
+	   		this.exps = exps;
+	   	}
+	   	public LExp lexp() {return exps;}
+		@Override
+		public void imprime() {
+			System.out.print("(");
+			exps.imprime();
+			System.out.print(")");
+		}
+   	}
 
-       	public static class SiExp extends ParamReales {
-       		private LExp exps;
-    	   	public SiExp(LExp exps) {
-    	   		this.exps = exps;
-    	   	}
-    	   	public String toString() {
-    	   		String s = "(" + exps.toString() + ")";
-    	   		return s;
-           	} 
-       	}
+   	public static class NoExp extends ParamReales {
+	   	public NoExp() {
+	   	}
+		@Override
+		public void imprime() {
+			System.out.print("()");
+		}
+   	}
 
-       	public static class NoExp extends ParamReales {
-    	   	public NoExp() {
-    	   	}
-    	   	public String toString() {
-    	   		String s = "()";
-    	   		return s;
-           	} 
-       	}
+   	public static class UnaExp extends LExp {
+   		Exp exp;
+	   	public UnaExp(Exp exp) {
+	   		this.exp = exp;
+	   	} 
+	   	public Exp exp() {return exp;}
+		@Override
+		public void imprime() {
+			exp.imprime();
+		}
+   	}
 
-       	public static class UnaExp extends LExp {
-       		Exp exp;
-    	   	public UnaExp(Exp exp) {
-    	   		this.exp = exp;
-    	   	}
-    	   	public String toString() {
-    	   		String s = exp.toString();
-    	   		return s;
-           	} 
-       	}
-
-       	public static class MuchasExp extends LExp {
-       		LExp exps;
-       		Exp exp;
-    	   	public MuchasExp(LExp exps, Exp exp) {
-    	   		this.exp = exp;
-    	   	}
-    	   	public String toString() {
-    	   		String s = exps.toString();
-    	   		s += ", ";
-    	   		s += exp.toString();
-    	   		return s;
-           	} 
-       	}
-        
-        private static abstract class ExpBin extends Exp {
-            protected Exp opnd0;
-            protected Exp opnd1;
-            public ExpBin(Exp opnd0, Exp opnd1) {
-                super();
-                this.opnd0 = opnd0;
-                this.opnd1 = opnd1;
-            }
-            public String imprimeExpBin(Exp opnd0, String op, Exp opnd1, int np0, int np1) {
-            	String s = imprimeOpnd(opnd0,np0);
-            	s += " " + op + " ";
-            	s += imprimeOpnd(opnd1,np1);
-            	return s;
-            }
+   	public static class MuchasExp extends LExp {
+   		LExp exps;
+   		Exp exp;
+	   	public MuchasExp(LExp exps, Exp exp) {
+	   		this.exp = exp;
+	   	} 
+	   	public Exp exp() {return exp;}
+	   	public LExp lexp() {return exps;}
+		@Override
+		public void imprime() {
+			exps.imprime();
+			System.out.print(", ");
+			exp.imprime();
+		}
+   	}
+    
+    private static abstract class ExpBin extends Exp {
+        Exp opnd0;
+        Exp opnd1;
+        public ExpBin(Exp opnd0, Exp opnd1) {
+            super();
+            this.opnd0 = opnd0;
+            this.opnd1 = opnd1;
         }
-        
-        public static class Asignacion extends ExpBin {
-            public Asignacion(Exp opnd0, Exp opnd1) {
-                super(opnd0,opnd1);
-            }
-            public String toString() {
-                return imprimeExpBin(opnd0,"=",opnd1,1,0);
-            }
-            @Override
-            public int prioridad(){
-            	return 0;
-            }
+        public void imprimeExpBin(Exp opnd0, String op, Exp opnd1, int np0, int np1) {
+        	imprimeOpnd(opnd0,np0);
+        	System.out.print(" " + op + " ");
+        	imprimeOpnd(opnd1,np1);
         }
-        
-        public static class Menor extends ExpBin {
-            public Menor(Exp opnd0, Exp opnd1) {
-                super(opnd0,opnd1);
-            }
-            public String toString() {
-                return imprimeExpBin(opnd0,"<",opnd1,1,2);
-            }
-            @Override
-            public int prioridad(){
-            	return 1;
-            }
+        public Exp opnd0() {return opnd0;}
+        public Exp opnd1() {return opnd1;}
+        public abstract String op();
+    }
+    
+    private static abstract class ExpUn extends Exp {
+        Exp opnd;
+        public ExpUn(Exp opnd) {
+            super();
+            this.opnd = opnd;
         }
-        
-        public static class Mayor extends ExpBin {
-            public Mayor(Exp opnd0, Exp opnd1) {
-                super(opnd0,opnd1);
-            }
-            public String toString() {
-                return imprimeExpBin(opnd0,">",opnd1,1,2);
-            }
-            @Override
-            public int prioridad(){
-            	return 1;
-            }
+        public Exp opnd() {return opnd;}
+    }
+    
+    public static class Asignacion extends ExpBin {
+        public Asignacion(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
         }
-        
-        public static class MenorIgual extends ExpBin {
-            public MenorIgual(Exp opnd0, Exp opnd1) {
-                super(opnd0,opnd1);
-            }
-            public String toString() {
-                return imprimeExpBin(opnd0,"<=",opnd1,1,2);
-            }
-            @Override
-            public int prioridad(){
-            	return 1;
-            }
+        public String toString() {
+            return imprimeExpBin(opnd0,"=",opnd1,1,0);
         }
-        
-        public static class MayorIgual extends ExpBin {
-            public MayorIgual(Exp opnd0, Exp opnd1) {
-                super(opnd0,opnd1);
-            }
-            public String toString() {
-                return imprimeExpBin(opnd0,">=",opnd1,1,2);
-            }
-            @Override
-            public int prioridad(){
-            	return 1;
-            }
+        @Override
+        public int prioridad(){
+        	return 0;
         }
-        
-        public static class Igual extends ExpBin {
-            public Igual(Exp opnd0, Exp opnd1) {
-                super(opnd0,opnd1);
-            }
-            public String toString() {
-                return imprimeExpBin(opnd0,"==",opnd1,1,2);
-            }
-            @Override
-            public int prioridad(){
-            	return 1;
-            }
+    }
+    
+    public static class Menor extends ExpBin {
+        public Menor(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
         }
-        
-        public static class Desigual extends ExpBin {
-            public Desigual(Exp opnd0, Exp opnd1) {
-                super(opnd0,opnd1);
-            }
-            public String toString() {
-                return imprimeExpBin(opnd0,"!=",opnd1,1,2);
-            }
-            @Override
-            public int prioridad(){
-            	return 1;
-            }
+        public String toString() {
+            return imprimeExpBin(opnd0,"<",opnd1,1,2);
         }
-        
-        public static class Suma extends ExpBin {
-            public Suma(Exp opnd0, Exp opnd1) {
-                super(opnd0,opnd1);
-            }
-            public String toString() {
-                return imprimeExpBin(opnd0,"+",opnd1,2,3);
-            }
-            @Override
-            public int prioridad(){
-            	return 2;
-            }
+        @Override
+        public int prioridad(){
+        	return 1;
         }
-        
-        public static class Resta extends ExpBin {
-            public Resta(Exp opnd0, Exp opnd1) {
-                super(opnd0,opnd1);
-            }
-            public String toString() {
-                return imprimeExpBin(opnd0,"-",opnd1,3,3);
-            }
-            @Override
-            public int prioridad(){
-            	return 2;
-            }
+    }
+    
+    public static class Mayor extends ExpBin {
+        public Mayor(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
         }
-        
-        public static class Array extends Exp {
-        	private Exp opnd, idx;
-            public Array(Exp opnd, Exp idx) {
-                this.opnd = opnd;
-                this.idx = idx;
-            }
-            public String toString() {
-            	String s = imprimeOpnd(opnd, 6);
-            	s += "[" + imprimeOpnd(idx, 0) + "]";
-                return s;
-            }
-            @Override
-            public int prioridad(){
-            	return 6;
-            }
+        public String toString() {
+            return imprimeExpBin(opnd0,">",opnd1,1,2);
         }
-        
-        public static class ExpCampo extends Exp {
-        	private Exp opnd;
-        	private String campo;
-            public ExpCampo(Exp opnd, String campo) {
-                this.opnd = opnd;
-                this.campo = campo;
-            }
-            public String toString() {
-            	String s = imprimeOpnd(opnd, 6);
-            	s += "." + campo;
-                return s;
-            }
-            @Override
-            public int prioridad(){
-            	return 6;
-            }
+        @Override
+        public int prioridad(){
+        	return 1;
         }
-        
-        public static class Punt extends Exp {
-        	private Exp opnd;
-            public Punt(Exp opnd) {
-                this.opnd = opnd;
-            }
-            public String toString() {
-            	String s = imprimeOpnd(opnd, 6);
-            	s += "^";
-                return s;
-            }
-            @Override
-            public int prioridad(){
-            	return 6;
-            }
+    }
+    
+    public static class MenorIgual extends ExpBin {
+        public MenorIgual(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
         }
+        public String toString() {
+            return imprimeExpBin(opnd0,"<=",opnd1,1,2);
+        }
+        @Override
+        public int prioridad(){
+        	return 1;
+        }
+    }
+    
+    public static class MayorIgual extends ExpBin {
+        public MayorIgual(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
+        }
+        public String toString() {
+            return imprimeExpBin(opnd0,">=",opnd1,1,2);
+        }
+        @Override
+        public int prioridad(){
+        	return 1;
+        }
+    }
+    
+    public static class Igual extends ExpBin {
+        public Igual(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
+        }
+        public String toString() {
+            return imprimeExpBin(opnd0,"==",opnd1,1,2);
+        }
+        @Override
+        public int prioridad(){
+        	return 1;
+        }
+    }
+    
+    public static class Desigual extends ExpBin {
+        public Desigual(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
+        }
+        public String toString() {
+            return imprimeExpBin(opnd0,"!=",opnd1,1,2);
+        }
+        @Override
+        public int prioridad(){
+        	return 1;
+        }
+    }
+    
+    public static class Suma extends ExpBin {
+        public Suma(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
+        }
+        @Override
+        public int prioridad(){
+        	return 2;
+        }
+		@Override
+		public String op() { return "+"; }
+		@Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"+",opnd1,2,3);
+		}
+    }
+    
+    public static class Resta extends ExpBin {
+        public Resta(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
+        }
+        @Override
+        public int prioridad(){
+        	return 2;
+        }
+		@Override
+		public String op() { return "-"; }
+		@Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"-",opnd1,3,3);
+		}
+    }
+    
+    public static class Array extends ExpUn {
+    	private Exp idx;
+        public Array(Exp opnd, Exp idx) {
+        	super(opnd);
+            this.opnd = opnd;
+            this.idx = idx;
+        }
+        @Override
+        public int prioridad(){
+        	return 6;
+        }
+        public Exp idx() {return idx;}
+		@Override
+		public void imprime() {
+			imprimeOpnd(opnd, 6);
+        	System.out.print("[");
+        	imprimeOpnd(idx, 0);
+        	System.out.print("]");
+		}
+    }
+    
+    public static class ExpCampo extends ExpUn {
+    	private String campo;
+        public ExpCampo(Exp opnd, String campo) {
+        	super(opnd);
+            this.opnd = opnd;
+            this.campo = campo;
+        }
+        @Override
+        public int prioridad(){
+        	return 6;
+        }
+        public String campo() {return campo;}
+		@Override
+		public void imprime() {
+			imprimeOpnd(opnd, 6);
+			System.out.print("."+campo);
+		}
+    }
+    
+    public static class Punt extends ExpUn {
+        public Punt(Exp opnd) {
+        	super(opnd);
+            this.opnd = opnd;
+        }
+        @Override
+        public int prioridad(){
+        	return 6;
+        }
+		@Override
+		public void imprime() {
+			imprimeOpnd(opnd, 6);
+			System.out.print("^");
+		}
+    }
     
     //constructoras
     public Decs siDecs(LDecs decs) {
