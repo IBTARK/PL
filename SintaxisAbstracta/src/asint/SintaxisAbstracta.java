@@ -102,7 +102,70 @@ public class SintaxisAbstracta {
 			p.procesa(this);
 		} 
     }
+    
+    public static class DecProg extends Decs {
+    	Prog prog;
+    	String iden;
+    	ParamForm param
+        public DecType(Prog prog, String iden, ParamForm param) {
+           this.tipo = tipo;
+           this.iden = iden;
+           this.param = param;
+        }
+		@Override
+		public void imprime() {
+			System.out.println("<prog> ");
+			System.out.println(iden);
+			param.imprime();
+			System.out.println(" "); 
+			prog.imprime();
+		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
 
+    
+    public static class DecType extends Decs {
+    	Tipo tipo;
+    	String iden;
+        public DecType(Tipo tipo, String iden) {
+           this.tipo = tipo;
+           this.iden = iden;
+        }
+		@Override
+		public void imprime() {
+			System.out.println("<type> ");
+			tipo.imprime();
+			System.out.println(" "); 
+			System.out.println(iden);
+		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+
+    public static class DecVar extends Decs {
+    	Tipo tipo;
+    	String iden;
+        public DecVar(Tipo tipo, String iden) {
+           this.tipo = tipo;
+           this.iden = iden;
+        }
+		@Override
+		public void imprime() {
+			tipo.imprime();
+			System.out.println(" "); 
+			System.out.println(iden);
+		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
     public static abstract class ParamForm extends Nodo {
     	public ParamForm() {
     	}
@@ -205,6 +268,24 @@ public class SintaxisAbstracta {
 		public void imprime() {
 			t.imprime();
 			System.out.print("["+litEnt+"]");
+		} 
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class TPunt extends Tipo {
+        private Tipo t;
+        public TArray(Tipo t) {
+        	super();
+        	this.t = t;
+        }
+        public Tipo tipo() {return t;}
+		@Override
+		public void imprime() {
+			System.out.print("^");
+			t.imprime();
 		} 
 		@Override
 		public void procesa(Procesamiento p) {
@@ -380,6 +461,189 @@ public class SintaxisAbstracta {
             }
         }
         public abstract int prioridad();
+    }
+    
+    public static class ArrobaInstr  extends  Instr {
+    	Exp exp;
+        public ArrobaInstr(Exp exp) {
+    		this.exp = exp;
+        }
+        public void imprime() {
+			System.out.print("@");
+			exp.imprime();
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class ProcInstr  extends  Instr {
+    	ParamReal param;
+    	String iden;
+    	
+        public ProcInstr(ParamReal param, String iden) {
+    		this.param = param;
+    		this.iden = iden;
+        }
+        public void imprime() {
+			System.out.print("<call> ");
+			System.out.print(iden);
+			param.imprime();
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class NlInstr  extends  Instr {
+
+        public NlInstr() {
+        }
+        public void imprime() {
+			System.out.print("<nl>");
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class NewInstr  extends  Instr {
+    	Exp exp;
+        public NewInstr(Exp exp) {
+    		this.exp = exp;
+        }
+        public void imprime() {
+			System.out.print("<new> ");
+			exp.imprime();
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class ReadInstr  extends  Instr {
+    	Exp exp;
+        public ReadInstr(Exp exp) {
+    		this.exp = exp;
+        }
+        public void imprime() {
+			System.out.print("<read> ");
+			exp.imprime();
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class WriteInstr  extends  Instr {
+    	Exp exp;
+        public WriteInstr(Exp exp) {
+    		this.exp = exp;
+        }
+        public void imprime() {
+			System.out.print("<write> ");
+			exp.imprime();
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class DeleteInstr  extends  Instr {
+    	Exp exp;
+        public DeleteInstr(Exp exp) {
+    		this.exp = exp;
+        }
+        public void imprime() {
+			System.out.print("<delete> ");
+			exp.imprime();
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class WhileInstr  extends  Instr {
+    	Exp exp;
+    	Prog prog;
+        public WhileInstr(Exp exp, Prog prog) {
+    		this.exp = exp;
+    		this.prog = prog;
+        }
+        public void imprime() {
+			System.out.print("<while> ");
+			exp.imprime();
+			System.out.print(" ");
+			prog.imprime();
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class IfElseInstr  extends  Instr {
+    	Exp exp;
+    	Prog prog1;
+    	Prog prog2;
+        public IfElseInstr(Exp exp, Prog prog1, Prog prog2) {
+    		this.exp = exp;
+    		this.prog1 = prog1;
+    		this.prog2 = prog2;
+        }
+        public void imprime() {
+			System.out.print("<if> ");
+			exp.imprime();
+			System.out.print(" ");
+			prog1.imprime();
+			System.out.print("\n");
+			System.out.print("<else> ");
+			prog2.imprime();
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class IfInstr  extends  Instr {
+    	Exp exp;
+    	Prog prog;
+        public IfInstr(Exp exp, Prog prog) {
+    		this.exp = exp;
+    		this.prog = prog;
+        }
+        public void imprime() {
+			System.out.print("<if> ");
+			exp.imprime();
+			System.out.print(" ");
+			prog.imprime();
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class BloqueInstr  extends  Instr {
+    	Prog prog;
+        public BloqueInstr(Prog prog) {
+    		this.prog = prog;
+        }
+        public void imprime() {
+        	prog.imprime();
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
    	public static class SiExp extends ParamReales {
@@ -595,6 +859,60 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			imprimeExpBin(opnd0,"-",opnd1,3,3);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class Mul extends ExpBin {
+        public Mul(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
+        }
+        @Override
+        public int prioridad(){
+        	return 4;
+        }
+		@Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"*",opnd1,4,5);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class Div extends ExpBin {
+        public Div(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
+        }
+        @Override
+        public int prioridad(){
+        	return 4;
+        }
+		@Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"/",opnd1,4,5);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class Mod extends ExpBin {
+        public Mod(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
+        }
+        @Override
+        public int prioridad(){
+        	return 4;
+        }
+		@Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"%",opnd1,4,5);
 		}
 		@Override
 		public void procesa(Procesamiento p) {

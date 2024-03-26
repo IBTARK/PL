@@ -90,6 +90,15 @@ public class ProcRecursivo extends SintaxisAbstracta {
     	else if (claseDe(exp, Resta.class)) {
     		imprimeExpBin(((Resta) exp).opnd0(), "-", ((Resta) exp).opnd1(), 3, 3);
     	}
+    	else if (claseDe(exp, Mul.class)) {
+    		imprimeExpBin(((Resta) exp).opnd0(), "*", ((Resta) exp).opnd1(), 4, 5);
+    	}
+    	else if (claseDe(exp, Div.class)) {
+    		imprimeExpBin(((Resta) exp).opnd0(), "/", ((Resta) exp).opnd1(), 4, 5);
+    	}
+    	else if (claseDe(exp, Mod.class)) {
+    		imprimeExpBin(((Resta) exp).opnd0(), "%", ((Resta) exp).opnd1(), 4, 5);
+    	}
     	else if (claseDe(exp, Array.class)) {
     		imprimeOpnd(((Array) exp).opnd(), 6);
         	System.out.print("[");

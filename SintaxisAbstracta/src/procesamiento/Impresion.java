@@ -68,6 +68,31 @@ public class Impresion implements Procesamiento {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void procesa(DecProc a) {
+		System.out.print("<proc> ");
+		System.out.print(a.iden());
+		a.paramForm().procesa(this); 
+		System.out.print(" ");
+		a.prog().procesa(this);
+	}
+	
+	
+	@Override
+	public void procesa(DecType a) {
+		System.out.print("<type> ");
+		a.tipo().procesa(this); 
+		System.out.print(" ");
+		System.out.print(a.iden());
+	}
+	
+	@Override
+	public void procesa(DecVar a) {
+		a.tipo().procesa(this); 
+		System.out.print(" ");
+		System.out.print(a.iden());
+	}
 
 	@Override
 	public void procesa(SiParam a) {
@@ -97,6 +122,12 @@ public class Impresion implements Procesamiento {
 	public void procesa(TArray a) {
 		a.tipo().procesa(this);
 		System.out.print("["+a.num()+"]");
+	}
+	
+	@Override
+	public void procesa(TPunt a) {
+		System.out.print("^");
+		a.tipo().procesa(this);
 	}
 
 	@Override
@@ -130,6 +161,80 @@ public class Impresion implements Procesamiento {
 		a.lcampos().procesa(this);
 		System.out.print("\n}");
 	}
+	
+	@Override
+	public void procesa(ArrobaInstr a) {
+		System.out.print("@");
+		a.exp().procesa(this);
+	}
+	
+	@Override
+	public void procesa(ProcInstr a) {
+		System.out.print("<call> ");
+		System.out.print(a.iden());
+		a.paramReal().procesa(this);
+	}
+	
+	@Override
+	public void procesa(NlInstr a) {
+		System.out.print("<nl>");
+	}
+	
+	@Override
+	public void procesa(NewInstr a) {
+		System.out.print("<new> ");
+		a.exp().procesa(this);
+	}
+	
+	@Override
+	public void procesa(ReadInstr a) {
+		System.out.print("<read> ");
+		a.exp().procesa(this);
+	}
+	
+	@Override
+	public void procesa(WriteInstr a) {
+		System.out.print("<write> ");
+		a.exp().procesa(this);
+	}
+	
+	@Override
+	public void procesa(DeleteInstr a) {
+		System.out.print("<delete> ");
+		a.exp().procesa(this);
+	}
+	
+	@Override
+	public void procesa(WhileInstr a) {
+		System.out.print("<while> ");
+		a.exp().procesa(this);
+		System.out.print(" ");
+		a.prog().procesa(this);
+	}
+	
+	@Override
+	public void procesa(IfElseInstr a) {
+		System.out.print("<if> ");
+		a.exp().procesa(this);
+		System.out.print(" ");
+		a.prog().procesa(this);
+		System.out.print("\n}");
+		System.out.print("<else> ");
+		a.prog().procesa(this);
+	}
+	
+	@Override
+	public void procesa(IfInstr a) {
+		System.out.print("<if> ");
+		a.exp().procesa(this);
+		System.out.print(" ");
+		a.prog().procesa(this);
+	}
+	
+	@Override
+	public void procesa(BloqueInstr a) {
+		a.prog().procesa(this);
+	}
 
 	@Override
 	public void procesa(SiExp a) {
@@ -154,6 +259,11 @@ public class Impresion implements Procesamiento {
 		System.out.print(", ");
 		a.exp().procesa(this);
 	}
+	
+	@Override
+	public void procesa(Asignacion a) {
+		imprimeExpBin(Opnd0,"=",Opnd1,1,0)
+	}
 
 	@Override
 	public void procesa(Suma a) {
@@ -163,6 +273,21 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(Resta a) {
 		imprimeExpBin(a.opnd0(),"-",a.opnd1(),3,3);
+	}
+	
+	@Override
+	public void procesa(Mul a) {
+		imprimeExpBin(Opnd0," * ",Opnd1,4,5)
+	}
+	
+	@Override
+	public void procesa(Div a) {
+		imprimeExpBin(Opnd0,"/",Opnd1,4,5)
+	}
+	
+	@Override
+	public void procesa(Mod a) {
+		imprimeExpBin(Opnd0,"%",Opnd1,4,5)
 	}
 
 	@Override
