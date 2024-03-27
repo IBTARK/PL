@@ -2,15 +2,30 @@ package procesamiento;
 
 import asint.Procesamiento;
 import asint.SintaxisAbstracta.Array;
+import asint.SintaxisAbstracta.ArrobaInstr;
+import asint.SintaxisAbstracta.Asignacion;
+import asint.SintaxisAbstracta.BloqueInstr;
+import asint.SintaxisAbstracta.DecType;
+import asint.SintaxisAbstracta.DecVar;
+import asint.SintaxisAbstracta.DeleteInstr;
+import asint.SintaxisAbstracta.Div;
 import asint.SintaxisAbstracta.Exp;
 import asint.SintaxisAbstracta.ExpCampo;
+import asint.SintaxisAbstracta.IfElseInstr;
+import asint.SintaxisAbstracta.IfInstr;
+import asint.SintaxisAbstracta.Mod;
 import asint.SintaxisAbstracta.MuchasDecs;
 import asint.SintaxisAbstracta.MuchasExp;
 import asint.SintaxisAbstracta.MuchosParams;
+import asint.SintaxisAbstracta.Mul;
+import asint.SintaxisAbstracta.NewInstr;
+import asint.SintaxisAbstracta.NlInstr;
 import asint.SintaxisAbstracta.NoDecs;
 import asint.SintaxisAbstracta.NoExp;
 import asint.SintaxisAbstracta.NoParam;
+import asint.SintaxisAbstracta.ProcInstr;
 import asint.SintaxisAbstracta.Punt;
+import asint.SintaxisAbstracta.ReadInstr;
 import asint.SintaxisAbstracta.Resta;
 import asint.SintaxisAbstracta.SiDecs;
 import asint.SintaxisAbstracta.SiExp;
@@ -20,12 +35,15 @@ import asint.SintaxisAbstracta.TArray;
 import asint.SintaxisAbstracta.TBool;
 import asint.SintaxisAbstracta.TIden;
 import asint.SintaxisAbstracta.TInt;
+import asint.SintaxisAbstracta.TPunt;
 import asint.SintaxisAbstracta.TReal;
 import asint.SintaxisAbstracta.TString;
 import asint.SintaxisAbstracta.TStruct;
 import asint.SintaxisAbstracta.UnParam;
 import asint.SintaxisAbstracta.UnaDec;
 import asint.SintaxisAbstracta.UnaExp;
+import asint.SintaxisAbstracta.WhileInstr;
+import asint.SintaxisAbstracta.WriteInstr;
 
 public class Impresion implements Procesamiento {
     
@@ -262,7 +280,7 @@ public class Impresion implements Procesamiento {
 	
 	@Override
 	public void procesa(Asignacion a) {
-		imprimeExpBin(Opnd0,"=",Opnd1,1,0)
+		imprimeExpBin(a.opnd0(),"=",a.opnd1(),1,0);
 	}
 
 	@Override
@@ -277,17 +295,17 @@ public class Impresion implements Procesamiento {
 	
 	@Override
 	public void procesa(Mul a) {
-		imprimeExpBin(Opnd0," * ",Opnd1,4,5)
+		imprimeExpBin(a.opnd0()," * ",a.opnd1(),4,5);
 	}
 	
 	@Override
 	public void procesa(Div a) {
-		imprimeExpBin(Opnd0,"/",Opnd1,4,5)
+		imprimeExpBin(a.opnd0(),"/",a.opnd1(),4,5);
 	}
 	
 	@Override
 	public void procesa(Mod a) {
-		imprimeExpBin(Opnd0,"%",Opnd1,4,5)
+		imprimeExpBin(a.opnd0(),"%",a.opnd1(),4,5);
 	}
 
 	@Override

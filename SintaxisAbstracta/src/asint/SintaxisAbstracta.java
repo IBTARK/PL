@@ -37,6 +37,29 @@ public class SintaxisAbstracta {
         }
      }
     
+    public static abstract class Prog extends Decs{
+    	private Decs decs;
+    	private Instr instr;
+    	
+    	public Prog(Decs decs, Instr instr) {
+    		this.decs = decs;
+    		this.instr = instr;
+    	}
+    	
+    	@Override
+		public void imprime() {
+    		System.out.println("{");
+			decs.imprime();
+			instr.imprime();
+			System.out.println();
+			System.out.println("{");
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
     public static class SiDecs extends Decs {
     	private LDecs decs; 
        	public SiDecs(LDecs decs) {
@@ -167,8 +190,46 @@ public class SintaxisAbstracta {
     }
     
     public static abstract class ParamForm extends Nodo {
-    	public ParamForm() {
+    	private Tipo t;
+    	private String id;
+    	
+    	public ParamForm(Tipo t, String id) {
+    		this.t = t;
+    		this.id = id;
     	}
+    	
+    	@Override
+		public void imprime() {
+			t.imprime();
+			System.out.println(" " + id);
+		}
+    	
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static abstract class ParamFormRef extends Nodo {
+    	private Tipo t;
+    	private String id;
+    	
+    	public ParamFormRef(Tipo t, String id) {
+    		this.t = t;
+    		this.id = id;
+    	}
+    	
+    	@Override
+		public void imprime() {
+			t.imprime();
+			System.out.print(" & ");
+			System.out.println(" " + id);
+		}
+    	
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
 
     public static abstract class Param extends Nodo {
@@ -181,7 +242,7 @@ public class SintaxisAbstracta {
     	}
     }
 
-    public static class SiParam extends ParamForm {
+    public static class SiParam extends ParamForm {//TODO Por que hereda de ParamForm?? ENTONCES DEBE RECIBIR tipo,id 
      	LParam params;
      	public SiParam(LParam params) {
      		this.params = params;
@@ -277,7 +338,7 @@ public class SintaxisAbstracta {
     
     public static class TPunt extends Tipo {
         private Tipo t;
-        public TArray(Tipo t) {
+        public TPunt(Tipo t) {
         	super();
         	this.t = t;
         }
@@ -373,6 +434,68 @@ public class SintaxisAbstracta {
  			System.out.print("\n}");
  		} 
         public LCampos lcampos() {return campos;}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class LCampos extends Nodo{ //TODO
+
+		@Override
+		public void imprime() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(Procesamiento p) {
+			// TODO Auto-generated method stub
+			
+		}
+    	
+    }
+    
+    public static class MuchosCamps extends LCampos{
+    	private LCampos lcampos;
+    	private Tipo t;
+    	private String id;
+    	
+    	public MuchosCamps(LCampos lcampos, Tipo t, String id) {
+    		this.lcampos = lcampos;
+    		this.t = t;
+    		this.id = id;
+    	}
+    	
+    	@Override
+ 		public void imprime() {
+ 			lcampos.imprime();
+ 			System.out.println(", ");
+ 			t.imprime();
+ 			System.out.println(" " + id);
+ 		} 
+    	
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class UnCamp extends LCampos{
+    	private Tipo t;
+    	private String id;
+    	
+    	public UnCamp(Tipo t, String id) {
+    		this.t = t;
+    		this.id = id;
+    	}
+    	
+    	@Override
+ 		public void imprime() {
+ 			t.imprime();
+ 			System.out.println(" " + id);
+ 		} 
+    	
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
@@ -744,12 +867,65 @@ public class SintaxisAbstracta {
             super(opnd0,opnd1);
         }
         public String toString() {
-            return imprimeExpBin(opnd0,"=",opnd1,1,0);
+            //return imprimeExpBin(opnd0,"=",opnd1,1,0);
+        	return "Aignacion(" + opnd0 + ", " + opnd1 + ")";
         }
         @Override
         public int prioridad(){
         	return 0;
         }
+        @Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"=",opnd1,1,0);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class And extends ExpBin{
+    	public And(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
+        }
+        public String toString() {
+            //return imprimeExpBin(opnd0,"=",opnd1,1,0);
+        	return "And(" + opnd0 + ", " + opnd1 + ")";
+        }
+        @Override
+        public int prioridad(){
+        	return 3;
+        }
+        @Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"and",opnd1,4,3);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class Or extends ExpBin{
+    	public Or(Exp opnd0, Exp opnd1) {
+            super(opnd0,opnd1);
+        }
+        public String toString() {
+            //return imprimeExpBin(opnd0,"=",opnd1,1,0);
+        	return "Or(" + opnd0 + ", " + opnd1 + ")";
+        }
+        @Override
+        public int prioridad(){
+        	return 3;
+        }
+        @Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"or",opnd1,4,4);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class Menor extends ExpBin {
@@ -757,25 +933,44 @@ public class SintaxisAbstracta {
             super(opnd0,opnd1);
         }
         public String toString() {
-            return imprimeExpBin(opnd0,"<",opnd1,1,2);
+            //return imprimeExpBin(opnd0,"<",opnd1,1,2);
+        	return "Menor(" + opnd0 + ", " + opnd1 + ")";
         }
         @Override
         public int prioridad(){
         	return 1;
         }
+        @Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"or",opnd1,1,2);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class Mayor extends ExpBin {
         public Mayor(Exp opnd0, Exp opnd1) {
             super(opnd0,opnd1);
         }
+      
         public String toString() {
-            return imprimeExpBin(opnd0,">",opnd1,1,2);
+            //return imprimeExpBin(opnd0,"<",opnd1,1,2);
+        	return "Mayor(" + opnd0 + ", " + opnd1 + ")";
         }
         @Override
         public int prioridad(){
         	return 1;
         }
+        @Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"or",opnd1,1,2);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class MenorIgual extends ExpBin {
@@ -783,25 +978,43 @@ public class SintaxisAbstracta {
             super(opnd0,opnd1);
         }
         public String toString() {
-            return imprimeExpBin(opnd0,"<=",opnd1,1,2);
+            return "MenorIgual(" + opnd0 + ", " + opnd1 + ")";
         }
         @Override
         public int prioridad(){
         	return 1;
         }
+        @Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"<=",opnd1,1,2);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class MayorIgual extends ExpBin {
         public MayorIgual(Exp opnd0, Exp opnd1) {
             super(opnd0,opnd1);
         }
+        
         public String toString() {
-            return imprimeExpBin(opnd0,">=",opnd1,1,2);
+            //return imprimeExpBin(opnd0,"<",opnd1,1,2);
+        	return "MayorIgual(" + opnd0 + ", " + opnd1 + ")";
         }
         @Override
         public int prioridad(){
         	return 1;
         }
+        @Override
+		public void imprime() {
+			imprimeExpBin(opnd0,">=",opnd1,1,2);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class Igual extends ExpBin {
@@ -809,31 +1022,54 @@ public class SintaxisAbstracta {
             super(opnd0,opnd1);
         }
         public String toString() {
-            return imprimeExpBin(opnd0,"==",opnd1,1,2);
+            return "Igual(" + opnd0 + ", " + opnd1 + ")";
         }
         @Override
         public int prioridad(){
         	return 1;
         }
+        @Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"=",opnd1,1,2);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class Desigual extends ExpBin {
         public Desigual(Exp opnd0, Exp opnd1) {
             super(opnd0,opnd1);
         }
+        
         public String toString() {
-            return imprimeExpBin(opnd0,"!=",opnd1,1,2);
+            //return imprimeExpBin(opnd0,"<",opnd1,1,2);
+        	return "Desigual(" + opnd0 + ", " + opnd1 + ")";
         }
         @Override
         public int prioridad(){
         	return 1;
         }
+        @Override
+		public void imprime() {
+			imprimeExpBin(opnd0,"!=",opnd1,1,2);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
     }
     
     public static class Suma extends ExpBin {
         public Suma(Exp opnd0, Exp opnd1) {
             super(opnd0,opnd1);
         }
+        public String toString() {
+            //return imprimeExpBin(opnd0,"<",opnd1,1,2);
+        	return "Suma(" + opnd0 + ", " + opnd1 + ")";
+        }
+        
         @Override
         public int prioridad(){
         	return 2;
@@ -852,6 +1088,12 @@ public class SintaxisAbstracta {
         public Resta(Exp opnd0, Exp opnd1) {
             super(opnd0,opnd1);
         }
+        
+        public String toString() {
+            //return imprimeExpBin(opnd0,"<",opnd1,1,2);
+        	return "Resta(" + opnd0 + ", " + opnd1 + ")";
+        }
+        
         @Override
         public int prioridad(){
         	return 2;
@@ -869,6 +1111,11 @@ public class SintaxisAbstracta {
     public static class Mul extends ExpBin {
         public Mul(Exp opnd0, Exp opnd1) {
             super(opnd0,opnd1);
+        }
+        
+        public String toString() {
+            //return imprimeExpBin(opnd0,"<",opnd1,1,2);
+        	return "Mul(" + opnd0 + ", " + opnd1 + ")";
         }
         @Override
         public int prioridad(){
@@ -888,6 +1135,12 @@ public class SintaxisAbstracta {
         public Div(Exp opnd0, Exp opnd1) {
             super(opnd0,opnd1);
         }
+        
+        public String toString() {
+            //return imprimeExpBin(opnd0,"<",opnd1,1,2);
+        	return "Div(" + opnd0 + ", " + opnd1 + ")";
+        }
+        
         @Override
         public int prioridad(){
         	return 4;
@@ -905,6 +1158,11 @@ public class SintaxisAbstracta {
     public static class Mod extends ExpBin {
         public Mod(Exp opnd0, Exp opnd1) {
             super(opnd0,opnd1);
+        }
+        
+        public String toString() {
+            //return imprimeExpBin(opnd0,"<",opnd1,1,2);
+        	return "Mod(" + opnd0 + ", " + opnd1 + ")";
         }
         @Override
         public int prioridad(){
@@ -927,6 +1185,7 @@ public class SintaxisAbstracta {
             this.opnd = opnd;
             this.idx = idx;
         }
+        
         @Override
         public int prioridad(){
         	return 6;
@@ -988,6 +1247,136 @@ public class SintaxisAbstracta {
 		} 
     }
     
+    public abstract class LitEnt extends ExpUn{
+    	public LitEnt(Exp opnd) {
+        	super(opnd);
+            this.opnd = opnd;
+        }
+        @Override
+        public int prioridad(){
+        	return 7;
+        }
+		@Override
+		public void imprime() {
+			System.out.println(opnd);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public abstract class LitReal extends ExpUn{
+    	public LitReal(Exp opnd) {
+        	super(opnd);
+            this.opnd = opnd;
+        }
+        @Override
+        public int prioridad(){
+        	return 7;
+        }
+		@Override
+		public void imprime() {
+			System.out.println(opnd);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public abstract class Iden extends ExpUn{
+    	public Iden(Exp opnd) {
+        	super(opnd);
+            this.opnd = opnd;
+        }
+        @Override
+        public int prioridad(){
+        	return 7;
+        }
+		@Override
+		public void imprime() {
+			System.out.println(opnd);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public abstract class True extends Exp{
+    	public True() {
+
+        }
+        @Override
+        public int prioridad(){
+        	return 7;
+        }
+		@Override
+		public void imprime() {
+			System.out.println("<true>");
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+    }
+    
+    public abstract class False extends Exp{
+    	public False() {
+
+        }
+        @Override
+        public int prioridad(){
+        	return 7;
+        }
+		@Override
+		public void imprime() {
+			System.out.println("<false>");
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+    }
+    
+    public abstract class LitCad extends ExpUn{
+    	public LitCad(Exp opnd) {
+        	super(opnd);
+            this.opnd = opnd;
+        }
+        @Override
+        public int prioridad(){
+        	return 7;
+        }
+		@Override
+		public void imprime() {
+			System.out.println(opnd);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public abstract class Null extends Exp{
+    	public Null() {
+
+        }
+        @Override
+        public int prioridad(){
+        	return 7;
+        }
+		@Override
+		public void imprime() {
+			System.out.println("<null>");
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+    }
+    
     //constructoras
     public Decs siDecs(LDecs decs) {
         return new SiDecs(decs);
@@ -1023,6 +1412,10 @@ public class SintaxisAbstracta {
     
     public Tipo tArray(Tipo t, String litEnt) {
         return new TArray(t, litEnt);
+    }
+    
+    public Tipo tPunt(Tipo t) {
+        return new TPunt(t);
     }
     
     public Tipo tInt() {
@@ -1064,6 +1457,50 @@ public class SintaxisAbstracta {
     public LInstrs unaInstr(Instr instr) {
         return new UnaInstr(instr);
     }    
+    
+    public Instr bloqueInstr(Prog prog) {
+        return new BloqueInstr(prog);
+    }
+    
+    public Instr bloqueInstr(Prog prog) {
+        return new BloqueInstr(prog);
+    }
+    
+    public Instr bloqueInstr(Prog prog) {
+        return new BloqueInstr(prog);
+    }
+    
+    public Instr bloqueInstr(Prog prog) {
+        return new BloqueInstr(prog);
+    }
+    
+    public Instr bloqueInstr(Prog prog) {
+        return new BloqueInstr(prog);
+    }
+    
+    public Instr bloqueInstr(Prog prog) {
+        return new BloqueInstr(prog);
+    }
+    
+    public Instr bloqueInstr(Prog prog) {
+        return new BloqueInstr(prog);
+    }
+    
+    public Instr bloqueInstr(Prog prog) {
+        return new BloqueInstr(prog);
+    }
+    
+    public Instr ifElseInstr(Exp exp, Prog prog1, Prog prog2) {
+        return new IfElseInstr(exp, prog1, prog2);
+    }
+    
+    public Instr ifInstr(Exp exp, Prog prog) {
+        return new IfInstr(exp, prog);
+    }
+    
+    public Instr bloqueInstr(Prog prog) {
+        return new BloqueInstr(prog);
+    }
     
     public ParamReales siExp(LExp exp) {
         return new SiExp(exp);
@@ -1115,6 +1552,18 @@ public class SintaxisAbstracta {
     
     public Exp resta(Exp opnd0, Exp opnd1) {
         return new Resta(opnd0,opnd1);
+    }
+    
+    public Exp mul(Exp opnd0, Exp opnd1) {
+        return new Mul(opnd0,opnd1);
+    }
+    
+    public Exp div(Exp opnd0, Exp opnd1) {
+        return new Div(opnd0,opnd1);
+    }
+    
+    public Exp mod(Exp opnd0, Exp opnd1) {
+        return new Mod(opnd0,opnd1);
     }
     
     public Exp array(Exp opnd0, Exp opnd1) {
