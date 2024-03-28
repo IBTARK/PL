@@ -37,7 +37,7 @@ public class SintaxisAbstracta {
         }
      }
     
-    public static abstract class Prog extends Decs{
+    public static class Prog extends Decs{
     	private Decs decs;
     	private Instr instr;
     	
@@ -189,7 +189,7 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public static abstract class ParamForm extends Nodo {
+    public static class ParamForm extends Nodo {
     	private Tipo t;
     	private String id;
     	
@@ -210,7 +210,7 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public static abstract class ParamFormRef extends Nodo {
+    public static class ParamFormRef extends Nodo {
     	private Tipo t;
     	private String id;
     	
@@ -1247,7 +1247,7 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public abstract class LitEnt extends ExpUn{
+    public static class LitEnt extends ExpUn{
     	public LitEnt(Exp opnd) {
         	super(opnd);
             this.opnd = opnd;
@@ -1266,7 +1266,7 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public abstract class LitReal extends ExpUn{
+    public static class LitReal extends ExpUn{
     	public LitReal(Exp opnd) {
         	super(opnd);
             this.opnd = opnd;
@@ -1285,7 +1285,7 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public abstract class Iden extends ExpUn{
+    public static class Iden extends ExpUn{
     	public Iden(Exp opnd) {
         	super(opnd);
             this.opnd = opnd;
@@ -1304,7 +1304,7 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public abstract class True extends Exp{
+    public static class True extends Exp{
     	public True() {
 
         }
@@ -1322,7 +1322,7 @@ public class SintaxisAbstracta {
 		}
     }
     
-    public abstract class False extends Exp{
+    public static class False extends Exp{
     	public False() {
 
         }
@@ -1340,7 +1340,7 @@ public class SintaxisAbstracta {
 		}
     }
     
-    public abstract class LitCad extends ExpUn{
+    public static class LitCad extends ExpUn{
     	public LitCad(Exp opnd) {
         	super(opnd);
             this.opnd = opnd;
@@ -1359,7 +1359,7 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public abstract class Null extends Exp{
+    public static class Null extends Exp{
     	public Null() {
 
         }
@@ -1378,6 +1378,10 @@ public class SintaxisAbstracta {
     }
     
     //constructoras
+    public Prog prog(Decs decs, Instr instr) {
+    	return new Prog(decs, instr);
+    }
+    
     public Decs siDecs(LDecs decs) {
         return new SiDecs(decs);
     }
@@ -1410,6 +1414,14 @@ public class SintaxisAbstracta {
     	return new MuchosParams(params, param);
     }
     
+    public ParamForm paramForm(Tipo t, String id) {
+    	return new ParamForm(t, id);
+    }
+    
+    public ParamFormRef paramFormRef(Tipo t, String id) {
+    	return new ParamFormRef(t, id);
+    }
+    
     public Tipo tArray(Tipo t, String litEnt) {
         return new TArray(t, litEnt);
     }
@@ -1440,6 +1452,14 @@ public class SintaxisAbstracta {
     
     public Tipo tStruct(LCampos campos) {
         return new TStruct(campos);
+    }
+    
+    public MuchosCamps muchosCamps(LCampos lcampos, Tipo t, String id) {
+    	return new MuchosCamps(lcampos, t, id);
+    }
+    
+    public UnCamp unCamp(Tipo t, String id) {
+    	return new UnCamp(t, id);
     }
     
     public Instr siInstrs(LInstrs instrs) {
@@ -1550,6 +1570,14 @@ public class SintaxisAbstracta {
         return new Suma(opnd0,opnd1);
     }
     
+    public And and(Exp opnd0, Exp opnd1) {
+        return new And(opnd0,opnd1);
+    }
+    
+    public Or or(Exp opnd0, Exp opnd1) {
+        return new Or(opnd0,opnd1);
+    }
+    
     public Exp resta(Exp opnd0, Exp opnd1) {
         return new Resta(opnd0,opnd1);
     }
@@ -1576,5 +1604,33 @@ public class SintaxisAbstracta {
     
     public Exp punt(Exp opnd) {
         return new Punt(opnd);
+    }
+    
+    public LitEnt litEnt(Exp opnd){
+    	return new LitEnt(opnd);
+    }
+    
+    public LitReal litReal(Exp opnd){
+    	return new LitReal(opnd);
+    }
+    
+    public Iden iden(Exp opnd){
+    	return new Iden(opnd);
+    }
+    
+    public True _true(){
+    	return new True();
+    }
+    
+    public False _false(){
+    	return new False();
+    }
+    
+    public LitCad litCad(Exp opnd){
+    	return new LitCad(opnd);
+    }
+    
+    public Null _null(){
+    	return new Null();
     }
 }
