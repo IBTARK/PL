@@ -96,6 +96,8 @@ public class SintaxisAbstracta {
         	this.dec = dec;
         	this.decs = decs;
         }
+        public LDecs ldecs() {return decs;}
+        public Dec dec() {return dec;}
 		@Override
 		public void imprime() {
 			decs.imprime();
@@ -116,6 +118,7 @@ public class SintaxisAbstracta {
         public String toString() {
             return dec.toString();
         }
+        public Dec dec() {return dec;}
 		@Override
 		public void imprime() {
 			dec.imprime();
@@ -129,7 +132,7 @@ public class SintaxisAbstracta {
     public static class DecProg extends Decs {
     	Prog prog;
     	String iden;
-    	ParamForm param
+    	ParamForm param;
         public DecType(Prog prog, String iden, ParamForm param) {
            this.tipo = tipo;
            this.iden = iden;

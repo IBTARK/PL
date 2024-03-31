@@ -265,7 +265,7 @@ PARSER_END(ConstructorASTs)
 	Exp RE4(Exp eh): 
 		{String op; Exp e5,e4;} 
 		{
-			op = OP4() e5 = E5() e4 = RE4(sem.mkop(op,eh,e5)) 
+			op = OP4() e5 = E5() e4 = RE4(sem.mkop4(op,eh,e5)) 
 			{return e4;}
 			|
 			{return eh;}
@@ -279,9 +279,15 @@ PARSER_END(ConstructorASTs)
 		}
 
 	Exp RE6(Exp ah): 
-		{Op6 op; Exp re6;} 
+		{Exp e0,re6;}
 		{
-			op = op6() re6 = re6(sem.mkop(op, ah))
+			e0 = E0() re6 = re6(array(ah,e0))
+			{return re6;}
+			|
+			id = <iden> re6 = re6(expCampo(ah,id))
+			{return re6;}
+			|
+			re6 = re6(punt(ah))
 			{return re6;}
 			|
 			{return ah;}

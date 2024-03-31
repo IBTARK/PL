@@ -65,26 +65,27 @@ public class Impresion implements Procesamiento {
 
 	@Override
 	public void procesa(SiDecs a) {
-		// TODO Auto-generated method stub
-		
+		a.ldecs().procesa(this);
+		System.out.print("\n&&");
+		System.out.println();
 	}
 
 	@Override
 	public void procesa(NoDecs a) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void procesa(MuchasDecs a) {
 		// TODO Auto-generated method stub
-		
+		a.ldecs().procesa(this);
+		System.out.print(";\n");
+		a.dec().procesa(this);
 	}
 
 	@Override
 	public void procesa(UnaDec a) {
-		// TODO Auto-generated method stub
-		
+		a.dec().procesa(this);
 	}
 	
 	@Override
