@@ -129,12 +129,17 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public static class DecProg extends Decs {
+    public static abstract class Dec extends Nodo {
+    	public Dec() {
+    	}
+    }
+    
+    public static class DecProg extends Dec {
     	Prog prog;
     	String iden;
     	ParamForm param;
-        public DecType(Prog prog, String iden, ParamForm param) {
-           this.tipo = tipo;
+        public DecProg(Prog prog, String iden, ParamForm param) {
+           this.prog = prog;
            this.iden = iden;
            this.param = param;
         }
@@ -153,7 +158,7 @@ public class SintaxisAbstracta {
     }
 
     
-    public static class DecType extends Decs {
+    public static class DecType extends Dec {
     	Tipo tipo;
     	String iden;
         public DecType(Tipo tipo, String iden) {
@@ -173,7 +178,7 @@ public class SintaxisAbstracta {
 		} 
     }
 
-    public static class DecVar extends Decs {
+    public static class DecVar extends Dec {
     	Tipo tipo;
     	String iden;
         public DecVar(Tipo tipo, String iden) {
@@ -192,25 +197,9 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public static class ParamForm extends Nodo {
-    	private Tipo t;
-    	private String id;
-    	
-    	public ParamForm(Tipo t, String id) {
-    		this.t = t;
-    		this.id = id;
+    public static abstract class ParamForm extends Nodo {
+    	public ParamForm() {
     	}
-    	
-    	@Override
-		public void imprime() {
-			t.imprime();
-			System.out.println(" " + id);
-		}
-    	
-		@Override
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		} 
     }
     
     public static class ParamFormRef extends Nodo {
@@ -245,7 +234,7 @@ public class SintaxisAbstracta {
     	}
     }
 
-    public static class SiParam extends ParamForm {//TODO Por que hereda de ParamForm?? ENTONCES DEBE RECIBIR tipo,id 
+    public static class SiParam extends ParamForm {
      	LParam params;
      	public SiParam(LParam params) {
      		this.params = params;
@@ -605,10 +594,10 @@ public class SintaxisAbstracta {
     }
     
     public static class ProcInstr  extends  Instr {
-    	ParamReal param;
+    	ParamReales param;
     	String iden;
     	
-        public ProcInstr(ParamReal param, String iden) {
+        public ProcInstr(ParamReales param, String iden) {
     		this.param = param;
     		this.iden = iden;
         }
@@ -698,16 +687,16 @@ public class SintaxisAbstracta {
     
     public static class WhileInstr  extends  Instr {
     	Exp exp;
-    	Prog prog;
-        public WhileInstr(Exp exp, Prog prog) {
+    	Bloque bloq;
+        public WhileInstr(Exp exp, Bloque bloq) {
     		this.exp = exp;
-    		this.prog = prog;
+    		this.bloq = bloq;
         }
         public void imprime() {
 			System.out.print("<while> ");
 			exp.imprime();
 			System.out.print(" ");
-			prog.imprime();
+			bloq.imprime();
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -717,21 +706,21 @@ public class SintaxisAbstracta {
     
     public static class IfElseInstr  extends  Instr {
     	Exp exp;
-    	Prog prog1;
-    	Prog prog2;
-        public IfElseInstr(Exp exp, Prog prog1, Prog prog2) {
+    	Bloque bloq1;
+    	Bloque bloq22;
+        public IfElseInstr(Exp exp, Bloque bloq1, Bloque bloq2) {
     		this.exp = exp;
-    		this.prog1 = prog1;
-    		this.prog2 = prog2;
+    		this.bloq1 = bloq1;
+    		this.bloq2 = bloq2;
         }
         public void imprime() {
 			System.out.print("<if> ");
 			exp.imprime();
 			System.out.print(" ");
-			prog1.imprime();
+			bloq1.imprime();
 			System.out.print("\n");
 			System.out.print("<else> ");
-			prog2.imprime();
+			bloq2.imprime();
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -741,16 +730,16 @@ public class SintaxisAbstracta {
     
     public static class IfInstr  extends  Instr {
     	Exp exp;
-    	Prog prog;
-        public IfInstr(Exp exp, Prog prog) {
+    	Bloque bloq;
+        public IfInstr(Exp exp, Bloque bloq) {
     		this.exp = exp;
-    		this.prog = prog;
+    		this.bloq = bloq;
         }
         public void imprime() {
 			System.out.print("<if> ");
 			exp.imprime();
 			System.out.print(" ");
-			prog.imprime();
+			bloq.imprime();
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -760,11 +749,11 @@ public class SintaxisAbstracta {
     
     public static class BloqueInstr  extends  Instr {
     	Prog prog;
-        public BloqueInstr(Prog prog) {
-    		this.prog = prog;
+        public BloqueInstr(Bloque bloq) {
+    		this.bloq = bloq;
         }
         public void imprime() {
-        	prog.imprime();
+        	bloq.imprime();
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1481,48 +1470,48 @@ public class SintaxisAbstracta {
         return new UnaInstr(instr);
     }    
     
-    public Instr bloqueInstr(Prog prog) {
-        return new BloqueInstr(prog);
+    public Instr arrobaInstr(Exp exp) {
+        return new ArrobaInstr(exp);
     }
     
-    public Instr bloqueInstr(Prog prog) {
-        return new BloqueInstr(prog);
+    public Instr procInstr(ParamReales param, String iden) {
+        return new ProcInstr(param, iden);
     }
     
-    public Instr bloqueInstr(Prog prog) {
-        return new BloqueInstr(prog);
+    public Instr nlInstr() {
+        return new NlInstr();
     }
     
-    public Instr bloqueInstr(Prog prog) {
-        return new BloqueInstr(prog);
+    public Instr newInstr(Exp exp) {
+        return new NewInstr(exp);
     }
     
-    public Instr bloqueInstr(Prog prog) {
-        return new BloqueInstr(prog);
+    public Instr readInstr(Exp exp) {
+        return new ReadInstr(exp);
     }
     
-    public Instr bloqueInstr(Prog prog) {
-        return new BloqueInstr(prog);
+    public Instr writeInstr(Exp exp) {
+        return new WriteInstr(exp);
     }
     
-    public Instr bloqueInstr(Prog prog) {
-        return new BloqueInstr(prog);
+    public Instr deleteInstr(Exp exp) {
+        return new DeleteInstr(exp);
     }
     
-    public Instr bloqueInstr(Prog prog) {
-        return new BloqueInstr(prog);
+    public Instr whileInstr(Exp exp, Bloque bloq) {
+        return new WhileInstr(exp, bloq);
     }
     
-    public Instr ifElseInstr(Exp exp, Prog prog1, Prog prog2) {
-        return new IfElseInstr(exp, prog1, prog2);
+    public Instr ifElseInstr(Exp exp, Bloque bloq1, Bloque bloq2) {
+        return new IfElseInstr(exp, bloq1, bloq2);
     }
     
-    public Instr ifInstr(Exp exp, Prog prog) {
-        return new IfInstr(exp, prog);
+    public Instr ifInstr(Exp exp, Bloque bloq) {
+        return new IfInstr(exp, bloq);
     }
     
-    public Instr bloqueInstr(Prog prog) {
-        return new BloqueInstr(prog);
+    public Instr bloqueInstr(Bloque bloq) {
+        return new BloqueInstr(bloq);
     }
     
     public ParamReales siExp(LExp exp) {
