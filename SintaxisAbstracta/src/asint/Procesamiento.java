@@ -15,7 +15,7 @@ public interface Procesamiento {
     void procesa(NoParam a);
     void procesa(UnParam a);
     void procesa(MuchosParams a);
-    void procesa(ParamForm a);
+    void procesa(ParamFormal a);
     void procesa(ParamFormRef a);
     void procesa(TArray a);
     void procesa(TPunt a);

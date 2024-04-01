@@ -202,6 +202,25 @@ public class SintaxisAbstracta {
     	}
     }
     
+    public static class ParamFormal extends Nodo {
+    	private Tipo t;
+    	private String id;
+    	
+    	public ParamFormal(Tipo t, String id) {
+    		this.t = t;
+    		this.id = id;
+    	}
+    	@Override
+		public void imprime() {
+			t.imprime();
+			System.out.println(" " + id);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		}
+    }
+    
     public static class ParamFormRef extends Nodo {
     	private Tipo t;
     	private String id;
@@ -1406,8 +1425,8 @@ public class SintaxisAbstracta {
     	return new MuchosParams(params, param);
     }
     
-    public ParamForm paramForm(Tipo t, String id) {
-    	return new ParamForm(t, id);
+    public ParamFormal paramForm(Tipo t, String id) {
+    	return new ParamFormal(t, id);
     }
     
     public ParamFormRef paramFormRef(Tipo t, String id) {
