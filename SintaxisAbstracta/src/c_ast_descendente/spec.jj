@@ -55,6 +55,20 @@ PARSER_END(ConstructorASTs)
 			{return prog;} 
 		}
 	
+	Prog programa(): 
+		{Bloque bloq} 
+		{
+			bloq = bloque()
+			{return bloq;}
+		}
+	
+	Bloq bloque(): 
+		{Instr inst; Decs decs;} 
+		{
+			"{" decs = declaraciones() instr = instrucciones() "}"
+			{return sem.prog(decs, instr);}
+		}
+	
 	Decs declaraciones(): 
 		{LDecs deca;} 
 		{
@@ -79,6 +93,19 @@ PARSER_END(ConstructorASTs)
 			|
 			{return decah;}
 		}	
+	
+	Dec declaracion(): 
+		{String id; ParamForm param; Bloque bloque: Tipo tipo} 
+		{
+			 <proc_id> id = <iden> param = parametros_formales() bloque = bloque() 
+			 {return sem.decProg(id, param, bloque);}
+			 | 
+			 <type_id> tipo = tipo() id = <iden> 
+			 {return sem.decType(tipo, id);}
+			 | 
+			 tipo = tipo() id = <iden> 
+			 {return sem.decVar(tipo, id);} 
+			 }
 		
 	ParamForm parametros_formales():
 		{ParamForm a;}
@@ -111,6 +138,24 @@ PARSER_END(ConstructorASTs)
 			|
 			{return ah;}
 		}
+		
+	ParamForm parametro_formal():
+		{Tipo tipo; ParamForm param} 
+		{
+			tipo = tipo()  param = r_parametro_formal(tipo)
+			
+			{return param;}
+		}
+	
+	ParamForm r_parametro_formal(Tipo tipo): 
+		{String id} 
+		{
+			"&" id = <iden> 
+			{return sem.paramFormRef(tipo ,id);}
+			| 
+			id = <iden>
+			{return sem.paramForm(tipo ,id);}
+		}
 	
 	Tipo tipo():
 		{Tipo tipoa;}
@@ -127,35 +172,69 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	Tipo RT0(Tipo tipoah):
-		{Tipo tipoa; Token t;}
+		{Tipo tipoa; Token t; String id}
 		{
-			"[" id = <literalEntero> "]" tipoa = RT0(sem.tArray(tipoah, id.image))
+			"[" id = <literalEntero> "]" tipoa = RT0(sem.tArray(tipoah, id))
 			{return tipoa;}
 			|
 			{return tipoah;}
 		}
 		
+	Tipo T1(): 
+		{Tipo tipoa;}
+		{
+			"^" tipoa = T1() 
+			{return sem.tPunt(tipoa);}
+			| 
+			tipoa = T2() 
+			{return tipoa;}
+		}
+		
 	Tipo T2():
-		{}
+		{String id;}
 		{
 			<int>
-			{return sem.tInt()}
+			{return sem.tInt();}
 			|
 			<real>
-			{return sem.tReal()}
+			{return sem.tReal();}
 			|
 			<bool>
-			{return sem.tBool()}
+			{return sem.tBool();}
 			|
 			<string>
-			{return sem.tString()}
+			{return sem.tString();}
 			|
 			id = <iden>
-			{return sem.tIden(id)}
+			{return sem.tIden(id);}
 			|
 			<struct> "{" campos = lista_campos() "}"
-			{return sem.tStruct(campos)}
+			{return sem.tStruct(campos);}
 		}
+		
+	LCamps lista_campos(): 
+		{Campo camp; MuchosCamps mCamps} 
+		{
+			camp = campo()  mCamps = r_lista_campos(sem.unCamp(camp))
+			{return mCamps;}
+		}
+	
+	
+	LCamps r_lista_campos(MuchosCamps lcamp): 
+		{MuchosCamps mCamps; Campo camp;} 
+		{
+			"," camp = campo() mCamps = r_lista_campos(sem.muchosCamps(camp, lcamp)) 
+			{return mCamps;}
+			| 
+			{return lcamp;}
+		}
+	
+	Campo campo(): 
+		{Tipo tipo; String id;} 
+		{
+			tipo = tipo() id = <iden>
+			{return sem.Campo(tipo, id);}
+		}	
 		
 	Instrs instrucciones(): 
 		{LInstrs lInstra;} 
@@ -180,6 +259,49 @@ PARSER_END(ConstructorASTs)
 			{return lInstrsa;}
 			|
 			{return instrah;}
+		}
+		
+	Instr instruccion(): 
+		{Exp exp; ParamReales param; Bloque bloq; Instr instr;} 
+		{
+			"@" exp = expresion() 
+			{return sem.arrobaInstr(exp);}
+			|
+			<call_id> id = <iden> param = parametros_reales() 
+			{return sem.procInstr(id, param);}
+			| 
+			<nl_id>
+			{return  sem.nlInstr();}
+			| 
+			<new_id> exp = expresion()
+			{return sem.newInstr(exp);} 
+			| 
+			<read_id> exp = expresion()
+			{return sem.readInstr(exp);} 
+			| 
+			<write_id> exp = expresion()
+			{return sem.writeInstr(exp);} 
+			| 
+			<delete_id> exp = expresion()
+			{return sem.deleteInstr(exp);} 
+			| 
+			<while_id> exp = expresion() bloq = bloque() 
+			{return sem.whileInstr(exp, bloque);}
+			| 
+			<if_id> exp = expresion() bloq = bloque() instr =  r_instruccion_if(exp, bloq)
+			{return instr;}
+			| 
+			bloq = bloque()
+			{return sem.bloqueInstr(bloq);}
+		}
+		
+	Instr r_instruccion_if(Exp exp, Bloque bloq);
+		{Bloque bloque;}
+		{
+			<else_id> bloque = bloque()
+			{return ifElseInstr(exp, bloq, bloque);}
+			|
+			{return ifInstr(exp, bloq);}
 		}
 		
 	ParamReales parametros_reales():
@@ -230,6 +352,22 @@ PARSER_END(ConstructorASTs)
 			{return eh;}
 		}
 		
+	Exp E1(): 
+	{Exp e1,e2;} 
+	{
+		e2 = E2() e1 = RE1(e2) 
+			{return e1;} 
+	}
+	
+	Exp RE1(Exp eh): 
+		{String op; Exp e2,e1;} 
+		{
+			op = OP1() e2 = E2() e1 = RE1(sem.mkop1(op,eh,e2)) 
+			{return e1;}
+			|
+			{return eh;}
+		}
+		
 	Exp E2():
 		{Exp e3; Exp re2; Exp rec2;}
 		{
@@ -254,6 +392,7 @@ PARSER_END(ConstructorASTs)
 			|
 			{return ah;}
 		}
+	
 
 	Exp E4(): 
 		{Exp e5,e4;} 
@@ -269,6 +408,16 @@ PARSER_END(ConstructorASTs)
 			{return e4;}
 			|
 			{return eh;}
+		}
+		
+	Exp E5(): 
+		{String op; Exp e5,e6;} 
+		{ 
+			op = OP5() e5 = E5() 
+			{return sem.mkop5(op,e5);}
+			| 
+			e6 = E6() 
+			{return e6;}
 		}
 
 	Exp E6(): 
@@ -314,6 +463,19 @@ PARSER_END(ConstructorASTs)
 			"!=" 
 			{return "!=";} 
        	}
+       	
+    String OP4(): 
+    	{} 
+    	{ 
+    		"*" 
+    		{return "*";}
+    		| 
+    		"/" 
+    		{return "/";}
+    		| 
+    		"%" 
+    		{return "%";}
+    		}
        
 	String op5():       
 		{} 
@@ -322,5 +484,5 @@ PARSER_END(ConstructorASTs)
 			{return "-";} 
 			|
 			<not> 
-			{return "not";}
+			{return <not>;}
        	}

@@ -25,6 +25,33 @@ public class ProcRecursivo extends SintaxisAbstracta {
     	imprimeOpnd(opnd1,np1);
     }
     
+    public void imprime(DecProg dec) { 	
+    	if (claseDe(dec, DecProg.class)) {
+    		System.out.print("<prog> ");
+    		System.out.print(((DecProg) dec).iden());
+    		System.out.print(" ");
+    		imprime(((DecProg) dec).param());
+    		System.out.print(" ");
+    		imprime(((DecProg) dec).bloc());
+    	}
+    }
+    
+    public void imprime(DecType dec) { 	
+    	if (claseDe(dec, DecType.class)) {
+    		System.out.print("<type> ");
+    		imprime(((DecType) dec).tipo());
+    		System.out.print(" ");
+    		System.out.print(((DecType) dec).iden());
+    	}
+    }
+    
+    public void imprime(DecVar dec) { 	
+    	if (claseDe(dec, DecVar.class)) {
+    		imprime(((DecVar) dec).tipo());
+    		System.out.print(" ");
+    		System.out.print(((DecVar) dec).iden());
+    	}
+    }
     
     public void imprime(ParamForm params) {
     	System.out.print("(");
@@ -63,6 +90,95 @@ public class ProcRecursivo extends SintaxisAbstracta {
     		System.out.println("<struct> {");
     		imprime(((TStruct) tipo).lcampos());
     		System.out.println("}");
+    	}
+    	else if (claseDe(tipo, TPunt.class)) {
+    		System.out.print("^ ");
+    		imprime(((TPunt) tipo).tipo());
+    	}
+    }
+    
+    public void imprime(ArrobaInstr instr) { 	
+    	if (claseDe(instr, ArrobaInstr.class)) {
+    		System.out.print("@ ");
+    		imprime(((ArrobaInstr) instr).exp());
+    	}
+    }
+    
+    public void imprime(ProcInstr instr) { 	
+    	if (claseDe(instr, ProcInstr.class)) {
+    		System.out.print("<call> ");
+    		System.out.print(((ProcInstr) instr).iden());
+    		imprime(((ProcInstr) instr).paramReales());
+    	}
+    }
+    
+    public void imprime(NlInstr instr) { 	
+    	if (claseDe(instr, NlInstr.class)) {
+    		System.out.print("<nl>");
+    	}
+    }
+    
+    public void imprime(NewInstr instr) { 	
+    	if (claseDe(instr, NewInstr.class)) {
+    		System.out.print("<new>");
+    		imprime(((NewInstr) instr).exp());
+    	}
+    }
+    
+    public void imprime(DeleteInstr instr) { 	
+    	if (claseDe(instr, DeleteInstr.class)) {
+    		System.out.print("<delete>");
+    		imprime(((DeleteInstr) instr).exp());
+    	}
+    }
+    
+    public void imprime(WriteInstr instr) { 	
+    	if (claseDe(instr, WriteInstr.class)) {
+    		System.out.print("<write>");
+    		imprime(((WriteInstr) instr).exp());
+    	}
+    }
+    
+    public void imprime(ReadInstr instr) { 	
+    	if (claseDe(instr, ReadInstr.class)) {
+    		System.out.print("<read>");
+    		imprime(((ReadInstr) instr).exp());
+    	}
+    }
+    
+    public void imprime(WhileInstr instr) { 	
+    	if (claseDe(instr, WhileInstr.class)) {
+    		System.out.print("<while> ");
+    		imprime(((WhileInstr) instr).exp());
+    		System.out.print(" ");
+    		imprime(((WhileInstr) instr).bloq());
+    	}
+    }
+    
+    public void imprime(IfElseInstr instr) { 	
+    	if (claseDe(instr, IfElseInstr.class)) {
+    		System.out.print("<if> ");
+    		imprime(((IfElseInstr) instr).exp());
+    		System.out.print(" ");
+    		imprime(((IfElseInstr) instr).bloq1());
+    		System.out.print("\n}");
+    		System.out.print("<else> ");
+    		imprime(((IfElseInstr) instr).bloq2());
+    	}
+    }
+    
+    public void imprime(IfInstr instr) { 	
+    	if (claseDe(instr, IfInstr.class)) {
+    		System.out.print("<if> ");
+    		imprime(((IfInstr) instr).exp());
+    		System.out.print(" ");
+    		imprime(((IfInstr) instr).bloq());
+    	}
+    }
+    
+    public void imprime(BloqueInstr instr) { 	
+    	if (claseDe(instr, BloqueInstr.class)) {
+    		imprime(((BloqueInstr) instr).bloq());
     	}
     }
     

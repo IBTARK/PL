@@ -37,11 +37,11 @@ public class SintaxisAbstracta {
         }
      }
     
-    public static class Prog extends Decs{
+    public static class Bloque extends Nodo {
     	private Decs decs;
     	private Instr instr;
     	
-    	public Prog(Decs decs, Instr instr) {
+    	public Bloque(Decs decs, Instr instr) {
     		this.decs = decs;
     		this.instr = instr;
     	}
@@ -135,32 +135,36 @@ public class SintaxisAbstracta {
     }
     
     public static class DecProg extends Dec {
-    	Prog prog;
-    	String iden;
-    	ParamForm param;
-        public DecProg(Prog prog, String iden, ParamForm param) {
-           this.prog = prog;
+    	private String iden;
+    	private ParamForm param;
+    	private Bloque bloc;
+        public DecProg(String iden, ParamForm param, Bloque bloc) {
            this.iden = iden;
            this.param = param;
+           this.bloc = bloc;
         }
 		@Override
 		public void imprime() {
 			System.out.println("<prog> ");
 			System.out.println(iden);
+			System.out.println("(");
 			param.imprime();
-			System.out.println(" "); 
-			prog.imprime();
+			System.out.println(")"); 
+			bloc.imprime();
 		} 
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
-		} 
+		}
+		public String iden() {return iden;}
+		public ParamForm param() {return param;} 
+		public Bloque bloc() {return bloc;}
     }
 
     
     public static class DecType extends Dec {
-    	Tipo tipo;
-    	String iden;
+    	private Tipo tipo;
+    	private String iden;
         public DecType(Tipo tipo, String iden) {
            this.tipo = tipo;
            this.iden = iden;
@@ -176,11 +180,13 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public String iden() {return iden;} 
+		public Tipo tipo() {return tipo;}
     }
 
     public static class DecVar extends Dec {
-    	Tipo tipo;
-    	String iden;
+    	private Tipo tipo;
+    	private String iden;
         public DecVar(Tipo tipo, String iden) {
            this.tipo = tipo;
            this.iden = iden;
@@ -195,6 +201,8 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public String iden() {return iden;} 
+		public Tipo tipo() {return tipo;}
     }
     
     public static abstract class ParamForm extends Nodo {
@@ -202,7 +210,7 @@ public class SintaxisAbstracta {
     	}
     }
     
-    public static class ParamFormal extends Nodo {
+    public static class ParamFormal extends ParamForm {
     	private Tipo t;
     	private String id;
     	
@@ -221,7 +229,7 @@ public class SintaxisAbstracta {
 		}
     }
     
-    public static class ParamFormRef extends Nodo {
+    public static class ParamFormRef extends ParamForm {
     	private Tipo t;
     	private String id;
     	
@@ -356,7 +364,7 @@ public class SintaxisAbstracta {
         public Tipo tipo() {return t;}
 		@Override
 		public void imprime() {
-			System.out.print("^");
+			System.out.print("^ ");
 			t.imprime();
 		} 
 		@Override
@@ -469,21 +477,18 @@ public class SintaxisAbstracta {
     
     public static class MuchosCamps extends LCampos{
     	private LCampos lcampos;
-    	private Tipo t;
-    	private String id;
+    	private Campo c;
     	
-    	public MuchosCamps(LCampos lcampos, Tipo t, String id) {
+    	public MuchosCamps(LCampos lcampos, Campo c) {
     		this.lcampos = lcampos;
-    		this.t = t;
-    		this.id = id;
+    		this.c = c;
     	}
     	
     	@Override
  		public void imprime() {
  			lcampos.imprime();
  			System.out.println(", ");
- 			t.imprime();
- 			System.out.println(" " + id);
+ 			c.imprime();
  		} 
     	
 		@Override
@@ -493,20 +498,38 @@ public class SintaxisAbstracta {
     }
     
     public static class UnCamp extends LCampos{
-    	private Tipo t;
-    	private String id;
+    	private Campo c;
     	
-    	public UnCamp(Tipo t, String id) {
-    		this.t = t;
-    		this.id = id;
+    	public UnCamp(Campo c) {
+    		this.c = c;
     	}
     	
     	@Override
  		public void imprime() {
+ 			c.imprime();
+ 		} 
+    	
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class Campo extends Nodo{
+        private Tipo t;
+        private String id;
+        
+        public Campo(Tipo t, String id){
+            this.t = t;
+            this.id = id;
+        }
+        
+        @Override
+ 		public void imprime() {
  			t.imprime();
  			System.out.println(" " + id);
  		} 
-    	
+ 		
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
@@ -598,7 +621,7 @@ public class SintaxisAbstracta {
     }
     
     public static class ArrobaInstr  extends  Instr {
-    	Exp exp;
+    	private Exp exp;
         public ArrobaInstr(Exp exp) {
     		this.exp = exp;
         }
@@ -609,12 +632,13 @@ public class SintaxisAbstracta {
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
-		} 
+		}
+		public Exp exp() {return exp;} 
     }
     
     public static class ProcInstr  extends  Instr {
-    	ParamReales param;
-    	String iden;
+    	private ParamReales param;
+    	private String iden;
     	
         public ProcInstr(ParamReales param, String iden) {
     		this.param = param;
@@ -628,7 +652,9 @@ public class SintaxisAbstracta {
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
-		} 
+		}
+		public String iden() {return iden;} 
+		public ParamReales paramReales() {return param;}
     }
     
     public static class NlInstr  extends  Instr {
@@ -645,7 +671,7 @@ public class SintaxisAbstracta {
     }
     
     public static class NewInstr  extends  Instr {
-    	Exp exp;
+    	private Exp exp;
         public NewInstr(Exp exp) {
     		this.exp = exp;
         }
@@ -657,10 +683,11 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public Exp exp() {return exp;} 
     }
     
     public static class ReadInstr  extends  Instr {
-    	Exp exp;
+    	private Exp exp;
         public ReadInstr(Exp exp) {
     		this.exp = exp;
         }
@@ -672,10 +699,11 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public Exp exp() {return exp;} 
     }
     
     public static class WriteInstr  extends  Instr {
-    	Exp exp;
+    	private Exp exp;
         public WriteInstr(Exp exp) {
     		this.exp = exp;
         }
@@ -687,10 +715,11 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public Exp exp() {return exp;} 
     }
     
     public static class DeleteInstr  extends  Instr {
-    	Exp exp;
+    	private Exp exp;
         public DeleteInstr(Exp exp) {
     		this.exp = exp;
         }
@@ -702,11 +731,12 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public Exp exp() {return exp;} 
     }
     
     public static class WhileInstr  extends  Instr {
-    	Exp exp;
-    	Bloque bloq;
+    	private Exp exp;
+    	private Bloque bloq;
         public WhileInstr(Exp exp, Bloque bloq) {
     		this.exp = exp;
     		this.bloq = bloq;
@@ -721,12 +751,14 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public Exp exp() {return exp;} 
+		public Bloque bloq() {return bloq;} 
     }
     
     public static class IfElseInstr  extends  Instr {
-    	Exp exp;
-    	Bloque bloq1;
-    	Bloque bloq22;
+    	private Exp exp;
+    	private Bloque bloq1;
+    	private Bloque bloq2;
         public IfElseInstr(Exp exp, Bloque bloq1, Bloque bloq2) {
     		this.exp = exp;
     		this.bloq1 = bloq1;
@@ -737,7 +769,7 @@ public class SintaxisAbstracta {
 			exp.imprime();
 			System.out.print(" ");
 			bloq1.imprime();
-			System.out.print("\n");
+			System.out.println();
 			System.out.print("<else> ");
 			bloq2.imprime();
 		}
@@ -745,11 +777,14 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public Exp exp() {return exp;} 
+		public Bloque bloq1() {return bloq1;} 
+		public Bloque bloq2() {return bloq2;}
     }
     
-    public static class IfInstr  extends  Instr {
-    	Exp exp;
-    	Bloque bloq;
+    public static class IfInstr extends Instr {
+    	private Exp exp;
+    	private Bloque bloq;
         public IfInstr(Exp exp, Bloque bloq) {
     		this.exp = exp;
     		this.bloq = bloq;
@@ -764,10 +799,12 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public Exp exp() {return exp;} 
+		public Bloque bloq() {return bloq;} 
     }
     
     public static class BloqueInstr  extends  Instr {
-    	Prog prog;
+    	private Bloque bloq;
         public BloqueInstr(Bloque bloq) {
     		this.bloq = bloq;
         }
@@ -778,6 +815,7 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public Bloque bloq() {return bloq;} 
     }
 
    	public static class SiExp extends ParamReales {
@@ -1389,8 +1427,8 @@ public class SintaxisAbstracta {
     }
     
     //constructoras
-    public Prog prog(Decs decs, Instr instr) {
-    	return new Prog(decs, instr);
+    public Bloque bloq(Decs decs, Instr instr) {
+    	return new Bloque(decs, instr);
     }
     
     public Decs siDecs(LDecs decs) {
@@ -1425,11 +1463,11 @@ public class SintaxisAbstracta {
     	return new MuchosParams(params, param);
     }
     
-    public ParamFormal paramForm(Tipo t, String id) {
+    public ParamForm paramForm(Tipo t, String id) {
     	return new ParamFormal(t, id);
     }
     
-    public ParamFormRef paramFormRef(Tipo t, String id) {
+    public ParamForm paramFormRef(Tipo t, String id) {
     	return new ParamFormRef(t, id);
     }
     
@@ -1465,12 +1503,16 @@ public class SintaxisAbstracta {
         return new TStruct(campos);
     }
     
-    public MuchosCamps muchosCamps(LCampos lcampos, Tipo t, String id) {
-    	return new MuchosCamps(lcampos, t, id);
+    public LCampos muchosCamps(LCampos lcampos, Campo c) {
+    	return new MuchosCamps(lcampos, c);
     }
     
-    public UnCamp unCamp(Tipo t, String id) {
-    	return new UnCamp(t, id);
+    public LCampos unCamp(Campo c) {
+    	return new UnCamp(c);
+    }
+    
+    public Campo campo(Tipo t, String id) {
+    	return new Campo(t, id);
     }
     
     public Instr siInstrs(LInstrs instrs) {

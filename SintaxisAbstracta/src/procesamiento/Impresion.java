@@ -94,7 +94,7 @@ public class Impresion implements Procesamiento {
 		System.out.print(a.iden());
 		a.paramForm().procesa(this); 
 		System.out.print(" ");
-		a.prog().procesa(this);
+		a.bloc().procesa(this);
 	}
 	
 	
@@ -191,7 +191,7 @@ public class Impresion implements Procesamiento {
 	public void procesa(ProcInstr a) {
 		System.out.print("<call> ");
 		System.out.print(a.iden());
-		a.paramReal().procesa(this);
+		a.paramReales().procesa(this);
 	}
 	
 	@Override
@@ -228,7 +228,7 @@ public class Impresion implements Procesamiento {
 		System.out.print("<while> ");
 		a.exp().procesa(this);
 		System.out.print(" ");
-		a.prog().procesa(this);
+		a.bloq().procesa(this);
 	}
 	
 	@Override
@@ -236,10 +236,10 @@ public class Impresion implements Procesamiento {
 		System.out.print("<if> ");
 		a.exp().procesa(this);
 		System.out.print(" ");
-		a.prog().procesa(this);
+		a.bloq1().procesa(this);
 		System.out.print("\n}");
 		System.out.print("<else> ");
-		a.prog().procesa(this);
+		a.bloq2().procesa(this);
 	}
 	
 	@Override
@@ -247,12 +247,12 @@ public class Impresion implements Procesamiento {
 		System.out.print("<if> ");
 		a.exp().procesa(this);
 		System.out.print(" ");
-		a.prog().procesa(this);
+		a.bloq().procesa(this);
 	}
 	
 	@Override
 	public void procesa(BloqueInstr a) {
-		a.prog().procesa(this);
+		a.bloq().procesa(this);
 	}
 
 	@Override

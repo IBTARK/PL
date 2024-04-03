@@ -33,6 +33,15 @@ init with {:
 				  parametro_formal, E0, E1, E2, E3, E4, E5, E6, E7, OP1, OP4, OP5, OP6, lista_campos, parametros_reales, 
 				  lista_expresiones_e, lista_expresiones, expresion;
     
+    declaracion ::= ID_PROC IDENTIFICADOR:id parametros_formales:params bloque:bloq;
+   		{: RESULT = sem.decProc(id, params, bloq); :};
+    
+	declaracion ::= ID_TYPE tipo:t IDENTIFICADOR:id;
+		{: RESULT = sem.decType(t, id); :};
+	
+	declaracion ::= tipo:t IDENTIFICADOR:id;
+		{: RESULT = sem.decType(t, id); :};
+	
     parametros_formales	::= PARENTESIS_APERTURA lista_parametros_formales_e:lista PARENTESIS_CIERRE
     	{: RESULT = lista; :};
     	
@@ -45,7 +54,11 @@ init with {:
     	{: RESULT = sem.muchosParam(lista, param); :};	
     lista_parametros_formales	::= parametro_formal:param
     	{: RESULT = sem.unParam(param); :};
-    	
+    
+    T1 ::= INDIRECCION T1:t1;
+    	{: RESULT = sem.tPunt(t1) :}
+	T1 ::= T2:t2;
+		{: RESULT = t2 :}	
     T2	::= ID_INT
     	{: RESULT = sem.tInt() :};
     T2	::= ID_REAL
@@ -58,7 +71,30 @@ init with {:
     	{: RESULT = sem.tIden(id) :};
     T2	::= ID_STRUCT LLAVE_APERTURA lista_campos:campos LLAVE_CIERRE
     	{: RESULT = sem.tStruct(campos) :};
-    	
+    
+    instruccion ::= INI_NOMBRE expresion:exp;
+    	{: RESULT = sem.arrobaInstr(exp); :};
+	instruccion ::= ID_CALL IDENTIFICADOR:id parametros_reales:param;
+		{: RESULT = sem.procInstr(id, param); :};
+	instruccion ::= ID_NL;
+		{: RESULT = sem.nlInstr(); :};
+	instruccion ::= ID_NEW expresion:exp;
+		{: RESULT = sem.newInstr(exp); :};
+	instruccion ::= ID_READ expresion:exp;
+		{: RESULT = sem.readInstr(exp); :};
+	instruccion ::= ID_WRITE expresion:exp;
+		{: RESULT = sem.writeInstr(exp); :};
+	instruccion ::= ID_DELETE expresion:exp;
+		{: RESULT = sem.deleteInstr(exp); :};
+	instruccion ::= ID_WHILE expresion:exp bloque:blq;
+		{: RESULT = sem.whileInstr(exp, blq); :};
+	instruccion ::= ID_IF expresion:exp bloque:blq ID_ELSE bloque:blqh;
+		{: RESULT = sem.ifElseInstr(exp, blq, blqh); :};
+	instruccion ::= ID_IF expresion bloque;
+		{: RESULT = sem.ifInstr(exp, blq); :};
+	instruccion ::= bloque:blq;
+		{: RESULT = sem.bloqueInstr(blq); :};
+		
     parametros_reales	::= PARENTESIS_APERTURA lista_expresiones_e:lista PARENTESIS_CIERRE
     	{: RESULT = lista; :};
     	
@@ -71,20 +107,33 @@ init with {:
     	{: RESULT = sem.muchasExp(lista, exp); :};	
     lista_expresiones	::= expresion:exp
     	{: RESULT = sem.unaExp(exp); :};
-    	
+    
+    E1 ::= E1:e1 OP1:op E2:e2;
+    	{: RESULT = sem.mkop1(op, e1, e2); :};
+	E1 ::= E2:2;
+		{: RESULT = e2; :};
     E2	::= E2:e2 SUMA E3:e3
-    	{: RESULT = sem.suma(e2, e3) :};
+    	{: RESULT = sem.suma(e2, e3); :};
     E2	::= E3:e3a RESTA E3:e3b
-    	{: RESULT = sem.resta(e3a, e3b) :};
+    	{: RESULT = sem.resta(e3a, e3b); :};
     E2	::= E3:e3
-    	{: RESULT = e3 :};
-    	
+    	{: RESULT = e3; :};
+    E5 ::= OP5:op E5:e5; 
+    	{: RESULT = sem.mkop1(op, e5); :};
+	E5 ::= E6;	
+		{: RESULT = e6; :};
     E6	::= E6:e6 OP6:op
-    	{: RESULT = sem.mkop(op, e6) :};
+    	{: RESULT = sem.mkop(op, e6); :};
     E6	::= E7:e7
-    	{: RESULT = e7 :};
+    	{: RESULT = e7; :};
     	
+    OP4 ::= MULTIPLICACION:op;
+    	{: RESULT = op; :};
+	OP4 ::= DIVISION:op;
+		{: RESULT = op; :};
+	OP4 ::= MODULO:op;
+		{: RESULT = op; :};	
     OP5	::= RESTA:op
-    	{: RESULT = op :};
+    	{: RESULT = op; :};
     OP5	::= ID_NOT:op
-    	{: RESULT = op :};
+    	{: RESULT = op; :};

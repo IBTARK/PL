@@ -3,7 +3,7 @@ package asint;
 import asint.SintaxisAbstracta.*;
 
 public interface Procesamiento {
-	void procesa(Prog a);
+	void procesa(Bloque a);
     void procesa(SiDecs a);
     void procesa(NoDecs a);
     void procesa(MuchasDecs a);
@@ -27,6 +27,7 @@ public interface Procesamiento {
     void procesa(TStruct a);
     void procesa(MuchosCamps a);
     void procesa(UnCamp a);
+    void procesa(Campo a);
     void procesa(ArrobaInstr  a);
     void procesa(ProcInstr  a);
     void procesa(NlInstr  a);
