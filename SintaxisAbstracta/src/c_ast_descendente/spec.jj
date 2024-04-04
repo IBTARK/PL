@@ -63,9 +63,9 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	Bloq bloque(): 
-		{Instr inst; Decs decs;} 
+		{Instrs insts; Decs decs;} 
 		{
-			"{" decs = declaraciones() instr = instrucciones() "}"
+			"{" decs = declaraciones() instrs = instrucciones() "}"
 			{return sem.prog(decs, instr);}
 		}
 	
