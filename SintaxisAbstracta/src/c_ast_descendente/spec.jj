@@ -393,6 +393,25 @@ PARSER_END(ConstructorASTs)
 			{return ah;}
 		}
 	
+	Exp E3(): 
+		{Exp e4; Exp re3;} 
+		{
+			e4 = E4() re3 = RE3(e4)
+			{return re3;}
+		}
+		
+		
+	Exp RE3(Exp ah): 
+		{Exp e3; Exp e4; Exp re3;} 
+		{
+			"and" e3 = E3() re3 = sem.and(ah, e3)
+			{return re3;}
+			| 
+			"or" e4 = E4() re3 = sem.or(ah, e4)
+			{return re3;}
+			| 
+			{return ah;}
+		}
 
 	Exp E4(): 
 		{Exp e5,e4;} 
@@ -440,6 +459,37 @@ PARSER_END(ConstructorASTs)
 			{return re6;}
 			|
 			{return ah;}
+		}
+	
+	Exp E7(): 
+		{Exp e0; Exp e7;} 
+		{
+			e7 = E7()
+			{return sem.litEnt(e7);} 
+			|
+			e7 = E7()
+			{return sem.litReal(e7);} 
+			| 
+			e7 = E7()
+			<iden>
+			{return sem.litIden(e7);}
+			|
+			<true_id> 
+			{return sem._true();}
+			| 
+			<false_id> 
+			{return sem._false();}
+			| 
+			e7 = E7()
+			<literalCadena>
+			{return sem.litCad(e7);} 
+			| 
+			<null_id>
+			{return sem._null();} 
+			| 
+			
+			"(" e0 = E0() ")"
+			{return e0;}
 		}
 
 	String op1():       
