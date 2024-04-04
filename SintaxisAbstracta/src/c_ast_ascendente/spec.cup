@@ -32,6 +32,16 @@ init with {:
 				  parametros_formales, lista_parametros_formales_e, lista_parametros_formales, campo, instruccion,
 				  parametro_formal, E0, E1, E2, E3, E4, E5, E6, E7, OP1, OP4, OP5, OP6, lista_campos, parametros_reales, 
 				  lista_expresiones_e, lista_expresiones, expresion;
+	
+	declaraciones	::= lista_declaraciones:lista TERMINACION
+    	{: RESULT = sem.siDecs(lista); :};
+    declaraciones	::=
+    	{: RESULT = sem.noDecs(); :};
+	
+	lista_declaraciones	::= lista_declaraciones:lista PUNTO_Y_COMA declaracion:dec
+    	{: RESULT = sem.muchasDecs(lista, dec); :};	
+    lista_declaraciones	::= declaracion:dec
+    	{: RESULT = sem.unaDec(dec); :};    
     
     declaracion ::= ID_PROC IDENTIFICADOR:id parametros_formales:params bloque:bloq;
    		{: RESULT = sem.decProc(id, params, bloq); :};
@@ -55,10 +65,19 @@ init with {:
     lista_parametros_formales	::= parametro_formal:param
     	{: RESULT = sem.unParam(param); :};
     
+    tipo ::= T0:t0;
+    	{: RESULT = t0 :}
+    
+    T0 ::= T0:t0 CORCHETE_APERTURA LITERAL_ENTERO:id CORCHETE_CIERRE;
+    	{: RESULT = sem.tArray(t0, id) :}
+    T0 ::= T1:t1;
+    	{: RESULT = t1 :}
+    
     T1 ::= INDIRECCION T1:t1;
     	{: RESULT = sem.tPunt(t1) :}
 	T1 ::= T2:t2;
 		{: RESULT = t2 :}	
+		
     T2	::= ID_INT
     	{: RESULT = sem.tInt() :};
     T2	::= ID_REAL
@@ -71,6 +90,16 @@ init with {:
     	{: RESULT = sem.tIden(id) :};
     T2	::= ID_STRUCT LLAVE_APERTURA lista_campos:campos LLAVE_CIERRE
     	{: RESULT = sem.tStruct(campos) :};
+    
+    instrucciones	::= lista_instrucciones:lista
+    	{: RESULT = sem.siInstrs(lista); :};
+    instrucciones	::=
+    	{: RESULT = sem.noInstrs(); :};
+	
+	lista_instrucciones	::= lista_instrucciones:lista PUNTO_Y_COMA instruccion:instr
+    	{: RESULT = sem.muchasInstrs(lista, instr); :};	
+    lista_instrucciones	::= instruccion:instr
+    	{: RESULT = sem.unaInstr(instr); :}; 
     
     instruccion ::= INI_NOMBRE expresion:exp;
     	{: RESULT = sem.arrobaInstr(exp); :};
@@ -108,24 +137,50 @@ init with {:
     lista_expresiones	::= expresion:exp
     	{: RESULT = sem.unaExp(exp); :};
     
+    E0 ::= E1:e1 ASIGNACION E0:e0;
+    	{: RESULT = sem.asignacion(e1, e0); :};
+	E0 ::= E1:e1;
+		{: RESULT = e1; :};
+    
     E1 ::= E1:e1 OP1:op E2:e2;
     	{: RESULT = sem.mkop1(op, e1, e2); :};
-	E1 ::= E2:2;
+	E1 ::= E2:e2;
 		{: RESULT = e2; :};
+		
     E2	::= E2:e2 SUMA E3:e3
     	{: RESULT = sem.suma(e2, e3); :};
     E2	::= E3:e3a RESTA E3:e3b
     	{: RESULT = sem.resta(e3a, e3b); :};
     E2	::= E3:e3
     	{: RESULT = e3; :};
+    	
+    E4 ::= E4:e4 OP4:op E5:e5;
+    	{: RESULT = sem.mkop4(op, e4, e5); :};
+	E4 ::= E5:e5;
+		{: RESULT = e5; :};
+    	
     E5 ::= OP5:op E5:e5; 
     	{: RESULT = sem.mkop1(op, e5); :};
 	E5 ::= E6;	
 		{: RESULT = e6; :};
+		
     E6	::= E6:e6 OP6:op
     	{: RESULT = sem.mkop(op, e6); :};
     E6	::= E7:e7
     	{: RESULT = e7; :};
+    	
+    OP1 ::= MENOR:op;
+    	{: RESULT = op; :};
+    OP1 ::= MAYOR:op;
+    	{: RESULT = op; :};
+    OP1 ::= MENOR_IGUAL:op;
+    	{: RESULT = op; :};
+    OP1 ::= MAYOR_IGUAL:op;
+    	{: RESULT = op; :};
+    OP1 ::= DESIGUAL:op;
+    	{: RESULT = op; :};
+    OP1 ::= IGUAL:op;
+    	{: RESULT = op; :};
     	
     OP4 ::= MULTIPLICACION:op;
     	{: RESULT = op; :};
