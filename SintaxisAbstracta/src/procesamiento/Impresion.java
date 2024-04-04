@@ -5,23 +5,32 @@ import asint.SintaxisAbstracta.Array;
 import asint.SintaxisAbstracta.ArrobaInstr;
 import asint.SintaxisAbstracta.Asignacion;
 import asint.SintaxisAbstracta.BloqueInstr;
+import asint.SintaxisAbstracta.DecProc;
 import asint.SintaxisAbstracta.DecType;
 import asint.SintaxisAbstracta.DecVar;
 import asint.SintaxisAbstracta.DeleteInstr;
+import asint.SintaxisAbstracta.Desigual;
 import asint.SintaxisAbstracta.Div;
 import asint.SintaxisAbstracta.Exp;
 import asint.SintaxisAbstracta.ExpCampo;
 import asint.SintaxisAbstracta.IfElseInstr;
 import asint.SintaxisAbstracta.IfInstr;
+import asint.SintaxisAbstracta.Igual;
+import asint.SintaxisAbstracta.Mayor;
+import asint.SintaxisAbstracta.MayorIgual;
+import asint.SintaxisAbstracta.Menor;
+import asint.SintaxisAbstracta.MenorIgual;
 import asint.SintaxisAbstracta.Mod;
 import asint.SintaxisAbstracta.MuchasDecs;
 import asint.SintaxisAbstracta.MuchasExp;
+import asint.SintaxisAbstracta.MuchasInstrs;
 import asint.SintaxisAbstracta.MuchosParams;
 import asint.SintaxisAbstracta.Mul;
 import asint.SintaxisAbstracta.NewInstr;
 import asint.SintaxisAbstracta.NlInstr;
 import asint.SintaxisAbstracta.NoDecs;
 import asint.SintaxisAbstracta.NoExp;
+import asint.SintaxisAbstracta.NoInstrs;
 import asint.SintaxisAbstracta.NoParam;
 import asint.SintaxisAbstracta.ProcInstr;
 import asint.SintaxisAbstracta.Punt;
@@ -29,6 +38,7 @@ import asint.SintaxisAbstracta.ReadInstr;
 import asint.SintaxisAbstracta.Resta;
 import asint.SintaxisAbstracta.SiDecs;
 import asint.SintaxisAbstracta.SiExp;
+import asint.SintaxisAbstracta.SiInstrs;
 import asint.SintaxisAbstracta.SiParam;
 import asint.SintaxisAbstracta.Suma;
 import asint.SintaxisAbstracta.TArray;
@@ -42,6 +52,7 @@ import asint.SintaxisAbstracta.TStruct;
 import asint.SintaxisAbstracta.UnParam;
 import asint.SintaxisAbstracta.UnaDec;
 import asint.SintaxisAbstracta.UnaExp;
+import asint.SintaxisAbstracta.UnaInstr;
 import asint.SintaxisAbstracta.WhileInstr;
 import asint.SintaxisAbstracta.WriteInstr;
 
@@ -72,12 +83,10 @@ public class Impresion implements Procesamiento {
 
 	@Override
 	public void procesa(NoDecs a) {
-		
 	}
 
 	@Override
 	public void procesa(MuchasDecs a) {
-		// TODO Auto-generated method stub
 		a.ldecs().procesa(this);
 		System.out.print(";\n");
 		a.dec().procesa(this);
@@ -90,17 +99,17 @@ public class Impresion implements Procesamiento {
 	
 	@Override
 	public void procesa(DecProc a) {
-		System.out.print("<proc> ");
+		System.out.print("<proc>");
 		System.out.print(a.iden());
-		a.paramForm().procesa(this); 
+		a.params().procesa(this); 
 		System.out.print(" ");
-		a.bloc().procesa(this);
+		a.bloq().procesa(this);
 	}
 	
 	
 	@Override
 	public void procesa(DecType a) {
-		System.out.print("<type> ");
+		System.out.print("<type>");
 		a.tipo().procesa(this); 
 		System.out.print(" ");
 		System.out.print(a.iden());
@@ -116,7 +125,7 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(SiParam a) {
 		System.out.print("(");
-		a.lparam().procesa(this);
+		a.lparams().procesa(this);
 		System.out.print(")");
 	}
 
@@ -133,14 +142,14 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(MuchosParams a) {
 		a.lparam().procesa(this);
-		System.out.print(", ");
+		System.out.print(",");
 		a.param().procesa(this);
 	}
 
 	@Override
 	public void procesa(TArray a) {
 		a.tipo().procesa(this);
-		System.out.print("["+a.num()+"]");
+		System.out.print("["+a.litEnt()+"]");
 	}
 	
 	@Override
@@ -176,9 +185,30 @@ public class Impresion implements Procesamiento {
 
 	@Override
 	public void procesa(TStruct a) {
-		System.out.println("<struct> {");
+		System.out.println("<struct>{");
 		a.lcampos().procesa(this);
 		System.out.print("\n}");
+	}
+	
+	@Override
+	public void procesa(SiInstrs a) {
+		a.linstrs().procesa(this);
+	}
+	
+	@Override
+	public void procesa(NoInstrs a) {
+	}
+	
+	@Override
+	public void procesa(MuchasInstrs a) {
+		a.linstrs().procesa(this);
+		System.out.print(";\n");
+		a.instr().procesa(this);
+	}
+	
+	@Override
+	public void procesa(UnaInstr a) {
+		a.instr().procesa(this);
 	}
 	
 	@Override
@@ -189,7 +219,7 @@ public class Impresion implements Procesamiento {
 	
 	@Override
 	public void procesa(ProcInstr a) {
-		System.out.print("<call> ");
+		System.out.print("<call>");
 		System.out.print(a.iden());
 		a.paramReales().procesa(this);
 	}
@@ -201,31 +231,31 @@ public class Impresion implements Procesamiento {
 	
 	@Override
 	public void procesa(NewInstr a) {
-		System.out.print("<new> ");
+		System.out.print("<new>");
 		a.exp().procesa(this);
 	}
 	
 	@Override
 	public void procesa(ReadInstr a) {
-		System.out.print("<read> ");
+		System.out.print("<read>");
 		a.exp().procesa(this);
 	}
 	
 	@Override
 	public void procesa(WriteInstr a) {
-		System.out.print("<write> ");
+		System.out.print("<write>");
 		a.exp().procesa(this);
 	}
 	
 	@Override
 	public void procesa(DeleteInstr a) {
-		System.out.print("<delete> ");
+		System.out.print("<delete>");
 		a.exp().procesa(this);
 	}
 	
 	@Override
 	public void procesa(WhileInstr a) {
-		System.out.print("<while> ");
+		System.out.print("<while>");
 		a.exp().procesa(this);
 		System.out.print(" ");
 		a.bloq().procesa(this);
@@ -233,7 +263,7 @@ public class Impresion implements Procesamiento {
 	
 	@Override
 	public void procesa(IfElseInstr a) {
-		System.out.print("<if> ");
+		System.out.print("<if>");
 		a.exp().procesa(this);
 		System.out.print(" ");
 		a.bloq1().procesa(this);
@@ -258,7 +288,7 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(SiExp a) {
 		System.out.print("(");
-		a.lexp().procesa(this);
+		a.lexps().procesa(this);
 		System.out.print(")");
 	}
 
@@ -296,7 +326,7 @@ public class Impresion implements Procesamiento {
 	
 	@Override
 	public void procesa(Mul a) {
-		imprimeExpBin(a.opnd0()," * ",a.opnd1(),4,5);
+		imprimeExpBin(a.opnd0(),"*",a.opnd1(),4,5);
 	}
 	
 	@Override
@@ -307,6 +337,36 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(Mod a) {
 		imprimeExpBin(a.opnd0(),"%",a.opnd1(),4,5);
+	}
+	
+	@Override
+	public void procesa(Menor a) {
+		imprimeExpBin(a.opnd0(),"<",a.opnd1(),1,2);
+	}
+	
+	@Override
+	public void procesa(Mayor a) {
+		imprimeExpBin(a.opnd0(),">",a.opnd1(),1,2);
+	}
+	
+	@Override
+	public void procesa(MenorIgual a) {
+		imprimeExpBin(a.opnd0(),"<=",a.opnd1(),1,2);
+	}
+	
+	@Override
+	public void procesa(MayorIgual a) {
+		imprimeExpBin(a.opnd0(),">=",a.opnd1(),1,2);
+	}
+	
+	@Override
+	public void procesa(Igual a) {
+		imprimeExpBin(a.opnd0(),"==",a.opnd1(),1,2);
+	}
+	
+	@Override
+	public void procesa(Desigual a) {
+		imprimeExpBin(a.opnd0(),"!=",a.opnd1(),1,2);
 	}
 
 	@Override

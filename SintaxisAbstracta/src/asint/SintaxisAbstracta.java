@@ -188,7 +188,7 @@ public class SintaxisAbstracta {
 		}
 		public String iden() {return iden;}
 		public ParamForms params() {return params;} 
-		public Bloque bloc() {return bloq;}
+		public Bloque bloq() {return bloq;}
     }
 
     
@@ -626,6 +626,7 @@ public class SintaxisAbstracta {
     	   	super();
     	   	this.instr = instr;
     	}
+    	public Instr instr() { return instr; }
 		@Override
 		public void imprime() {
 			instr.imprime();
