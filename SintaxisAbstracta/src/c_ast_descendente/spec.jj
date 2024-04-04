@@ -59,82 +59,82 @@ PARSER_END(ConstructorASTs)
 		{Bloque bloq} 
 		{
 			bloq = bloque()
-			{return bloq;}
+			{return sem.prog(bloq);}
 		}
 	
 	Bloq bloque(): 
-		{Instrs insts; Decs decs;} 
+		{Instrs instrs; Decs decs;} 
 		{
 			"{" decs = declaraciones() instrs = instrucciones() "}"
-			{return sem.prog(decs, instr);}
+			{return sem.bloq(decs, instr);}
 		}
 	
 	Decs declaraciones(): 
-		{LDecs deca;} 
+		{LDecs ldecsa;} 
 		{
-			deca = lista_declaraciones() "&&"
-			{return sem.siDecs(deca);} 
+			ldecsa = lista_declaraciones() "&&"
+			{return sem.siDecs(ldecsa);} 
 			|
 			{return sem.noDecs();}
 		}
 		
 	LDecs lista_declaraciones(): 
-		{LDecs deca; Dec dec;} 
+		{LDecs ldecsa; Dec dec;} 
 		{
-			dec = declaracion() deca = r_lista_declaraciones(sem.unaDec(dec)) 
-			{return deca;}
+			dec = declaracion() ldecsa = r_lista_declaraciones(sem.unaDec(dec)) 
+			{return ldecsa;}
 		}
        
-	LDecs r_lista_declaraciones(LDecs decah): 
-		{LDecs deca; Dec dec;} 
+	LDecs r_lista_declaraciones(LDecs ldecsah): 
+		{LDecs ldecsa; Dec dec;} 
 		{
-			";" dec = declaracion() deca = r_lista_declaraciones(sem.muchasDecs(decah,dec))  
-			{return deca;}
+			";" dec = declaracion() ldecsa = r_lista_declaraciones(sem.muchasDecs(ldecsah,dec))  
+			{return ldecsa;}
 			|
-			{return decah;}
+			{return ldecsah;}
 		}	
 	
 	Dec declaracion(): 
-		{String id; ParamForm param; Bloque bloque: Tipo tipo} 
+		{String id; ParamForms params; Bloque bloque; Tipo tipo} 
 		{
-			 <proc_id> id = <iden> param = parametros_formales() bloque = bloque() 
-			 {return sem.decProg(id, param, bloque);}
+			 <proc_id> id = <iden> params = parametros_formales() bloque = bloque() 
+			 {return sem.decProc(id, params, bloque);}
 			 | 
 			 <type_id> tipo = tipo() id = <iden> 
 			 {return sem.decType(tipo, id);}
 			 | 
 			 tipo = tipo() id = <iden> 
 			 {return sem.decVar(tipo, id);} 
-			 }
+		}
 		
-	ParamForm parametros_formales():
-		{ParamForm a;}
+	ParamForms parametros_formales():
+		{ParamForms a;}
 		{
 			"(" a = lista_parametros_formales_e() ")"
 			{return a;}
 		}
 		
-	ParamForm lista_parametros_formales_e():
-		{LParam params;}
+	ParamForms lista_parametros_formales_e():
+		{LParams lparams;}
 		{
-			params = lista_parametros_formales()
-			{return sem.siParam(params);}
+			lparams = lista_parametros_formales()
+			{return sem.siParam(lparams);}
 			|
 			{return sem.noParam();}
 		}
 		
-	LParam lista_parametros_formales():
-		{LParam params; Param param;}
+	LParams lista_parametros_formales():
+		{LParams lparams; ParamForm param;}
 		{
-			param = parametro_formal() params = r_lista_parametros_formales(sem.unParam(param))
-			{return params;}
+			param = parametro_formal() lparams = r_lista_parametros_formales(sem.unParam(param))
+			{return lparams;}
 		}
 		
-	LParam r_lista_parametros_formales(LParam ah):
-		{LParam params; Param param;}
+	LParams r_lista_parametros_formales(LParams ah):
+		{LParams lparams; Param param;}
 		{
-			param = parametro_formal() params = r_lista_parametros_formales(sem.muchosParam(ah, param))
-			{return params;}
+			param = parametro_formal() lparams = r_lista_parametros_formales(sem.muchosParam(ah, param))
+			{return lparams;}
 			|
 			{return ah;}
 		}
@@ -147,14 +147,14 @@ PARSER_END(ConstructorASTs)
 			{return param;}
 		}
 	
-	ParamForm r_parametro_formal(Tipo tipo): 
+	ParamForm r_parametro_formal(Tipo tipoah): 
 		{String id} 
 		{
 			"&" id = <iden> 
-			{return sem.paramFormRef(tipo ,id);}
+			{return sem.paramFormRef(tipoah ,id);}
 			| 
 			id = <iden>
-			{return sem.paramForm(tipo ,id);}
+			{return sem.paramForm(tipoah ,id);}
 		}
 	
 	Tipo tipo():
@@ -191,7 +191,7 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	Tipo T2():
-		{String id;}
+		{String id; LCampos campos}
 		{
 			<int>
 			{return sem.tInt();}
@@ -212,21 +212,21 @@ PARSER_END(ConstructorASTs)
 			{return sem.tStruct(campos);}
 		}
 		
-	LCamps lista_campos(): 
-		{Campo camp; MuchosCamps mCamps} 
+	LCampos lista_campos(): 
+		{Campo camp; LCampos lcampos} 
 		{
-			camp = campo()  mCamps = r_lista_campos(sem.unCamp(camp))
-			{return mCamps;}
+			camp = campo()  lcampos = r_lista_campos(sem.unCamp(camp))
+			{return lcampos;}
 		}
 	
 	
-	LCamps r_lista_campos(MuchosCamps lcamp): 
-		{MuchosCamps mCamps; Campo camp;} 
+	LCampos r_lista_campos(LCampos lcamposah): 
+		{LCampos lcampos; Campo camp;} 
 		{
-			"," camp = campo() mCamps = r_lista_campos(sem.muchosCamps(camp, lcamp)) 
-			{return mCamps;}
+			"," camp = campo() lcampos = r_lista_campos(sem.muchosCamps(lcamposah, camp)) 
+			{return lcampos;}
 			| 
-			{return lcamp;}
+			{return lcamposah;}
 		}
 	
 	Campo campo(): 
@@ -237,10 +237,10 @@ PARSER_END(ConstructorASTs)
 		}	
 		
 	Instrs instrucciones(): 
-		{LInstrs lInstra;} 
+		{LInstrs lInstrsa;} 
 		{
-			lInstra = lista_instrucciones()
-			{return sem.siInstrs(lInstra);} 
+			lInstrsa = lista_instrucciones()
+			{return sem.siInstrs(lInstrsa);} 
 			| 
 			{return sem.noInstrs();}
 		}
@@ -252,8 +252,8 @@ PARSER_END(ConstructorASTs)
 			{return lInstrsa;}
 		}
 	
-	LInstrs r_lista_instrucciones(Linstrs instrah): 
-		{Linstrs lInstrsa; Instr instra;} 
+	LInstrs r_lista_instrucciones(LInstrs instrah): 
+		{LInstrs lInstrsa; Instr instra;} 
 		{
 			";" instra = instruccion() lInstrsa = r_lista_instrucciones(sem.muchasInstrs(instrah,instra))  
 			{return lInstrsa;}
@@ -286,7 +286,7 @@ PARSER_END(ConstructorASTs)
 			{return sem.deleteInstr(exp);} 
 			| 
 			<while_id> exp = expresion() bloq = bloque() 
-			{return sem.whileInstr(exp, bloque);}
+			{return sem.whileInstr(exp, bloq);}
 			| 
 			<if_id> exp = expresion() bloq = bloque() instr =  r_instruccion_if(exp, bloq)
 			{return instr;}
@@ -312,7 +312,7 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	ParamReales lista_expresiones_e():
-		{LExp lista;}
+		{LExps lista;}
 		{
 			lista = lista_expresiones()
 			{return sem.siExp(lista);}
@@ -320,20 +320,27 @@ PARSER_END(ConstructorASTs)
 			{return sem.noExp();}
 		}
 		
-	LExp lista_expresiones():
-		{LExp exps; Exp exp;}
+	LExps lista_expresiones():
+		{LExps exps; Exp exp;}
 		{
 			exp = expresion() exps = r_lista_expresiones(sem.unaExp(exp))
 			{return exps;}
 		}
 		
-	LExp r_lista_expresiones(LExp ah):
-		{LExp exps; Exp exp;}
+	LExps r_lista_expresiones(LExps ah):
+		{LExps exps; Exp exp;}
 		{
 			"," exp = expresion() exps = r_lista_expresiones(sem.muchasExp(ah, exp))
 			{return exps;}
 			|
 			{return ah;}
+		}
+
+	Exp expresion(): 
+		{Ex e;} 
+		{
+			e = E0()
+			{return e;}
 		}
 	
 	Exp E0(): 
@@ -344,20 +351,20 @@ PARSER_END(ConstructorASTs)
 		}
         
 	Exp RE0(Exp eh): 
-		{Exp e1,e2;} 
+		{Exp e;} 
 		{
-			"=" e1 = E1() e2 = E0() 
-			{return sem.asignacion(eh, e2);}
+			"=" e = E0() 
+			{return sem.asignacion(eh, e);}
 			|
 			{return eh;}
 		}
 		
 	Exp E1(): 
-	{Exp e1,e2;} 
-	{
-		e2 = E2() e1 = RE1(e2) 
+		{Exp e1,e2;} 
+		{
+			e2 = E2() e1 = RE1(e2) 
 			{return e1;} 
-	}
+		}
 	
 	Exp RE1(Exp eh): 
 		{String op; Exp e2,e1;} 
@@ -369,7 +376,7 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	Exp E2():
-		{Exp e3; Exp re2; Exp rec2;}
+		{Exp e3,re2,rec2;}
 		{
 			e3 = E3() re2 = RE2(e3) rec2 = REC2(re2)
 			{return rec2;}
@@ -385,7 +392,7 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	Exp REC2(Exp ah):
-		{Exp e3; Exp rec2;}
+		{Exp e3,rec2;}
 		{
 			"+" e3 = E3() rec2 = REC2(sem.suma(ah, e3))
 			{return rec2;}
@@ -394,15 +401,14 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	Exp E3(): 
-		{Exp e4; Exp re3;} 
+		{Exp e4,re3;} 
 		{
 			e4 = E4() re3 = RE3(e4)
 			{return re3;}
 		}
 		
-		
 	Exp RE3(Exp ah): 
-		{Exp e3; Exp e4; Exp re3;} 
+		{Exp e3,e4,re3;} 
 		{
 			"and" e3 = E3() re3 = sem.and(ah, e3)
 			{return re3;}
@@ -449,20 +455,20 @@ PARSER_END(ConstructorASTs)
 	Exp RE6(Exp ah): 
 		{Exp e0,re6;}
 		{
-			e0 = E0() re6 = re6(array(ah,e0))
+			"[" e0 = E0() "]" re6 = RE6(sem.array(ah,e0))
 			{return re6;}
 			|
-			id = <iden> re6 = re6(expCampo(ah,id))
+			"." id = <iden> re6 = RE6(sem.expCampo(ah,id))
 			{return re6;}
 			|
-			re6 = re6(punt(ah))
+			"^" re6 = RE6(sem.punt(ah))
 			{return re6;}
 			|
 			{return ah;}
 		}
 	
 	Exp E7(): 
-		{Exp e0; Exp e7;} 
+		{Exp e0,e7;} 
 		{
 			e7 = E7()
 			{return sem.litEnt(e7);} 
