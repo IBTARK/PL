@@ -16,12 +16,12 @@ public class DomJudge {
 			if(op == 'a') {
 				System.out.println("CONSTRUCCION AST ASCENDENTE");
 				AnalizadorLexicoTiny alex = new AnalizadorLexicoTiny(input);
-				c_ast_ascendente.ConstructorASTs asint = new c_ast_ascendente.ConstructorASTs(alex);
-				prog = (Prog)asint.parse().value;
+				c_ast_ascendente.ConstructorASTs asint = new c_ast_ascendente.ConstructorASTsDJ(alex);
+				prog = (Prog)asint.debug_parse().value;
 			}
 			else if (op == 'd') {
 				System.out.println("CONSTRUCCION AST DESCENDENTE");
-				c_ast_descendente.ConstructorASTs asint = new c_ast_descendente.ConstructorASTs(input);
+				c_ast_descendente.ConstructorASTs asint = new c_ast_descendente.ConstructorASTsDJ(input);
 				asint.disable_tracing();
 				prog = asint.analiza();
 			}

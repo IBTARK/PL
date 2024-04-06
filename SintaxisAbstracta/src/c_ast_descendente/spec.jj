@@ -132,7 +132,7 @@ PARSER_END(ConstructorASTs)
 	LParams r_lista_parametros_formales(LParams ah):
 		{LParams lparams; ParamForm param;}
 		{
-			param = parametro_formal() lparams = r_lista_parametros_formales(sem.muchosParams(ah, param))
+			"," param = parametro_formal() lparams = r_lista_parametros_formales(sem.muchosParams(ah, param))
 			{return lparams;}
 			|
 			{return ah;}

@@ -60,7 +60,7 @@ LDecs ldecsa;
       case proc_id:
       case type_id:
       case iden:
-      case 43:{
+      case 44:{
         ldecsa = lista_declaraciones();
         jj_consume_token(36);
 {if ("" != null) return sem.siDecs(ldecsa);}
@@ -137,7 +137,7 @@ Token id; ParamForms params; Bloque bloque; Tipo tipo;
       case string_id:
       case struct_id:
       case iden:
-      case 43:{
+      case 44:{
         tipo = tipo();
         id = jj_consume_token(iden);
 {if ("" != null) return (Dec) sem.decVar(tipo, id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
@@ -179,7 +179,7 @@ LParams lparams;
       case string_id:
       case struct_id:
       case iden:
-      case 43:{
+      case 44:{
         lparams = lista_parametros_formales();
 {if ("" != null) return sem.siParam(lparams);}
         break;
@@ -212,13 +212,8 @@ LParams lparams; ParamForm param;
     try {
 LParams lparams; ParamForm param;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case int_id:
-      case real_id:
-      case bool_id:
-      case string_id:
-      case struct_id:
-      case iden:
-      case 43:{
+      case 40:{
+        jj_consume_token(40);
         param = parametro_formal();
         lparams = r_lista_parametros_formales(sem.muchosParams(ah, param));
 {if ("" != null) return lparams;}
@@ -252,8 +247,8 @@ Tipo tipo; ParamForm param;
     try {
 Token id;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 40:{
-        jj_consume_token(40);
+      case 41:{
+        jj_consume_token(41);
         id = jj_consume_token(iden);
 {if ("" != null) return (ParamForm) sem.paramFormRef(tipoah ,id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
@@ -304,10 +299,10 @@ Tipo tipo1a; Tipo tipoa;
     try {
 Tipo tipoa; Token id;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 41:{
-        jj_consume_token(41);
-        id = jj_consume_token(literalEntero);
+      case 42:{
         jj_consume_token(42);
+        id = jj_consume_token(literalEntero);
+        jj_consume_token(43);
         tipoa = RT0((Tipo) sem.tArray(tipoah, id.image).ponFila(id.beginLine).ponCol(id.beginColumn));
 {if ("" != null) return tipoa;}
         break;
@@ -327,8 +322,8 @@ Tipo tipoa; Token id;
     try {
 Tipo tipoa;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 43:{
-        jj_consume_token(43);
+      case 44:{
+        jj_consume_token(44);
         tipoa = T1();
 {if ("" != null) return sem.tPunt(tipoa);}
         break;
@@ -421,8 +416,8 @@ Campo camp; LCampos lcampos;
     try {
 LCampos lcampos; Campo camp;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 44:{
-        jj_consume_token(44);
+      case 40:{
+        jj_consume_token(40);
         camp = campo();
         lcampos = r_lista_campos(sem.muchosCamps(lcamposah, camp));
 {if ("" != null) return lcampos;}
@@ -675,8 +670,8 @@ LExp exps; Exp exp;
     try {
 LExp exps; Exp exp;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 44:{
-        jj_consume_token(44);
+      case 40:{
+        jj_consume_token(40);
         exp = expresion();
         exps = r_lista_expresiones(sem.muchasExp(ah, exp));
 {if ("" != null) return exps;}
@@ -965,10 +960,10 @@ Exp e7,re6;
     try {
 Exp e0,re6; Token id;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 41:{
-        jj_consume_token(41);
-        e0 = E0();
+      case 42:{
         jj_consume_token(42);
+        e0 = E0();
+        jj_consume_token(43);
         re6 = RE6(sem.array(ah,e0));
 {if ("" != null) return re6;}
         break;
@@ -980,8 +975,8 @@ Exp e0,re6; Token id;
 {if ("" != null) return re6;}
         break;
         }
-      case 43:{
-        jj_consume_token(43);
+      case 44:{
+        jj_consume_token(44);
         re6 = RE6(sem.punt(ah));
 {if ("" != null) return re6;}
         break;
@@ -1174,10 +1169,10 @@ Token lit; Exp e0;
 	   jj_la1_init_1();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x6f800,0x0,0x6f800,0xf800,0xf800,0x0,0x0,0xf800,0xf800,0x0,0x7f80000,0x0,0x7f80000,0x8000000,0xc0010700,0x0,0x0,0x0,0x0,0x0,0x30000000,0x0,0xc0010700,0x0,0xc0000700,0x0,0x0,0x10000,};
+	   jj_la1_0 = new int[] {0x6f800,0x0,0x6f800,0xf800,0x0,0x0,0x0,0xf800,0xf800,0x0,0x7f80000,0x0,0x7f80000,0x8000000,0xc0010700,0x0,0x0,0x0,0x0,0x0,0x30000000,0x0,0xc0010700,0x0,0xc0000700,0x0,0x0,0x10000,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x802,0x20,0x802,0x802,0x802,0x102,0x200,0x802,0x2,0x1000,0x2004,0x20,0x2004,0x0,0x8043,0x1000,0x4000,0xfc0000,0x8000,0x10000,0x0,0x7000000,0x8043,0x20a00,0x43,0xfc0000,0x7000000,0x8000,};
+	   jj_la1_1 = new int[] {0x1002,0x20,0x1002,0x1002,0x100,0x202,0x400,0x1002,0x2,0x100,0x2004,0x20,0x2004,0x0,0x8043,0x100,0x4000,0xfc0000,0x8000,0x10000,0x0,0x7000000,0x8043,0x21400,0x43,0xfc0000,0x7000000,0x8000,};
 	}
 
   {
