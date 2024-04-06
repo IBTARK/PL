@@ -484,8 +484,27 @@ public class SintaxisAbstracta {
     }
     
     public static abstract class Campo extends Nodo {
-    	public Campo() {
+    	private Tipo t;
+    	private String id;
+    	
+    	public Campo(Tipo t, String id) {
+    		this.t = t;
+    		this.id = id;
     	}
+    	
+    	 @Override
+  		public void imprime() {
+  			t.imprime();
+  			System.out.println(" " + id);
+  		} 
+  		
+ 		@Override
+ 		public void procesa(Procesamiento p) {
+ 			p.procesa(this);
+ 		} 
+ 		
+ 		public Tipo tipo() {return t;}
+		public String id() {return id;}
     }
     
     public static class MuchosCamps extends LCampos{
@@ -536,8 +555,7 @@ public class SintaxisAbstracta {
         private String id;
         
         public CampoF(Tipo t, String id){
-            this.t = t;
-            this.id = id;
+           super(t, id);
         }
         
         @Override

@@ -1,10 +1,13 @@
 package procesamiento;
 
 import asint.Procesamiento;
+import asint.SintaxisAbstracta.And;
 import asint.SintaxisAbstracta.Array;
 import asint.SintaxisAbstracta.ArrobaInstr;
 import asint.SintaxisAbstracta.Asignacion;
+import asint.SintaxisAbstracta.Bloque;
 import asint.SintaxisAbstracta.BloqueInstr;
+import asint.SintaxisAbstracta.Campo;
 import asint.SintaxisAbstracta.DecProc;
 import asint.SintaxisAbstracta.DecType;
 import asint.SintaxisAbstracta.DecVar;
@@ -13,9 +16,14 @@ import asint.SintaxisAbstracta.Desigual;
 import asint.SintaxisAbstracta.Div;
 import asint.SintaxisAbstracta.Exp;
 import asint.SintaxisAbstracta.ExpCampo;
+import asint.SintaxisAbstracta.False;
+import asint.SintaxisAbstracta.Iden;
 import asint.SintaxisAbstracta.IfElseInstr;
 import asint.SintaxisAbstracta.IfInstr;
 import asint.SintaxisAbstracta.Igual;
+import asint.SintaxisAbstracta.LitCad;
+import asint.SintaxisAbstracta.LitEnt;
+import asint.SintaxisAbstracta.LitReal;
 import asint.SintaxisAbstracta.Mayor;
 import asint.SintaxisAbstracta.MayorIgual;
 import asint.SintaxisAbstracta.Menor;
@@ -24,6 +32,7 @@ import asint.SintaxisAbstracta.Mod;
 import asint.SintaxisAbstracta.MuchasDecs;
 import asint.SintaxisAbstracta.MuchasExp;
 import asint.SintaxisAbstracta.MuchasInstrs;
+import asint.SintaxisAbstracta.MuchosCamps;
 import asint.SintaxisAbstracta.MuchosParams;
 import asint.SintaxisAbstracta.Mul;
 import asint.SintaxisAbstracta.NewInstr;
@@ -32,7 +41,12 @@ import asint.SintaxisAbstracta.NoDecs;
 import asint.SintaxisAbstracta.NoExp;
 import asint.SintaxisAbstracta.NoInstrs;
 import asint.SintaxisAbstracta.NoParam;
+import asint.SintaxisAbstracta.Null;
+import asint.SintaxisAbstracta.Or;
+import asint.SintaxisAbstracta.ParamFormRef;
+import asint.SintaxisAbstracta.ParamFormal;
 import asint.SintaxisAbstracta.ProcInstr;
+import asint.SintaxisAbstracta.Programa;
 import asint.SintaxisAbstracta.Punt;
 import asint.SintaxisAbstracta.ReadInstr;
 import asint.SintaxisAbstracta.Resta;
@@ -49,6 +63,8 @@ import asint.SintaxisAbstracta.TPunt;
 import asint.SintaxisAbstracta.TReal;
 import asint.SintaxisAbstracta.TString;
 import asint.SintaxisAbstracta.TStruct;
+import asint.SintaxisAbstracta.True;
+import asint.SintaxisAbstracta.UnCamp;
 import asint.SintaxisAbstracta.UnParam;
 import asint.SintaxisAbstracta.UnaDec;
 import asint.SintaxisAbstracta.UnaExp;
@@ -73,6 +89,19 @@ public class Impresion implements Procesamiento {
     	System.out.print(" " + op + " ");
     	imprimeOpnd(opnd1,np1);
     }
+    
+    @Override
+	public void procesa(Programa a) {
+		a.bloq().procesa(this);
+	}
+    
+    @Override
+	public void procesa(Bloque a) {
+    	System.out.println("{");
+		a.decs().procesa(this);
+		a.instrs().procesa(this);
+		System.out.print("\n}");
+	}
 
 	@Override
 	public void procesa(SiDecs a) {
@@ -145,6 +174,19 @@ public class Impresion implements Procesamiento {
 		System.out.print(",");
 		a.param().procesa(this);
 	}
+	
+	@Override
+	public void procesa(ParamFormRef a) {
+		a.tipo().procesa(this);
+		System.out.print(" & ");
+		System.out.print(a.id());
+	}
+	
+	@Override
+	public void procesa(ParamFormal a) {
+		a.tipo().procesa(this);
+		System.out.print(" " + a.id());
+	}
 
 	@Override
 	public void procesa(TArray a) {
@@ -188,6 +230,24 @@ public class Impresion implements Procesamiento {
 		System.out.println("<struct>{");
 		a.lcampos().procesa(this);
 		System.out.print("\n}");
+	}
+	
+	@Override
+	public void procesa(MuchosCamps a) {
+		a.lcampos().procesa(this);
+		System.out.println(", ");
+		a.campo().procesa(this);
+	}
+	
+	@Override
+	public void procesa(UnCamp a) {
+		a.campo().procesa(this);
+	}
+	
+	@Override
+	public void procesa(Campo a) {
+		a.tipo().procesa(this);
+		System.out.print(" " + a.id());
 	}
 	
 	@Override
@@ -310,6 +370,41 @@ public class Impresion implements Procesamiento {
 	}
 	
 	@Override
+	public void procesa(LitEnt a) {
+		System.out.print(a.opnd());
+	}
+	
+	@Override
+	public void procesa(LitReal a) {
+		System.out.print(a.opnd());
+	}
+	
+	@Override
+	public void procesa(Iden a) {
+		System.out.print(a.opnd());
+	}
+	
+	@Override
+	public void procesa(True a) {
+		a.imprime();
+	}
+	
+	@Override
+	public void procesa(False a) {
+		a.imprime();
+	}
+	
+	@Override
+	public void procesa(LitCad a) {
+		a.imprime();
+	}
+	
+	@Override
+	public void procesa(Null a) {
+		a.imprime();
+	}
+	
+	@Override
 	public void procesa(Asignacion a) {
 		imprimeExpBin(a.opnd0(),"=",a.opnd1(),1,0);
 	}
@@ -322,6 +417,16 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(Resta a) {
 		imprimeExpBin(a.opnd0(),"-",a.opnd1(),3,3);
+	}
+	
+	@Override
+	public void procesa(And a) {
+		imprimeExpBin(a.opnd0(),"and",a.opnd1(),4,5);
+	}
+	
+	@Override
+	public void procesa(Or a) {
+		imprimeExpBin(a.opnd0(),"or",a.opnd1(),4,5);
 	}
 	
 	@Override

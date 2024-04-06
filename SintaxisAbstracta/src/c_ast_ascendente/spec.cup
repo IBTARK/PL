@@ -32,6 +32,11 @@ init with {:
 				  parametros_formales, lista_parametros_formales_e, lista_parametros_formales, campo, instruccion,
 				  parametro_formal, E0, E1, E2, E3, E4, E5, E6, E7, OP1, OP4, OP5, OP6, lista_campos, parametros_reales, 
 				  lista_expresiones_e, lista_expresiones, expresion;
+				  
+	programa ::= bloque:bloq 
+		{: RESULT = sem.prog(bloq); :};
+	bloque ::= LLAVE_APERTURA declaraciones:decs instrucciones:instrs LLAVE_CIERRE
+		{: RESULT = sem.bloq(decs, instrs); :};
 	
 	declaraciones	::= lista_declaraciones:lista TERMINACION
     	{: RESULT = sem.siDecs(lista); :};
@@ -65,6 +70,11 @@ init with {:
     lista_parametros_formales	::= parametro_formal:param
     	{: RESULT = sem.unParam(param); :};
     
+    parametro_formal ::= tipo:t REFERENCIA IDENTIFICADOR:id
+    	{: RESULT = sem.paramFormRef(t, id); :};
+    parametro_formal ::= tipo:t IDENTIFICADOR:id
+    	{: RESULT = sem.paramForm(t, id); :};
+    
     tipo ::= T0:t0;
     	{: RESULT = t0 :}
     
@@ -90,6 +100,13 @@ init with {:
     	{: RESULT = sem.tIden(id) :};
     T2	::= ID_STRUCT LLAVE_APERTURA lista_campos:campos LLAVE_CIERRE
     	{: RESULT = sem.tStruct(campos) :};
+    	
+    lista_campos ::= lista_campos:lista COMA campo:c
+    	{: RESULT = sem.muchosCamps(lista, c); :};
+	lista_campos ::= campo:c
+		{: RESULT = sem.unCamp(c); :};
+	campo ::= tipo:t IDENTIFICADOR:id
+		{: RESULT = sem.campo(t, id); :};
     
     instrucciones	::= lista_instrucciones:lista
     	{: RESULT = sem.siInstrs(lista); :};
@@ -137,6 +154,9 @@ init with {:
     lista_expresiones	::= expresion:exp
     	{: RESULT = sem.unaExp(exp); :};
     
+    expresion ::= E0:e0
+    	{: RESULT = e0; :};
+    
     E0 ::= E1:e1 ASIGNACION E0:e0;
     	{: RESULT = sem.asignacion(e1, e0); :};
 	E0 ::= E1:e1;
@@ -154,6 +174,13 @@ init with {:
     E2	::= E3:e3
     	{: RESULT = e3; :};
     	
+    E3 ::= E4:e4 ID_AND E3:e3
+    	{: RESULT = sem.and(e4, e3); :};
+	E3 ::= E4:e41 ID_OR E4:e42
+		{: RESULT = sem.or(e41, e42); :};
+	E3 ::= E4:e4
+		{: RESULT = e4; :};
+    	
     E4 ::= E4:e4 OP4:op E5:e5;
     	{: RESULT = sem.mkop4(op, e4, e5); :};
 	E4 ::= E5:e5;
@@ -169,6 +196,23 @@ init with {:
     E6	::= E7:e7
     	{: RESULT = e7; :};
     	
+    E7 ::= LITERAL_REAL:litR
+    	{: RESULT = sem.litReal(litR); :};
+	E7 ::= LITERAL_ENTERO:litE
+		{: RESULT = sem.litEnt(litE); :};
+	E7 ::= IDENTIFICADOR:id
+		{: RESULT = sem.iden(id); :};
+	E7 ::= LITERAL_CADENA:litC
+		{: RESULT = sem.litCad(liC); :};
+	E7 ::= TRUE
+		{: RESULT = sem._true(); :};
+	E7 ::= FALSE
+		{: RESULT = sem._false(); :};
+	E7 ::= ID_NULL
+		{: RESULT = sem._null(); :};
+	E7 ::= PARENTESIS_APERTURA E0:e0 PARENTESIS_CIERRE
+		{: RESULT = e0; :};
+    
     OP1 ::= MENOR:op;
     	{: RESULT = op; :};
     OP1 ::= MAYOR:op;
@@ -192,3 +236,10 @@ init with {:
     	{: RESULT = op; :};
     OP5	::= ID_NOT:op
     	{: RESULT = op; :};
+    	
+    OP6 ::= CORCHETE_APERTURA E0:e0 CORCHETE_CIERRE
+    	{: RESULT = e0; :};
+	OP6 ::= PUNTO:op IDENTIFICADOR
+		{: RESULT = op; :};
+	OP6 ::= INDIRECCION:op
+		{: RESULT = op; :};
