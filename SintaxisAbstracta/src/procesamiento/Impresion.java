@@ -1,76 +1,7 @@
 package procesamiento;
 
 import asint.Procesamiento;
-import asint.SintaxisAbstracta.And;
-import asint.SintaxisAbstracta.Array;
-import asint.SintaxisAbstracta.ArrobaInstr;
-import asint.SintaxisAbstracta.Asignacion;
-import asint.SintaxisAbstracta.Bloque;
-import asint.SintaxisAbstracta.BloqueInstr;
-import asint.SintaxisAbstracta.Campo;
-import asint.SintaxisAbstracta.DecProc;
-import asint.SintaxisAbstracta.DecType;
-import asint.SintaxisAbstracta.DecVar;
-import asint.SintaxisAbstracta.DeleteInstr;
-import asint.SintaxisAbstracta.Desigual;
-import asint.SintaxisAbstracta.Div;
-import asint.SintaxisAbstracta.Exp;
-import asint.SintaxisAbstracta.ExpCampo;
-import asint.SintaxisAbstracta.False;
-import asint.SintaxisAbstracta.Iden;
-import asint.SintaxisAbstracta.IfElseInstr;
-import asint.SintaxisAbstracta.IfInstr;
-import asint.SintaxisAbstracta.Igual;
-import asint.SintaxisAbstracta.LitCad;
-import asint.SintaxisAbstracta.LitEnt;
-import asint.SintaxisAbstracta.LitReal;
-import asint.SintaxisAbstracta.Mayor;
-import asint.SintaxisAbstracta.MayorIgual;
-import asint.SintaxisAbstracta.Menor;
-import asint.SintaxisAbstracta.MenorIgual;
-import asint.SintaxisAbstracta.Mod;
-import asint.SintaxisAbstracta.MuchasDecs;
-import asint.SintaxisAbstracta.MuchasExp;
-import asint.SintaxisAbstracta.MuchasInstrs;
-import asint.SintaxisAbstracta.MuchosCamps;
-import asint.SintaxisAbstracta.MuchosParams;
-import asint.SintaxisAbstracta.Mul;
-import asint.SintaxisAbstracta.NewInstr;
-import asint.SintaxisAbstracta.NlInstr;
-import asint.SintaxisAbstracta.NoDecs;
-import asint.SintaxisAbstracta.NoExp;
-import asint.SintaxisAbstracta.NoInstrs;
-import asint.SintaxisAbstracta.NoParam;
-import asint.SintaxisAbstracta.Null;
-import asint.SintaxisAbstracta.Or;
-import asint.SintaxisAbstracta.ParamFormRef;
-import asint.SintaxisAbstracta.ParamFormal;
-import asint.SintaxisAbstracta.ProcInstr;
-import asint.SintaxisAbstracta.Programa;
-import asint.SintaxisAbstracta.Punt;
-import asint.SintaxisAbstracta.ReadInstr;
-import asint.SintaxisAbstracta.Resta;
-import asint.SintaxisAbstracta.SiDecs;
-import asint.SintaxisAbstracta.SiExp;
-import asint.SintaxisAbstracta.SiInstrs;
-import asint.SintaxisAbstracta.SiParam;
-import asint.SintaxisAbstracta.Suma;
-import asint.SintaxisAbstracta.TArray;
-import asint.SintaxisAbstracta.TBool;
-import asint.SintaxisAbstracta.TIden;
-import asint.SintaxisAbstracta.TInt;
-import asint.SintaxisAbstracta.TPunt;
-import asint.SintaxisAbstracta.TReal;
-import asint.SintaxisAbstracta.TString;
-import asint.SintaxisAbstracta.TStruct;
-import asint.SintaxisAbstracta.True;
-import asint.SintaxisAbstracta.UnCamp;
-import asint.SintaxisAbstracta.UnParam;
-import asint.SintaxisAbstracta.UnaDec;
-import asint.SintaxisAbstracta.UnaExp;
-import asint.SintaxisAbstracta.UnaInstr;
-import asint.SintaxisAbstracta.WhileInstr;
-import asint.SintaxisAbstracta.WriteInstr;
+import asint.SintaxisAbstracta.*;
 
 public class Impresion implements Procesamiento {
     
@@ -91,7 +22,7 @@ public class Impresion implements Procesamiento {
     }
     
     @Override
-	public void procesa(Programa a) {
+	public void procesa(Prog a) {
 		a.bloq().procesa(this);
 	}
     
@@ -247,7 +178,7 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(Campo a) {
 		a.tipo().procesa(this);
-		System.out.print(" " + a.id());
+		System.out.print(" " + a.iden());
 	}
 	
 	@Override

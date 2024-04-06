@@ -1,5 +1,7 @@
 package asint;
 
+import c_ast_descendente.Token;
+
 public class SintaxisAbstracta {
 
     public static abstract class Nodo  {
@@ -26,10 +28,10 @@ public class SintaxisAbstracta {
 	   public abstract void procesa(Procesamiento p);
     }
     
-    public static class Programa extends Nodo {
+    public static class Prog extends Nodo {
     	private Bloque bloq;
     	
-    	public Programa(Bloque bloq) {
+    	public Prog(Bloque bloq) {
     		this.bloq = bloq;
     	}
     	public Bloque bloq() { return bloq; }
@@ -58,7 +60,6 @@ public class SintaxisAbstracta {
     		System.out.println("{");
 			decs.imprime();
 			instrs.imprime();
-			System.out.println();
 			System.out.println("}");
 		}
 		@Override
@@ -166,11 +167,11 @@ public class SintaxisAbstracta {
     }
     
     public static class DecProc extends Dec {
-    	private String iden;
+    	private Token iden;
     	private ParamForms params;
     	private Bloque bloq;
-        public DecProc(String iden, ParamForms params, Bloque bloq) {
-           this.iden = iden;
+        public DecProc(Token id, ParamForms params, Bloque bloq) {
+           this.iden = id;
            this.params = params;
            this.bloq = bloq;
         }
@@ -186,7 +187,7 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
-		public String iden() {return iden;}
+		public Token iden() {return iden;}
 		public ParamForms params() {return params;} 
 		public Bloque bloq() {return bloq;}
     }
@@ -194,10 +195,10 @@ public class SintaxisAbstracta {
     
     public static class DecType extends Dec {
     	private Tipo tipo;
-    	private String iden;
-        public DecType(Tipo tipo, String iden) {
+    	private Token iden;
+        public DecType(Tipo tipo, Token id) {
            this.tipo = tipo;
-           this.iden = iden;
+           this.iden = id;
         }
 		@Override
 		public void imprime() {
@@ -210,16 +211,16 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
-		public String iden() {return iden;} 
+		public Token iden() {return iden;} 
 		public Tipo tipo() {return tipo;}
     }
 
     public static class DecVar extends Dec {
     	private Tipo tipo;
-    	private String iden;
-        public DecVar(Tipo tipo, String iden) {
+    	private Token iden;
+        public DecVar(Tipo tipo, Token id) {
            this.tipo = tipo;
-           this.iden = iden;
+           this.iden = id;
         }
 		@Override
 		public void imprime() {
@@ -231,17 +232,17 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
-		public String iden() {return iden;} 
+		public Token iden() {return iden;} 
 		public Tipo tipo() {return tipo;}
     }
     
     public static class ParamFormal extends ParamForm {
     	private Tipo t;
-    	private String id;
+    	private Token id;
     	
-    	public ParamFormal(Tipo t, String id) {
+    	public ParamFormal(Tipo t, Token id2) {
     		this.t = t;
-    		this.id = id;
+    		this.id = id2;
     	}
     	@Override
 		public void imprime() {
@@ -252,17 +253,17 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
-		public String id() {return id;} 
+		public Token id() {return id;} 
 		public Tipo tipo() {return t;}
     }
     
     public static class ParamFormRef extends ParamForm {
     	private Tipo t;
-    	private String id;
+    	private Token id;
     	
-    	public ParamFormRef(Tipo t, String id) {
+    	public ParamFormRef(Tipo t, Token id2) {
     		this.t = t;
-    		this.id = id;
+    		this.id = id2;
     	}
     	
     	@Override
@@ -276,7 +277,7 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
-		public String id() {return id;} 
+		public Token id() {return id;} 
 		public Tipo tipo() {return t;}
     }
 
@@ -354,14 +355,14 @@ public class SintaxisAbstracta {
     }
      
     public static class TArray extends Tipo {
-        private String litEnt;
+        private Token litEnt;
         private Tipo t;
-        public TArray(Tipo t, String litEnt) {
+        public TArray(Tipo t, Token litEnt2) {
         	super();
         	this.t = t;
-        	this.litEnt = litEnt;
+        	this.litEnt = litEnt2;
         }
-        public String litEnt() {return litEnt;}
+        public Token litEnt() {return litEnt;}
         public Tipo tipo() {return t;}
 		@Override
 		public void imprime() {
@@ -445,15 +446,15 @@ public class SintaxisAbstracta {
     }
 
     public static class TIden extends Tipo {
-     	String iden;
-     	public TIden(String iden) {
-     		this.iden = iden;
+    	Token iden;
+     	public TIden(Token id) {
+     		this.iden = id;
      	}
  		@Override
  		public void imprime() {
  			System.out.print(iden);
  		} 
-        public String iden() {return iden;}
+        public Token iden() {return iden;}
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
@@ -481,30 +482,6 @@ public class SintaxisAbstracta {
     public static abstract class LCampos extends Nodo {
     	public LCampos() {
     	}
-    }
-    
-    public static abstract class Campo extends Nodo {
-    	private Tipo t;
-    	private String id;
-    	
-    	public Campo(Tipo t, String id) {
-    		this.t = t;
-    		this.id = id;
-    	}
-    	
-    	 @Override
-  		public void imprime() {
-  			t.imprime();
-  			System.out.println(" " + id);
-  		} 
-  		
- 		@Override
- 		public void procesa(Procesamiento p) {
- 			p.procesa(this);
- 		} 
- 		
- 		public Tipo tipo() {return t;}
-		public String id() {return id;}
     }
     
     public static class MuchosCamps extends LCampos{
@@ -550,30 +527,31 @@ public class SintaxisAbstracta {
 		public Campo campo() {return c;}
     }
     
-    public static class CampoF extends Campo{
+    public static class Campo extends Nodo {
         private Tipo t;
-        private String id;
+        private Token id;
         
-        public CampoF(Tipo t, String id){
-           super(t, id);
+        public Campo(Tipo t, Token id2){
+            this.t = t;
+            this.id = id2;
         }
-        
         @Override
  		public void imprime() {
  			t.imprime();
  			System.out.println(" " + id);
  		} 
- 		
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		} 
+		public Tipo tipo() {return t;}
+		public Token iden() {return id;}
     }
      
     public static abstract class Instrs extends Nodo {
         public Instrs() {
         }
-     }
+    }
       
     public static abstract class LInstrs extends Nodo {
         public LInstrs() {
@@ -673,9 +651,9 @@ public class SintaxisAbstracta {
     
     public static class ProcInstr extends Instr {
     	private ParamReales params;
-    	private String iden;
+    	private Token iden;
     	
-        public ProcInstr(ParamReales params, String iden) {
+        public ProcInstr(ParamReales params, Token iden) {
     		this.params = params;
     		this.iden = iden;
         }
@@ -688,7 +666,7 @@ public class SintaxisAbstracta {
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
 		}
-		public String iden() {return iden;} 
+		public Token iden() {return iden;} 
 		public ParamReales paramReales() {return params;}
     }
     
@@ -1291,8 +1269,8 @@ public class SintaxisAbstracta {
     }
     
     public static class ExpCampo extends ExpUn {
-    	private String campo;
-        public ExpCampo(Exp opnd, String campo) {
+    	private Token campo;
+        public ExpCampo(Exp opnd, Token campo) {
         	super(opnd);
             this.opnd = opnd;
             this.campo = campo;
@@ -1301,7 +1279,7 @@ public class SintaxisAbstracta {
         public int prioridad(){
         	return 6;
         }
-        public String campo() {return campo;}
+        public Token campo() {return campo;}
 		@Override
 		public void imprime() {
 			imprimeOpnd(opnd, 6);
@@ -1333,10 +1311,10 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public static class LitEnt extends ExpUn{
-    	public LitEnt(Exp opnd) {
-        	super(opnd);
-            this.opnd = opnd;
+    public static class LitEnt extends Exp {
+    	Token lit;
+    	public LitEnt(Token lit) {
+            this.lit = lit;
         }
         @Override
         public int prioridad(){
@@ -1344,7 +1322,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println(opnd);
+			System.out.println(lit);
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1352,10 +1330,10 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public static class LitReal extends ExpUn{
-    	public LitReal(Exp opnd) {
-        	super(opnd);
-            this.opnd = opnd;
+    public static class LitReal extends Exp {
+    	Token lit;
+    	public LitReal(Token lit) {
+            this.lit = lit;
         }
         @Override
         public int prioridad(){
@@ -1363,7 +1341,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println(opnd);
+			System.out.println(lit);
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1371,10 +1349,10 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public static class Iden extends ExpUn{
-    	public Iden(Exp opnd) {
-        	super(opnd);
-            this.opnd = opnd;
+    public static class LitCad extends Exp {
+    	Token lit;
+    	public LitCad(Token lit) {
+            this.lit = lit;
         }
         @Override
         public int prioridad(){
@@ -1382,7 +1360,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println(opnd);
+			System.out.println(lit);
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1390,7 +1368,26 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public static class True extends Exp{
+    public static class Iden extends Exp {
+    	Token lit;
+    	public Iden(Token id) {
+            this.lit = id;
+        }
+        @Override
+        public int prioridad(){
+        	return 7;
+        }
+		@Override
+		public void imprime() {
+			System.out.println(lit);
+		}
+		@Override
+		public void procesa(Procesamiento p) {
+			p.procesa(this);
+		} 
+    }
+    
+    public static class True extends Exp {
     	public True() {
 
         }
@@ -1408,7 +1405,7 @@ public class SintaxisAbstracta {
 		}
     }
     
-    public static class False extends Exp{
+    public static class False extends Exp {
     	public False() {
 
         }
@@ -1426,26 +1423,7 @@ public class SintaxisAbstracta {
 		}
     }
     
-    public static class LitCad extends ExpUn{
-    	public LitCad(Exp opnd) {
-        	super(opnd);
-            this.opnd = opnd;
-        }
-        @Override
-        public int prioridad(){
-        	return 7;
-        }
-		@Override
-		public void imprime() {
-			System.out.println(opnd);
-		}
-		@Override
-		public void procesa(Procesamiento p) {
-			p.procesa(this);
-		} 
-    }
-    
-    public static class Null extends Exp{
+    public static class Null extends Exp {
     	public Null() {
 
         }
@@ -1464,8 +1442,8 @@ public class SintaxisAbstracta {
     }
     
     //constructoras
-    public Programa prog(Bloque bloq) {
-    	return new Programa(bloq);
+    public Prog prog(Bloque bloq) {
+    	return new Prog(bloq);
     }
     
     public Bloque bloq(Decs decs, Instrs instrs) {
@@ -1488,15 +1466,15 @@ public class SintaxisAbstracta {
         return new UnaDec(dec);
     }
     
-    public Dec decProc(String id, ParamForms paramForms, Bloque bloq) {
+    public Dec decProc(Token id, ParamForms paramForms, Bloque bloq) {
     	return new DecProc(id, paramForms, bloq);
     }
     
-    public Dec decType(Tipo t, String id) {
+    public Dec decType(Tipo t, Token id) {
     	return new DecType(t, id);
     }
     
-    public Dec decVar(Tipo t, String id) {
+    public Dec decVar(Tipo t, Token id) {
     	return new DecVar(t, id);
     }
     
@@ -1516,15 +1494,15 @@ public class SintaxisAbstracta {
     	return new MuchosParams(lparams, param);
     }
     
-    public ParamForm paramForm(Tipo t, String id) {
+    public ParamForm paramForm(Tipo t, Token id) {
     	return new ParamFormal(t, id);
     }
     
-    public ParamForm paramFormRef(Tipo t, String id) {
+    public ParamForm paramFormRef(Tipo t, Token id) {
     	return new ParamFormRef(t, id);
     }
     
-    public Tipo tArray(Tipo t, String litEnt) {
+    public Tipo tArray(Tipo t, Token litEnt) {
         return new TArray(t, litEnt);
     }
     
@@ -1548,8 +1526,8 @@ public class SintaxisAbstracta {
         return new TString();
     }
     
-    public Tipo tIden(String iden) {
-        return new TIden(iden);
+    public Tipo tIden(Token id) {
+        return new TIden(id);
     }
     
     public Tipo tStruct(LCampos lcampos) {
@@ -1564,8 +1542,8 @@ public class SintaxisAbstracta {
     	return new UnCamp(c);
     }
     
-    public Campo campo(Tipo t, String id) {
-    	return new CampoF(t, id);
+    public Campo campo(Tipo t, Token id) {
+    	return new Campo(t, id);
     }
     
     public Instrs siInstrs(LInstrs linstrs) {
@@ -1588,7 +1566,7 @@ public class SintaxisAbstracta {
         return new ArrobaInstr(exp);
     }
     
-    public Instr procInstr(ParamReales params, String iden) {
+    public Instr procInstr(Token iden, ParamReales params) {
         return new ProcInstr(params, iden);
     }
     
@@ -1708,7 +1686,7 @@ public class SintaxisAbstracta {
         return new Array(opnd0,opnd1);
     }
     
-    public Exp expCampo(Exp opnd0, String campo) {
+    public Exp expCampo(Exp opnd0, Token campo) {
         return new ExpCampo(opnd0,campo);
     }
     
@@ -1720,16 +1698,16 @@ public class SintaxisAbstracta {
         return new Not(opnd);
     }
     
-    public LitEnt litEnt(Exp opnd){
-    	return new LitEnt(opnd);
+    public LitEnt litEnt(Token lit){
+    	return new LitEnt(lit);
     }
     
-    public LitReal litReal(Exp opnd){
-    	return new LitReal(opnd);
+    public LitReal litReal(Token lit){
+    	return new LitReal(lit);
     }
     
-    public Iden iden(Exp opnd){
-    	return new Iden(opnd);
+    public Iden iden(Token id){
+    	return new Iden(id);
     }
     
     public True _true(){
@@ -1740,8 +1718,8 @@ public class SintaxisAbstracta {
     	return new False();
     }
     
-    public LitCad litCad(Exp opnd){
-    	return new LitCad(opnd);
+    public LitCad litCad(Token lit){
+    	return new LitCad(lit);
     }
     
     public Null _null(){

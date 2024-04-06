@@ -1,39 +1,52 @@
 package procesamiento;
 
 import asint.SintaxisAbstracta;
-import asint.SintaxisAbstracta.Exp;
 
 public class ProcRecursivo extends SintaxisAbstracta {
 	
     private boolean claseDe(Object o, Class c) {
         return o.getClass() == c;
-    } 
+    }
+    
+    private void imprime(String token) {
+    	System.out.println(String.format("%s$f:%d,c:%d$", token, 0, 0));
+    }
     
     private void imprimeOpnd(Exp opnd, int minPrior) {
        	if(opnd.prioridad() < minPrior){
-       		System.out.print("(");
+       		System.out.println("(");
        	}
        	imprime(opnd);
        	if(opnd.prioridad() < minPrior) {
-       		System.out.print(")");
+       		System.out.println(")");
        	}
     }
 
     private void imprimeExpBin(Exp opnd0, String op, Exp opnd1, int np0, int np1) {
     	imprimeOpnd(opnd0,np0);
-    	System.out.print(" " + op + " ");
+    	System.out.println(op);
     	imprimeOpnd(opnd1,np1);
     }
     
     private void imprimeExpUn(String op, Exp opnd, int np) {
-    	System.out.print(op + " ");
+    	System.out.println(op);
     	imprimeOpnd(opnd,np);
+    }
+    
+    public void imprime(Prog prog) {
+    	imprime(prog.bloq());
+    }
+    
+    public void imprime(Bloque bloq) {
+    	System.out.println("{");
+    	imprime(bloq.decs());
+    	imprime(bloq.instrs());
+    	System.out.println("}");
     }
     
     public void imprime(Decs decs) {
     	if (claseDe(decs, SiDecs.class)) {
     		imprime(((SiDecs) decs).ldecs());
-    		System.out.println();
 			System.out.println("&&");
     	}
     }
@@ -43,38 +56,34 @@ public class ProcRecursivo extends SintaxisAbstracta {
     		imprime(((UnaDec) ldecs).dec());
     	else {
     		imprime(((MuchasDecs) ldecs).ldecs());
-    		System.out.print(";");
+    		System.out.println(";");
     		imprime(((MuchasDecs) ldecs).dec());
     	}
     }
     
     public void imprime(Dec dec) { 	
     	if (claseDe(dec, DecProc.class)) {
-    		System.out.print("<prog> ");
-    		System.out.print(((DecProc) dec).iden());
-    		System.out.print(" ");
+    		System.out.println("<prog>");
+    		imprime(((DecProc) dec).iden());
     		imprime(((DecProc) dec).params());
-    		System.out.print(" ");
     		imprime(((DecProc) dec).bloq());
     	}
     	else if (claseDe(dec, DecType.class)) {
-    		System.out.print("<type> ");
+    		System.out.println("<type>");
     		imprime(((DecType) dec).tipo());
-    		System.out.print(" ");
-    		System.out.print(((DecType) dec).iden());
+    		imprime(((DecType) dec).iden());
     	}
     	else if (claseDe(dec, DecVar.class)) {
     		imprime(((DecVar) dec).tipo());
-    		System.out.print(" ");
-    		System.out.print(((DecVar) dec).iden());
+    		imprime(((DecVar) dec).iden());
     	}
     }
     
     public void imprime(ParamForms params) {
-    	System.out.print("(");
+    	System.out.println("(");
     	if (claseDe(params, SiParam.class))
     		imprime(((SiParam) params).lparams());
-    	System.out.print(")");
+    	System.out.println(")");
     }
     
     public void imprime(LParams lparam) {
@@ -82,40 +91,72 @@ public class ProcRecursivo extends SintaxisAbstracta {
     		imprime(((UnParam) lparam).param());
     	else {
     		imprime(((MuchosParams) lparam).lparam());
-    		System.out.print(", ");
+    		System.out.println(",");
     		imprime(((MuchosParams) lparam).param());
     	}
     }
     
+    public void imprime(ParamForm param) {
+    	System.out.println("(");
+    	if (claseDe(param, ParamFormal.class)) {
+    		imprime(((ParamFormal) param).tipo());
+    		System.out.println(((ParamFormal) param).id());
+    	}
+    	else {
+    		imprime(((ParamFormRef) param).tipo());
+    		System.out.println(((ParamFormRef) param).id());
+    	}
+    	System.out.println(")");
+    }
+    
     public void imprime(Tipo tipo) {
     	if (claseDe(tipo, TInt.class)) {
-    		System.out.print("<int>");
+    		System.out.println("<int>");
     	}
     	else if (claseDe(tipo, TReal.class)) {
-    		System.out.print("<real>");
+    		System.out.println("<real>");
     	}
     	else if (claseDe(tipo, TBool.class)) {
-    		System.out.print("<bool>");
+    		System.out.println("<bool>");
     	}
     	else if (claseDe(tipo, TString.class)) {
-    		System.out.print("<string>");
+    		System.out.println("<string>");
     	}
     	else if (claseDe(tipo, TIden.class)) {
-    		System.out.print(((TIden) tipo).iden());
+    		System.out.println(((TIden) tipo).iden());
     	}
     	else if (claseDe(tipo, TStruct.class)) {
-    		System.out.println("<struct> {");
+    		System.out.println("<struct>");
+    		System.out.println("{");
     		imprime(((TStruct) tipo).lcampos());
     		System.out.println("}");
     	}
     	else if (claseDe(tipo, TPunt.class)) {
-    		System.out.print("^ ");
+    		System.out.println("^");
     		imprime(((TPunt) tipo).tipo());
     	}
     	else if (claseDe(tipo, TArray.class)) {
     		imprime(((TArray) tipo).tipo());
-    		System.out.print("[" + ((TArray) tipo).litEnt() + "]");
+    		System.out.println("[");
+    		System.out.println(((TArray) tipo).litEnt());
+    		System.out.println("]");
     	}
+    }
+    
+    public void imprime(LCampos campos) {
+    	if (claseDe(campos, UnCamp.class)) {
+    		imprime(((UnCamp) campos).campo());
+    	}
+    	else {
+    		imprime(((MuchosCamps) campos).lcampos());
+    		System.out.println(",");
+    		imprime(((MuchosCamps) campos).campo());
+    	}
+    }
+    
+    public void imprime(Campo campo) {
+    	imprime(campo.tipo());
+    	System.out.println(campo.iden());
     }
     
     public void imprime(Instrs instrs) {
@@ -129,59 +170,55 @@ public class ProcRecursivo extends SintaxisAbstracta {
     		imprime(((UnaInstr) linstrs).instr());
     	else {
     		imprime(((MuchasInstrs) linstrs).linstrs());
-    		System.out.print(";");
+    		System.out.println(";");
     		imprime(((MuchasInstrs) linstrs).instr());
     	}
     }
     
     public void imprime(Instr instr) { 	
     	if (claseDe(instr, ArrobaInstr.class)) {
-    		System.out.print("@");
+    		System.out.println("@");
     		imprime(((ArrobaInstr) instr).exp());
     	}
     	else if (claseDe(instr, ProcInstr.class)) {
-    		System.out.print("<call>");
-    		System.out.print(((ProcInstr) instr).iden());
+    		System.out.println("<call>");
+    		System.out.println(((ProcInstr) instr).iden());
     		imprime(((ProcInstr) instr).paramReales());
     	}
     	else if (claseDe(instr, NlInstr.class)) {
-    		System.out.print("<nl>");
+    		System.out.println("<nl>");
     	}
     	else if (claseDe(instr, NewInstr.class)) {
-    		System.out.print("<new>");
+    		System.out.println("<new>");
     		imprime(((NewInstr) instr).exp());
     	}
     	else if (claseDe(instr, ReadInstr.class)) {
-    		System.out.print("<read>");
+    		System.out.println("<read>");
     		imprime(((ReadInstr) instr).exp());
     	}
     	else if (claseDe(instr, WriteInstr.class)) {
-    		System.out.print("<write>");
+    		System.out.println("<write>");
     		imprime(((WriteInstr) instr).exp());
     	}
     	else if (claseDe(instr, DeleteInstr.class)) {
-    		System.out.print("<delete>");
+    		System.out.println("<delete>");
     		imprime(((DeleteInstr) instr).exp());
     	}
     	else if (claseDe(instr, WhileInstr.class)) {
-    		System.out.print("<while> ");
+    		System.out.println("<while>");
     		imprime(((WhileInstr) instr).exp());
-    		System.out.print(" ");
     		imprime(((WhileInstr) instr).bloq());
     	}
     	else if (claseDe(instr, IfElseInstr.class)) {
-    		System.out.print("<if> ");
+    		System.out.println("<if>");
     		imprime(((IfElseInstr) instr).exp());
-    		System.out.print(" ");
     		imprime(((IfElseInstr) instr).bloq1());
-    		System.out.print("\n}");
-    		System.out.print("<else> ");
+    		System.out.println("<else>");
     		imprime(((IfElseInstr) instr).bloq2());
     	}
     	else if (claseDe(instr, IfInstr.class)) {
-    		System.out.print("<if> ");
+    		System.out.println("<if>");
     		imprime(((IfInstr) instr).exp());
-    		System.out.print(" ");
     		imprime(((IfInstr) instr).bloq());
     	}
     	else if (claseDe(instr, BloqueInstr.class)) {
@@ -190,10 +227,10 @@ public class ProcRecursivo extends SintaxisAbstracta {
     }
     
     public void imprime(ParamReales params) {
-		System.out.print("(");
+		System.out.println("(");
     	if (claseDe(params, SiExp.class))
     		imprime(((SiExp) params).lexps());
-		System.out.print(")");
+		System.out.println(")");
     }
     
     public void imprime(LExps params) {
@@ -201,7 +238,7 @@ public class ProcRecursivo extends SintaxisAbstracta {
     		imprime(((UnaExp) params).exp());
     	else {
     		imprime(((MuchasExp) params).lexp());
-    		System.out.print(", ");
+    		System.out.println(",");
     		imprime(((MuchasExp) params).exp());
     	}
     }
@@ -245,17 +282,18 @@ public class ProcRecursivo extends SintaxisAbstracta {
     	}
     	else if (claseDe(exp, Array.class)) {
     		imprimeOpnd(((Array) exp).opnd(), 6);
-        	System.out.print("[");
+        	System.out.println("[");
         	imprime(((Array) exp).idx());
-        	System.out.print("]");
+        	System.out.println("]");
     	}
     	else if (claseDe(exp, ExpCampo.class)) {
     		imprimeOpnd(((ExpCampo) exp).opnd(), 6);
-        	System.out.print("." + ((ExpCampo) exp).campo());
+        	System.out.println(".");
+        	imprime(((ExpCampo) exp).campo());
     	}
     	else if (claseDe(exp, Punt.class)) {
     		imprimeOpnd(((Punt) exp).opnd(), 6);
-        	System.out.print("^");
+        	System.out.println("^");
     	}
     }
 }

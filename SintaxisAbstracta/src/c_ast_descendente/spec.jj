@@ -3,10 +3,9 @@ options  {
   DEBUG_PARSER=true;
 }  
 PARSER_BEGIN(ConstructorASTs)
-package constructoresAsts.descendente;
-import constructoresAsts.asint.ClaseSemantica;
-import constructoresAsts.asint.SintaxisAbstracta*;
-import constructoresAsts.descendente.UnidadLexica.StringLocalizado;
+package c_ast_descendente;
+import asint.ClaseSemantica;
+import asint.SintaxisAbstracta.*;
 
 public class ConstructorASTs {
    private ClaseSemantica sem = new ClaseSemantica();   
@@ -56,17 +55,17 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	Prog programa(): 
-		{Bloque bloq} 
+		{Bloque bloq;} 
 		{
 			bloq = bloque()
 			{return sem.prog(bloq);}
 		}
 	
-	Bloq bloque(): 
+	Bloque bloque(): 
 		{Instrs instrs; Decs decs;} 
 		{
 			"{" decs = declaraciones() instrs = instrucciones() "}"
-			{return sem.bloq(decs, instr);}
+			{return sem.bloq(decs, instrs);}
 		}
 	
 	Decs declaraciones(): 
@@ -95,7 +94,7 @@ PARSER_END(ConstructorASTs)
 		}	
 	
 	Dec declaracion(): 
-		{String id; ParamForms params; Bloque bloque; Tipo tipo} 
+		{Token id; ParamForms params; Bloque bloque; Tipo tipo;} 
 		{
 			 <proc_id> id = <iden> params = parametros_formales() bloque = bloque() 
 			 {return sem.decProc(id, params, bloque);}
@@ -131,16 +130,16 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	LParams r_lista_parametros_formales(LParams ah):
-		{LParams lparams; Param param;}
+		{LParams lparams; ParamForm param;}
 		{
-			param = parametro_formal() lparams = r_lista_parametros_formales(sem.muchosParam(ah, param))
+			param = parametro_formal() lparams = r_lista_parametros_formales(sem.muchosParams(ah, param))
 			{return lparams;}
 			|
 			{return ah;}
 		}
 		
 	ParamForm parametro_formal():
-		{Tipo tipo; ParamForm param} 
+		{Tipo tipo; ParamForm param;} 
 		{
 			tipo = tipo()  param = r_parametro_formal(tipo)
 			
@@ -148,7 +147,7 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	ParamForm r_parametro_formal(Tipo tipoah): 
-		{String id} 
+		{Token id;} 
 		{
 			"&" id = <iden> 
 			{return sem.paramFormRef(tipoah ,id);}
@@ -172,7 +171,7 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	Tipo RT0(Tipo tipoah):
-		{Tipo tipoa; Token t; String id}
+		{Tipo tipoa; Token t; Token id;}
 		{
 			"[" id = <literalEntero> "]" tipoa = RT0(sem.tArray(tipoah, id))
 			{return tipoa;}
@@ -191,29 +190,29 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	Tipo T2():
-		{String id; LCampos campos}
+		{Token id; LCampos campos;}
 		{
-			<int>
+			<int_id>
 			{return sem.tInt();}
 			|
-			<real>
+			<real_id>
 			{return sem.tReal();}
 			|
-			<bool>
+			<bool_id>
 			{return sem.tBool();}
 			|
-			<string>
+			<string_id>
 			{return sem.tString();}
 			|
 			id = <iden>
 			{return sem.tIden(id);}
 			|
-			<struct> "{" campos = lista_campos() "}"
+			<struct_id> "{" campos = lista_campos() "}"
 			{return sem.tStruct(campos);}
 		}
 		
 	LCampos lista_campos(): 
-		{Campo camp; LCampos lcampos} 
+		{Campo camp; LCampos lcampos;} 
 		{
 			camp = campo()  lcampos = r_lista_campos(sem.unCamp(camp))
 			{return lcampos;}
@@ -230,10 +229,10 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	Campo campo(): 
-		{Tipo tipo; String id;} 
+		{Tipo tipo; Token id;} 
 		{
 			tipo = tipo() id = <iden>
-			{return sem.Campo(tipo, id);}
+			{return sem.campo(tipo, id);}
 		}	
 		
 	Instrs instrucciones(): 
@@ -262,7 +261,7 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	Instr instruccion(): 
-		{Exp exp; ParamReales param; Bloque bloq; Instr instr;} 
+		{Exp exp; ParamReales param; Bloque bloq; Instr instr; Token id;} 
 		{
 			"@" exp = expresion() 
 			{return sem.arrobaInstr(exp);}
@@ -271,7 +270,7 @@ PARSER_END(ConstructorASTs)
 			{return sem.procInstr(id, param);}
 			| 
 			<nl_id>
-			{return  sem.nlInstr();}
+			{return sem.nlInstr();}
 			| 
 			<new_id> exp = expresion()
 			{return sem.newInstr(exp);} 
@@ -295,13 +294,13 @@ PARSER_END(ConstructorASTs)
 			{return sem.bloqueInstr(bloq);}
 		}
 		
-	Instr r_instruccion_if(Exp exp, Bloque bloq);
+	Instr r_instruccion_if(Exp exp, Bloque bloq):
 		{Bloque bloque;}
 		{
 			<else_id> bloque = bloque()
-			{return ifElseInstr(exp, bloq, bloque);}
+			{return sem.ifElseInstr(exp, bloq, bloque);}
 			|
-			{return ifInstr(exp, bloq);}
+			{return sem.ifInstr(exp, bloq);}
 		}
 		
 	ParamReales parametros_reales():
@@ -337,7 +336,7 @@ PARSER_END(ConstructorASTs)
 		}
 
 	Exp expresion(): 
-		{Ex e;} 
+		{Exp e;} 
 		{
 			e = E0()
 			{return e;}
@@ -383,7 +382,7 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	Exp RE2(Exp ah):
-		{Exp e3}
+		{Exp e3;}
 		{
 			"-" e3 = E3()
 			{return sem.resta(ah, e3);}
@@ -410,11 +409,11 @@ PARSER_END(ConstructorASTs)
 	Exp RE3(Exp ah): 
 		{Exp e3,e4,re3;} 
 		{
-			"and" e3 = E3() re3 = sem.and(ah, e3)
-			{return re3;}
+			<and_id> e3 = E3()
+			{return sem.and(ah, e3);}
 			| 
-			"or" e4 = E4() re3 = sem.or(ah, e4)
-			{return re3;}
+			<or_id> e4 = E4()
+			{return sem.or(ah, e4);}
 			| 
 			{return ah;}
 		}
@@ -453,7 +452,7 @@ PARSER_END(ConstructorASTs)
 		}
 
 	Exp RE6(Exp ah): 
-		{Exp e0,re6;}
+		{Exp e0,re6; Token id;}
 		{
 			"[" e0 = E0() "]" re6 = RE6(sem.array(ah,e0))
 			{return re6;}
@@ -468,17 +467,16 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	Exp E7(): 
-		{Exp e0,e7;} 
+		{Token lit; Exp e0;} 
 		{
-			e7 = E7()
-			{return sem.litEnt(e7);} 
+			lit = <literalEntero>
+			{return sem.litEnt(lit);} 
 			|
-			e7 = E7()
-			{return sem.litReal(e7);} 
+			lit = <literalReal>
+			{return sem.litReal(lit);} 
 			| 
-			e7 = E7()
-			<iden>
-			{return sem.litIden(e7);}
+			lit = <iden>
+			{return sem.iden(lit);}
 			|
 			<true_id> 
 			{return sem._true();}
@@ -486,19 +484,17 @@ PARSER_END(ConstructorASTs)
 			<false_id> 
 			{return sem._false();}
 			| 
-			e7 = E7()
-			<literalCadena>
-			{return sem.litCad(e7);} 
+			lit = <literalCadena>
+			{return sem.litCad(lit);} 
 			| 
 			<null_id>
 			{return sem._null();} 
 			| 
-			
 			"(" e0 = E0() ")"
 			{return e0;}
 		}
 
-	String op1():       
+	String OP1():       
 		{} 
 		{
 			"<" 
@@ -533,12 +529,12 @@ PARSER_END(ConstructorASTs)
     		{return "%";}
     		}
        
-	String op5():       
+	String OP5():       
 		{} 
 		{
 			"-" 
 			{return "-";} 
 			|
-			<not> 
-			{return <not>;}
+			<not_id> 
+			{return "not";}
        	}
