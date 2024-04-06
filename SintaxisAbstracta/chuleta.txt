@@ -1,3 +1,3 @@
-java -jar ./cup.jar -parser AnalizadorSintacticoTiny -symbols ClaseLexica -nopositions ./src/asint_asc/spec.cup
+java -jar ./cup.jar -parser ConstructorASTs -symbols ClaseLexica -nopositions ./src/c_ast_ascendente/spec.cup
 
 java -cp ./javacc.jar javacc -OUTPUT_DIRECTORY="./src/c_ast_descendente" ./src/c_ast_descendente/spec.jj

@@ -121,14 +121,14 @@ Token id; ParamForms params; Bloque bloque; Tipo tipo;
         id = jj_consume_token(iden);
         params = parametros_formales();
         bloque = bloque();
-{if ("" != null) return sem.decProc(id, params, bloque);}
+{if ("" != null) return (Dec) sem.decProc(id.image, params, bloque).ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
         }
       case type_id:{
         jj_consume_token(type_id);
         tipo = tipo();
         id = jj_consume_token(iden);
-{if ("" != null) return sem.decType(tipo, id);}
+{if ("" != null) return (Dec) sem.decType(tipo, id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
         }
       case int_id:
@@ -140,7 +140,7 @@ Token id; ParamForms params; Bloque bloque; Tipo tipo;
       case 43:{
         tipo = tipo();
         id = jj_consume_token(iden);
-{if ("" != null) return sem.decVar(tipo, id);}
+{if ("" != null) return (Dec) sem.decVar(tipo, id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
         }
       default:
@@ -255,12 +255,12 @@ Token id;
       case 40:{
         jj_consume_token(40);
         id = jj_consume_token(iden);
-{if ("" != null) return sem.paramFormRef(tipoah ,id);}
+{if ("" != null) return (ParamForm) sem.paramFormRef(tipoah ,id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
         }
       case iden:{
         id = jj_consume_token(iden);
-{if ("" != null) return sem.paramForm(tipoah ,id);}
+{if ("" != null) return (ParamForm) sem.paramForm(tipoah ,id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
         }
       default:
@@ -302,13 +302,13 @@ Tipo tipo1a; Tipo tipoa;
   final public Tipo RT0(Tipo tipoah) throws ParseException {
     trace_call("RT0");
     try {
-Tipo tipoa; Token t; Token id;
+Tipo tipoa; Token id;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 41:{
         jj_consume_token(41);
         id = jj_consume_token(literalEntero);
         jj_consume_token(42);
-        tipoa = RT0(sem.tArray(tipoah, id));
+        tipoa = RT0((Tipo) sem.tArray(tipoah, id.image).ponFila(id.beginLine).ponCol(id.beginColumn));
 {if ("" != null) return tipoa;}
         break;
         }
@@ -381,7 +381,7 @@ Token id; LCampos campos;
         }
       case iden:{
         id = jj_consume_token(iden);
-{if ("" != null) return sem.tIden(id);}
+{if ("" != null) return (Tipo) sem.tIden(id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
         }
       case struct_id:{
@@ -444,7 +444,7 @@ LCampos lcampos; Campo camp;
 Tipo tipo; Token id;
       tipo = tipo();
       id = jj_consume_token(iden);
-{if ("" != null) return sem.campo(tipo, id);}
+{if ("" != null) return (Campo) sem.campo(tipo, id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
     throw new Error("Missing return statement in function");
     } finally {
       trace_return("campo");
@@ -530,7 +530,7 @@ Exp exp; ParamReales param; Bloque bloq; Instr instr; Token id;
         jj_consume_token(call_id);
         id = jj_consume_token(iden);
         param = parametros_reales();
-{if ("" != null) return sem.procInstr(id, param);}
+{if ("" != null) return (Instr) sem.procInstr(id.image, param).ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
         }
       case nl_id:{
@@ -631,7 +631,7 @@ ParamReales lista;
   final public ParamReales lista_expresiones_e() throws ParseException {
     trace_call("lista_expresiones_e");
     try {
-LExps lista;
+LExp lista;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case literalEntero:
       case literalReal:
@@ -657,10 +657,10 @@ LExps lista;
     }
 }
 
-  final public LExps lista_expresiones() throws ParseException {
+  final public LExp lista_expresiones() throws ParseException {
     trace_call("lista_expresiones");
     try {
-LExps exps; Exp exp;
+LExp exps; Exp exp;
       exp = expresion();
       exps = r_lista_expresiones(sem.unaExp(exp));
 {if ("" != null) return exps;}
@@ -670,10 +670,10 @@ LExps exps; Exp exp;
     }
 }
 
-  final public LExps r_lista_expresiones(LExps ah) throws ParseException {
+  final public LExp r_lista_expresiones(LExp ah) throws ParseException {
     trace_call("r_lista_expresiones");
     try {
-LExps exps; Exp exp;
+LExp exps; Exp exp;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 44:{
         jj_consume_token(44);
@@ -976,7 +976,7 @@ Exp e0,re6; Token id;
       case 49:{
         jj_consume_token(49);
         id = jj_consume_token(iden);
-        re6 = RE6(sem.expCampo(ah,id));
+        re6 = RE6((Exp) sem.expCampo(ah,id.image).ponFila(id.beginLine).ponCol(id.beginColumn));
 {if ("" != null) return re6;}
         break;
         }
@@ -1003,37 +1003,37 @@ Token lit; Exp e0;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case literalEntero:{
         lit = jj_consume_token(literalEntero);
-{if ("" != null) return sem.litEnt(lit);}
+{if ("" != null) return (Exp) sem.litEnt(lit.image).ponFila(lit.beginLine).ponCol(lit.beginColumn);}
         break;
         }
       case literalReal:{
         lit = jj_consume_token(literalReal);
-{if ("" != null) return sem.litReal(lit);}
+{if ("" != null) return (Exp) sem.litReal(lit.image).ponFila(lit.beginLine).ponCol(lit.beginColumn);}
         break;
         }
       case iden:{
         lit = jj_consume_token(iden);
-{if ("" != null) return sem.iden(lit);}
+{if ("" != null) return (Exp) sem.iden(lit.image).ponFila(lit.beginLine).ponCol(lit.beginColumn);}
         break;
         }
       case true_id:{
-        jj_consume_token(true_id);
-{if ("" != null) return sem._true();}
+        lit = jj_consume_token(true_id);
+{if ("" != null) return (Exp) sem._true().ponFila(lit.beginLine).ponCol(lit.beginColumn);}
         break;
         }
       case false_id:{
-        jj_consume_token(false_id);
-{if ("" != null) return sem._false();}
+        lit = jj_consume_token(false_id);
+{if ("" != null) return (Exp) sem._false().ponFila(lit.beginLine).ponCol(lit.beginColumn);}
         break;
         }
       case literalCadena:{
         lit = jj_consume_token(literalCadena);
-{if ("" != null) return sem.litCad(lit);}
+{if ("" != null) return (Exp) sem.litCad(lit.image).ponFila(lit.beginLine).ponCol(lit.beginColumn);}
         break;
         }
       case null_id:{
-        jj_consume_token(null_id);
-{if ("" != null) return sem._null();}
+        lit = jj_consume_token(null_id);
+{if ("" != null) return (Exp) sem._null().ponFila(lit.beginLine).ponCol(lit.beginColumn);}
         break;
         }
       case 38:{

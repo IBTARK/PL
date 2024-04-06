@@ -1,6 +1,7 @@
 package procesamiento;
 
 import asint.SintaxisAbstracta;
+import c_ast_descendente.Token;
 
 public class ProcRecursivo extends SintaxisAbstracta {
 	
@@ -8,8 +9,8 @@ public class ProcRecursivo extends SintaxisAbstracta {
         return o.getClass() == c;
     }
     
-    private void imprime(String token) {
-    	System.out.println(String.format("%s$f:%d,c:%d$", token, 0, 0));
+    private void imprime(Token token) {
+    	System.out.println(String.format("%s$f:%d,c:%d$", token.image, token.endLine, token.endColumn));
     }
     
     private void imprimeOpnd(Exp opnd, int minPrior) {
@@ -233,7 +234,7 @@ public class ProcRecursivo extends SintaxisAbstracta {
 		System.out.println(")");
     }
     
-    public void imprime(LExps params) {
+    public void imprime(LExp params) {
     	if (claseDe(params, UnaExp.class))
     		imprime(((UnaExp) params).exp());
     	else {
@@ -272,13 +273,13 @@ public class ProcRecursivo extends SintaxisAbstracta {
     		imprimeExpBin(((Resta) exp).opnd0(), "-", ((Resta) exp).opnd1(), 3, 3);
     	}
     	else if (claseDe(exp, Mul.class)) {
-    		imprimeExpBin(((Resta) exp).opnd0(), "*", ((Mul) exp).opnd1(), 4, 5);
+    		imprimeExpBin(((Mul) exp).opnd0(), "*", ((Mul) exp).opnd1(), 4, 5);
     	}
     	else if (claseDe(exp, Div.class)) {
-    		imprimeExpBin(((Resta) exp).opnd0(), "/", ((Div) exp).opnd1(), 4, 5);
+    		imprimeExpBin(((Div) exp).opnd0(), "/", ((Div) exp).opnd1(), 4, 5);
     	}
     	else if (claseDe(exp, Mod.class)) {
-    		imprimeExpBin(((Resta) exp).opnd0(), "%", ((Mod) exp).opnd1(), 4, 5);
+    		imprimeExpBin(((Mod) exp).opnd0(), "%", ((Mod) exp).opnd1(), 4, 5);
     	}
     	else if (claseDe(exp, Array.class)) {
     		imprimeOpnd(((Array) exp).opnd(), 6);

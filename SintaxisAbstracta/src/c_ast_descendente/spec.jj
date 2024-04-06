@@ -97,13 +97,13 @@ PARSER_END(ConstructorASTs)
 		{Token id; ParamForms params; Bloque bloque; Tipo tipo;} 
 		{
 			 <proc_id> id = <iden> params = parametros_formales() bloque = bloque() 
-			 {return sem.decProc(id, params, bloque);}
+			 {return (Dec) sem.decProc(id.image, params, bloque).ponFila(id.beginLine).ponCol(id.beginColumn);}
 			 | 
 			 <type_id> tipo = tipo() id = <iden> 
-			 {return sem.decType(tipo, id);}
+			 {return (Dec) sem.decType(tipo, id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
 			 | 
 			 tipo = tipo() id = <iden> 
-			 {return sem.decVar(tipo, id);} 
+			 {return (Dec) sem.decVar(tipo, id.image).ponFila(id.beginLine).ponCol(id.beginColumn);} 
 		}
 		
 	ParamForms parametros_formales():
@@ -150,10 +150,10 @@ PARSER_END(ConstructorASTs)
 		{Token id;} 
 		{
 			"&" id = <iden> 
-			{return sem.paramFormRef(tipoah ,id);}
+			{return (ParamForm) sem.paramFormRef(tipoah ,id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
 			| 
 			id = <iden>
-			{return sem.paramForm(tipoah ,id);}
+			{return (ParamForm) sem.paramForm(tipoah ,id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
 		}
 	
 	Tipo tipo():
@@ -171,9 +171,9 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	Tipo RT0(Tipo tipoah):
-		{Tipo tipoa; Token t; Token id;}
+		{Tipo tipoa; Token id;}
 		{
-			"[" id = <literalEntero> "]" tipoa = RT0(sem.tArray(tipoah, id))
+			"[" id = <literalEntero> "]" tipoa = RT0((Tipo) sem.tArray(tipoah, id.image).ponFila(id.beginLine).ponCol(id.beginColumn))
 			{return tipoa;}
 			|
 			{return tipoah;}
@@ -205,7 +205,7 @@ PARSER_END(ConstructorASTs)
 			{return sem.tString();}
 			|
 			id = <iden>
-			{return sem.tIden(id);}
+			{return (Tipo) sem.tIden(id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
 			|
 			<struct_id> "{" campos = lista_campos() "}"
 			{return sem.tStruct(campos);}
@@ -229,10 +229,10 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	Campo campo(): 
-		{Tipo tipo; Token id;} 
+		{Tipo tipo; Token id;}
 		{
 			tipo = tipo() id = <iden>
-			{return sem.campo(tipo, id);}
+			{return (Campo) sem.campo(tipo, id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
 		}	
 		
 	Instrs instrucciones(): 
@@ -267,7 +267,7 @@ PARSER_END(ConstructorASTs)
 			{return sem.arrobaInstr(exp);}
 			|
 			<call_id> id = <iden> param = parametros_reales() 
-			{return sem.procInstr(id, param);}
+			{return (Instr) sem.procInstr(id.image, param).ponFila(id.beginLine).ponCol(id.beginColumn);}
 			| 
 			<nl_id>
 			{return sem.nlInstr();}
@@ -311,7 +311,7 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	ParamReales lista_expresiones_e():
-		{LExps lista;}
+		{LExp lista;}
 		{
 			lista = lista_expresiones()
 			{return sem.siExp(lista);}
@@ -319,15 +319,15 @@ PARSER_END(ConstructorASTs)
 			{return sem.noExp();}
 		}
 		
-	LExps lista_expresiones():
-		{LExps exps; Exp exp;}
+	LExp lista_expresiones():
+		{LExp exps; Exp exp;}
 		{
 			exp = expresion() exps = r_lista_expresiones(sem.unaExp(exp))
 			{return exps;}
 		}
 		
-	LExps r_lista_expresiones(LExps ah):
-		{LExps exps; Exp exp;}
+	LExp r_lista_expresiones(LExp ah):
+		{LExp exps; Exp exp;}
 		{
 			"," exp = expresion() exps = r_lista_expresiones(sem.muchasExp(ah, exp))
 			{return exps;}
@@ -457,7 +457,7 @@ PARSER_END(ConstructorASTs)
 			"[" e0 = E0() "]" re6 = RE6(sem.array(ah,e0))
 			{return re6;}
 			|
-			"." id = <iden> re6 = RE6(sem.expCampo(ah,id))
+			"." id = <iden> re6 = RE6((Exp) sem.expCampo(ah,id.image).ponFila(id.beginLine).ponCol(id.beginColumn))
 			{return re6;}
 			|
 			"^" re6 = RE6(sem.punt(ah))
@@ -470,25 +470,25 @@ PARSER_END(ConstructorASTs)
 		{Token lit; Exp e0;} 
 		{
 			lit = <literalEntero>
-			{return sem.litEnt(lit);} 
+			{return (Exp) sem.litEnt(lit.image).ponFila(lit.beginLine).ponCol(lit.beginColumn);} 
 			|
 			lit = <literalReal>
-			{return sem.litReal(lit);} 
+			{return (Exp) sem.litReal(lit.image).ponFila(lit.beginLine).ponCol(lit.beginColumn);} 
 			| 
 			lit = <iden>
-			{return sem.iden(lit);}
+			{return (Exp) sem.iden(lit.image).ponFila(lit.beginLine).ponCol(lit.beginColumn);}
 			|
-			<true_id> 
-			{return sem._true();}
+			lit = <true_id> 
+			{return (Exp) sem._true().ponFila(lit.beginLine).ponCol(lit.beginColumn);}
 			| 
-			<false_id> 
-			{return sem._false();}
+			lit = <false_id> 
+			{return (Exp) sem._false().ponFila(lit.beginLine).ponCol(lit.beginColumn);}
 			| 
 			lit = <literalCadena>
-			{return sem.litCad(lit);} 
+			{return (Exp) sem.litCad(lit.image).ponFila(lit.beginLine).ponCol(lit.beginColumn);} 
 			| 
-			<null_id>
-			{return sem._null();} 
+			lit = <null_id>
+			{return (Exp) sem._null().ponFila(lit.beginLine).ponCol(lit.beginColumn);} 
 			| 
 			"(" e0 = E0() ")"
 			{return e0;}

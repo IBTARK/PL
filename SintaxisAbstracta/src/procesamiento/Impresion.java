@@ -302,17 +302,17 @@ public class Impresion implements Procesamiento {
 	
 	@Override
 	public void procesa(LitEnt a) {
-		System.out.print(a.opnd());
+		System.out.print(a.lit());
 	}
 	
 	@Override
 	public void procesa(LitReal a) {
-		System.out.print(a.opnd());
+		System.out.print(a.lit());
 	}
 	
 	@Override
 	public void procesa(Iden a) {
-		System.out.print(a.opnd());
+		System.out.print(a.id());
 	}
 	
 	@Override
@@ -423,5 +423,17 @@ public class Impresion implements Procesamiento {
 	public void procesa(Punt a) {
 		imprimeOpnd(a.opnd(), 6);
 		System.out.print("^");
+	}
+
+	@Override
+	public void procesa(Neg a) {
+		System.out.println("-");
+		imprimeOpnd(a.opnd(), 5);
+	}
+
+	@Override
+	public void procesa(Not a) {
+		System.out.println("<not>");
+		imprimeOpnd(a.opnd(), 5);
 	}
 }
