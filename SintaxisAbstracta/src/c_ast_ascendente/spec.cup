@@ -91,7 +91,7 @@ action code {:
 		{: RESULT = (Dec) sem.decType(t, id.str()).ponFila(id.fila()).ponCol(id.col()); :};
 	
 	declaracion ::= tipo:t IDENTIFICADOR:id
-		{: RESULT = (Dec) sem.decType(t, id.str()).ponFila(id.fila()).ponCol(id.col()); :};
+		{: RESULT = (Dec) sem.decVar(t, id.str()).ponFila(id.fila()).ponCol(id.col()); :};
 	
     parametros_formales	::= PARENTESIS_APERTURA lista_parametros_formales_e:lista PARENTESIS_CIERRE
     	{: RESULT = lista; :};
@@ -177,7 +177,7 @@ action code {:
 	instruccion ::= bloque:blq
 		{: RESULT = sem.bloqueInstr(blq); :};
 		
-    parametros_reales	::= PARENTESIS_APERTURA lista_expresiones_e:lista PARENTESIS_CIERRE
+    parametros_reales ::= PARENTESIS_APERTURA lista_expresiones_e:lista PARENTESIS_CIERRE
     	{: RESULT = lista; :};
     	
 	lista_expresiones_e	::= lista_expresiones:lista
@@ -185,9 +185,9 @@ action code {:
     lista_expresiones_e	::=
     	{: RESULT = sem.noExp(); :};
     	
-    lista_expresiones	::= lista_expresiones:lista COMA expresion:exp
+    lista_expresiones ::= lista_expresiones:lista COMA expresion:exp
     	{: RESULT = sem.muchasExp(lista, exp); :};	
-    lista_expresiones	::= expresion:exp
+    lista_expresiones ::= expresion:exp
     	{: RESULT = sem.unaExp(exp); :};
     
     expresion ::= E0:e0

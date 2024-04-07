@@ -87,7 +87,7 @@ public class SintaxisAbstracta {
 		public void imprime() {
 			ldecs.imprime();
 			System.out.println();
-			System.out.println("&&");
+			System.out.println("&& ");
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -175,7 +175,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println("<proc>");
+			System.out.println("<proc> ");
 			System.out.println(iden);
 			params.imprime();
 			System.out.print(" ");
@@ -656,7 +656,7 @@ public class SintaxisAbstracta {
     		this.iden = iden;
         }
         public void imprime() {
-			System.out.print("<call>");
+			System.out.print("<call> ");
 			System.out.print(iden);
 			params.imprime();
 		}
@@ -687,7 +687,7 @@ public class SintaxisAbstracta {
     		this.exp = exp;
         }
         public void imprime() {
-			System.out.print("<new>");
+			System.out.print("<new> ");
 			exp.imprime();
 		}
 		@Override
@@ -776,12 +776,12 @@ public class SintaxisAbstracta {
     		this.bloq2 = bloq2;
         }
         public void imprime() {
-			System.out.print("<if>");
+			System.out.print("<if> ");
 			exp.imprime();
 			System.out.print(" ");
 			bloq1.imprime();
 			System.out.println();
-			System.out.print("<else>");
+			System.out.print("<else> ");
 			bloq2.imprime();
 		}
 		@Override
@@ -1016,7 +1016,7 @@ public class SintaxisAbstracta {
         }
         @Override
 		public void imprime() {
-			imprimeExpBin(opnd0,"<",opnd1,1,2);
+			imprimeExpBin(opnd0,"< ",opnd1,1,2);
 		}
 		@Override
 		public void procesa(Procesamiento p) {

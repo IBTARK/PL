@@ -12,7 +12,7 @@ public class Main {
    public static void main(String[] args) throws Exception {
      Reader input = new InputStreamReader(new FileInputStream(args[0]));
 	 AnalizadorLexicoTiny alex = new AnalizadorLexicoTiny(input);
-	 ConstructorASTs asint = new ConstructorASTs(alex);
+	 ConstructorASTsDJ asint = new ConstructorASTsDJ(alex);
 	 try {    
         asint.debug_parse();
      }
