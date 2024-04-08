@@ -6,7 +6,7 @@ import alex.UnidadLexica;
 import errors.GestionErroresTiny;
 import asint.ClaseSemantica;
 import asint.SintaxisAbstracta.*;
-import c_ast_ascendente.UnidadLexica.StringLocalizado;
+import alex.UnidadLexica.StringLocalizado;
 
 scan with {: 
   return getScanner().next_token(); 

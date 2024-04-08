@@ -907,6 +907,7 @@ public class SintaxisAbstracta {
    		Exp exp;
 	   	public MuchasExp(LExp lexps, Exp exp) {
 	   		this.exp = exp;
+	   		this.lexps = lexps;
 	   	} 
 	   	public Exp exp() {return exp;}
 	   	public LExp lexp() {return lexps;}

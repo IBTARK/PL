@@ -9,8 +9,8 @@ public class ProcRecursivo extends SintaxisAbstracta {
         return o.getClass() == c;
     }
     
-    private void imprime(Token token) {
-    	System.out.println(String.format("%s$f:%d,c:%d$", token.image, token.endLine, token.endColumn));
+    private void imprime(String token) {
+    	System.out.println(String.format("%s$f:%d,c:%d$", token, 0, 0));
     }
     
     private void imprimeOpnd(Exp opnd, int minPrior) {
@@ -246,7 +246,7 @@ public class ProcRecursivo extends SintaxisAbstracta {
     
     public void imprime(Exp exp) {
     	if (claseDe(exp, Asignacion.class)) {
-    		imprimeExpBin(((Asignacion) exp).opnd0(), "=", ((Menor) exp).opnd1(), 1, 0);
+    		imprimeExpBin(((Asignacion) exp).opnd0(), "=", ((Asignacion) exp).opnd1(), 1, 0);
     	}
     	else if (claseDe(exp, Menor.class)) {
     		imprimeExpBin(((Menor) exp).opnd0(), "<", ((Menor) exp).opnd1(), 1, 2);
