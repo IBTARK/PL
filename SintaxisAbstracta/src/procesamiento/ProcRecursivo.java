@@ -270,6 +270,12 @@ public class ProcRecursivo extends SintaxisAbstracta {
     	else if (claseDe(exp, Resta.class)) {
     		imprimeExpBin(((Resta) exp).opnd0(), "-", ((Resta) exp).opnd1(), 3, 3, exp);
     	}
+    	else if (claseDe(exp, And.class)) {
+    		imprimeExpBin(((And) exp).opnd0(), "<and>", ((And) exp).opnd1(), 4, 3, exp);
+    	}
+    	else if (claseDe(exp, Or.class)) {
+    		imprimeExpBin(((Or) exp).opnd0(), "<or>", ((Or) exp).opnd1(), 4, 4, exp);
+    	}
     	else if (claseDe(exp, Mul.class)) {
     		imprimeExpBin(((Mul) exp).opnd0(), "*", ((Mul) exp).opnd1(), 4, 5, exp);
     	}

@@ -242,10 +242,10 @@ action code {:
 		{: RESULT = (Exp) sem.iden(id.str()).ponFila(id.fila()).ponCol(id.col()); :};
 	E7 ::= LITERAL_CADENA:litC
 		{: RESULT = (Exp) sem.litCad(litC.str()).ponFila(litC.fila()).ponCol(litC.col()); :};
-	E7 ::= TRUE
-		{: RESULT = sem._true(); :};
-	E7 ::= FALSE
-		{: RESULT = sem._false(); :};
+	E7 ::= TRUE:a
+		{: RESULT = (Exp) sem._true().ponFila(a.fila()).ponCol(a.col()); :};
+	E7 ::= FALSE:a
+		{: RESULT = (Exp) sem._false().ponFila(a.fila()).ponCol(a.col()); :};
 	E7 ::= ID_NULL:nul
 		{: RESULT = (Exp) sem._null().ponFila(nul.fila()).ponCol(nul.col()); :};
 	E7 ::= PARENTESIS_APERTURA E0:e0 PARENTESIS_CIERRE
