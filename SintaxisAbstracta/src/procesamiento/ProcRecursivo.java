@@ -1,7 +1,6 @@
 package procesamiento;
 
 import asint.SintaxisAbstracta;
-import c_ast_descendente.Token;
 
 public class ProcRecursivo extends SintaxisAbstracta {
 	
@@ -9,8 +8,8 @@ public class ProcRecursivo extends SintaxisAbstracta {
         return o.getClass() == c;
     }
     
-    private void imprime(String token) {
-    	System.out.println(String.format("%s$f:%d,c:%d$", token, 0, 0));
+    private void imprime(String token, int fila, int col) {
+    	System.out.println(String.format("%s$f:%d,c:%d$", token, fila, col));
     }
     
     private void imprimeOpnd(Exp opnd, int minPrior) {
@@ -23,14 +22,14 @@ public class ProcRecursivo extends SintaxisAbstracta {
        	}
     }
 
-    private void imprimeExpBin(Exp opnd0, String op, Exp opnd1, int np0, int np1) {
+    private void imprimeExpBin(Exp opnd0, String op, Exp opnd1, int np0, int np1, Exp exp) {
     	imprimeOpnd(opnd0,np0);
-    	System.out.println(op);
+    	imprime(op, exp.leeFila(), exp.leeCol());
     	imprimeOpnd(opnd1,np1);
     }
     
-    private void imprimeExpUn(String op, Exp opnd, int np) {
-    	System.out.println(op);
+    private void imprimeExpUn(String op, Exp opnd, int np, Exp exp) {
+    	imprime(op, exp.leeFila(), exp.leeCol());
     	imprimeOpnd(opnd,np);
     }
     
@@ -64,19 +63,19 @@ public class ProcRecursivo extends SintaxisAbstracta {
     
     public void imprime(Dec dec) { 	
     	if (claseDe(dec, DecProc.class)) {
-    		System.out.println("<prog>");
-    		imprime(((DecProc) dec).iden());
+    		System.out.println("<proc>");
+    		imprime(((DecProc) dec).iden(), dec.leeFila(), dec.leeCol());
     		imprime(((DecProc) dec).params());
     		imprime(((DecProc) dec).bloq());
     	}
     	else if (claseDe(dec, DecType.class)) {
     		System.out.println("<type>");
     		imprime(((DecType) dec).tipo());
-    		imprime(((DecType) dec).iden());
+    		imprime(((DecType) dec).iden(), dec.leeFila(), dec.leeCol());
     	}
     	else if (claseDe(dec, DecVar.class)) {
     		imprime(((DecVar) dec).tipo());
-    		imprime(((DecVar) dec).iden());
+    		imprime(((DecVar) dec).iden(), dec.leeFila(), dec.leeCol());
     	}
     }
     
@@ -98,16 +97,15 @@ public class ProcRecursivo extends SintaxisAbstracta {
     }
     
     public void imprime(ParamForm param) {
-    	System.out.println("(");
     	if (claseDe(param, ParamFormal.class)) {
     		imprime(((ParamFormal) param).tipo());
-    		System.out.println(((ParamFormal) param).id());
+    		imprime(((ParamFormal) param).id(), param.leeFila(), param.leeCol());
     	}
     	else {
     		imprime(((ParamFormRef) param).tipo());
-    		System.out.println(((ParamFormRef) param).id());
+    		System.out.println("&");
+    		imprime(((ParamFormRef) param).id(), param.leeFila(), param.leeCol());
     	}
-    	System.out.println(")");
     }
     
     public void imprime(Tipo tipo) {
@@ -124,7 +122,7 @@ public class ProcRecursivo extends SintaxisAbstracta {
     		System.out.println("<string>");
     	}
     	else if (claseDe(tipo, TIden.class)) {
-    		System.out.println(((TIden) tipo).iden());
+    		imprime(((TIden) tipo).iden(), tipo.leeFila(), tipo.leeCol());
     	}
     	else if (claseDe(tipo, TStruct.class)) {
     		System.out.println("<struct>");
@@ -140,7 +138,7 @@ public class ProcRecursivo extends SintaxisAbstracta {
     		imprime(((TArray) tipo).tipo());
     		System.out.println("[");
     		System.out.println(((TArray) tipo).litEnt());
-    		System.out.println("]");
+    		imprime("]", tipo.leeFila(), tipo.leeCol());
     	}
     }
     
@@ -157,7 +155,7 @@ public class ProcRecursivo extends SintaxisAbstracta {
     
     public void imprime(Campo campo) {
     	imprime(campo.tipo());
-    	System.out.println(campo.iden());
+    	imprime(campo.iden(), campo.leeFila(), campo.leeCol());
     }
     
     public void imprime(Instrs instrs) {
@@ -183,7 +181,7 @@ public class ProcRecursivo extends SintaxisAbstracta {
     	}
     	else if (claseDe(instr, ProcInstr.class)) {
     		System.out.println("<call>");
-    		System.out.println(((ProcInstr) instr).iden());
+    		imprime(((ProcInstr) instr).iden(), instr.leeFila(), instr.leeCol());
     		imprime(((ProcInstr) instr).paramReales());
     	}
     	else if (claseDe(instr, NlInstr.class)) {
@@ -246,55 +244,82 @@ public class ProcRecursivo extends SintaxisAbstracta {
     
     public void imprime(Exp exp) {
     	if (claseDe(exp, Asignacion.class)) {
-    		imprimeExpBin(((Asignacion) exp).opnd0(), "=", ((Asignacion) exp).opnd1(), 1, 0);
+    		imprimeExpBin(((Asignacion) exp).opnd0(), "=", ((Asignacion) exp).opnd1(), 1, 0, exp);
     	}
     	else if (claseDe(exp, Menor.class)) {
-    		imprimeExpBin(((Menor) exp).opnd0(), "<", ((Menor) exp).opnd1(), 1, 2);
+    		imprimeExpBin(((Menor) exp).opnd0(), "<", ((Menor) exp).opnd1(), 1, 2, exp);
     	}
     	else if (claseDe(exp, Mayor.class)) {
-    		imprimeExpBin(((Mayor) exp).opnd0(), ">", ((Mayor) exp).opnd1(), 1, 2);
+    		imprimeExpBin(((Mayor) exp).opnd0(), ">", ((Mayor) exp).opnd1(), 1, 2, exp);
     	}
     	else if (claseDe(exp, MenorIgual.class)) {
-    		imprimeExpBin(((MenorIgual) exp).opnd0(), "<=", ((MenorIgual) exp).opnd1(), 1, 2);
+    		imprimeExpBin(((MenorIgual) exp).opnd0(), "<=", ((MenorIgual) exp).opnd1(), 1, 2, exp);
     	}
     	else if (claseDe(exp, MayorIgual.class)) {
-    		imprimeExpBin(((MayorIgual) exp).opnd0(), ">=", ((MayorIgual) exp).opnd1(), 1, 2);
+    		imprimeExpBin(((MayorIgual) exp).opnd0(), ">=", ((MayorIgual) exp).opnd1(), 1, 2, exp);
     	}
     	else if (claseDe(exp, Igual.class)) {
-    		imprimeExpBin(((Igual) exp).opnd0(), "==", ((Igual) exp).opnd1(), 1, 2);
+    		imprimeExpBin(((Igual) exp).opnd0(), "==", ((Igual) exp).opnd1(), 1, 2, exp);
     	}
     	else if (claseDe(exp, Desigual.class)) {
-    		imprimeExpBin(((Desigual) exp).opnd0(), "!=", ((Desigual) exp).opnd1(), 1, 2);
+    		imprimeExpBin(((Desigual) exp).opnd0(), "!=", ((Desigual) exp).opnd1(), 1, 2, exp);
     	}
     	else if (claseDe(exp, Suma.class)) {
-    		imprimeExpBin(((Suma) exp).opnd0(), "+", ((Suma) exp).opnd1(), 2, 3);
+    		imprimeExpBin(((Suma) exp).opnd0(), "+", ((Suma) exp).opnd1(), 2, 3, exp);
     	}
     	else if (claseDe(exp, Resta.class)) {
-    		imprimeExpBin(((Resta) exp).opnd0(), "-", ((Resta) exp).opnd1(), 3, 3);
+    		imprimeExpBin(((Resta) exp).opnd0(), "-", ((Resta) exp).opnd1(), 3, 3, exp);
     	}
     	else if (claseDe(exp, Mul.class)) {
-    		imprimeExpBin(((Mul) exp).opnd0(), "*", ((Mul) exp).opnd1(), 4, 5);
+    		imprimeExpBin(((Mul) exp).opnd0(), "*", ((Mul) exp).opnd1(), 4, 5, exp);
     	}
     	else if (claseDe(exp, Div.class)) {
-    		imprimeExpBin(((Div) exp).opnd0(), "/", ((Div) exp).opnd1(), 4, 5);
+    		imprimeExpBin(((Div) exp).opnd0(), "/", ((Div) exp).opnd1(), 4, 5, exp);
     	}
     	else if (claseDe(exp, Mod.class)) {
-    		imprimeExpBin(((Mod) exp).opnd0(), "%", ((Mod) exp).opnd1(), 4, 5);
+    		imprimeExpBin(((Mod) exp).opnd0(), "%", ((Mod) exp).opnd1(), 4, 5, exp);
+    	}
+    	else if (claseDe(exp, Neg.class)) {
+    		imprimeExpUn("-", ((Neg) exp).opnd(), 5, exp);
+    	}
+    	else if (claseDe(exp, Not.class)) {
+    		imprimeExpUn("<not>", ((Not) exp).opnd(), 5, exp);
     	}
     	else if (claseDe(exp, Array.class)) {
     		imprimeOpnd(((Array) exp).opnd(), 6);
-        	System.out.println("[");
+        	imprime("[", exp.leeFila(), exp.leeCol());
         	imprime(((Array) exp).idx());
         	System.out.println("]");
     	}
     	else if (claseDe(exp, ExpCampo.class)) {
     		imprimeOpnd(((ExpCampo) exp).opnd(), 6);
         	System.out.println(".");
-        	imprime(((ExpCampo) exp).campo());
+        	imprime(((ExpCampo) exp).campo(), exp.leeFila(), exp.leeCol());
     	}
     	else if (claseDe(exp, Punt.class)) {
     		imprimeOpnd(((Punt) exp).opnd(), 6);
-        	System.out.println("^");
+        	imprime("^", exp.leeFila(), exp.leeCol());
+    	}
+    	else if (claseDe(exp, LitEnt.class)) {
+        	imprime(((LitEnt) exp).lit(), exp.leeFila(), exp.leeCol());
+    	}
+    	else if (claseDe(exp, LitReal.class)) {
+        	imprime(((LitReal) exp).lit(), exp.leeFila(), exp.leeCol());
+    	}
+    	else if (claseDe(exp, LitCad.class)) {
+        	imprime(((LitCad) exp).lit(), exp.leeFila(), exp.leeCol());
+    	}
+    	else if (claseDe(exp, Iden.class)) {
+        	imprime(((Iden) exp).id(), exp.leeFila(), exp.leeCol());
+    	}
+    	else if (claseDe(exp, True.class)) {
+        	imprime("<true>", exp.leeFila(), exp.leeCol());
+    	}
+    	else if (claseDe(exp, False.class)) {
+        	imprime("<false>", exp.leeFila(), exp.leeCol());
+    	}
+    	else if (claseDe(exp, Null.class)) {
+        	imprime("<null>", exp.leeFila(), exp.leeCol());
     	}
     }
 }

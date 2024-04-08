@@ -26,14 +26,12 @@ action code {:
   ClaseSemantica sem = new ClaseSemantica();
 :}
 
-	terminal     TERMINACION, ASIGNACION, PUNTO_Y_COMA, MENOR, MAYOR, MENOR_IGUAL, MAYOR_IGUAL, 
-				 DESIGUAL, IGUAL, CORCHETE_APERTURA, CORCHETE_CIERRE, PUNTO,
-				 PARENTESIS_APERTURA, PARENTESIS_CIERRE, COMA, ID_INT, ID_REAL, ID_BOOL, ID_STRING,
-				 ID_STRUCT, LLAVE_APERTURA, LLAVE_CIERRE, SUMA, RESTA, MULTIPLICACION,
+	terminal StringLocalizado TERMINACION, ASIGNACION, PUNTO_Y_COMA, MENOR, MAYOR, MENOR_IGUAL, MAYOR_IGUAL, 
+				 DESIGUAL, IGUAL, CORCHETE_CIERRE, PUNTO, PARENTESIS_APERTURA, PARENTESIS_CIERRE, COMA, ID_INT, ID_REAL, 
+				 ID_BOOL, ID_STRING, ID_STRUCT, LLAVE_APERTURA, LLAVE_CIERRE, SUMA, RESTA, MULTIPLICACION,
 				 DIVISION, MODULO, ID_NOT, INI_NOMBRE, ID_IF, ID_ELSE, ID_PROC, ID_TYPE, ID_CALL, ID_READ, ID_WRITE, 
-				 ID_WHILE, ID_NEW, ID_DELETE, ID_NL, REFERENCIA, ID_AND, ID_OR, 
-				 TRUE, FALSE, ID_NULL, INDIRECCION;
-	terminal StringLocalizado LITERAL_ENTERO, IDENTIFICADOR, LITERAL_REAL, LITERAL_CADENA;
+				 ID_WHILE, ID_NEW, ID_DELETE, ID_NL, REFERENCIA, ID_AND, ID_OR, TRUE, FALSE, ID_NULL, LITERAL_ENTERO, 
+				 IDENTIFICADOR, LITERAL_REAL, LITERAL_CADENA, INDIRECCION, CORCHETE_APERTURA;
 
 	non terminal Prog programa;
 	non terminal Bloque bloque;
@@ -60,9 +58,9 @@ action code {:
 	non terminal Exp E5;
 	non terminal Exp E6;
 	non terminal Exp E7;
-	non terminal String OP1;
-	non terminal String OP4;
-	non terminal String OP5;
+	non terminal StringLocalizado OP1;
+	non terminal StringLocalizado OP4;
+	non terminal StringLocalizado OP5;
 	non terminal LCampos lista_campos;
 	non terminal ParamReales parametros_reales;
 	non terminal ParamReales lista_expresiones_e;
@@ -82,13 +80,13 @@ action code {:
 	lista_declaraciones	::= lista_declaraciones:lista PUNTO_Y_COMA declaracion:dec
     	{: RESULT = sem.muchasDecs(lista, dec); :};	
     lista_declaraciones	::= declaracion:dec
-    	{: RESULT = sem.unaDec(dec); :};    
+    	{: RESULT = sem.unaDec(dec); :};
+    
+	declaracion ::= ID_TYPE tipo:t IDENTIFICADOR:id
+		{: RESULT = (Dec) sem.decType(t, id.str()).ponFila(id.fila()).ponCol(id.col()); :};    
     
     declaracion ::= ID_PROC IDENTIFICADOR:id parametros_formales:params bloque:bloq
    		{: RESULT = (Dec) sem.decProc(id.str(), params, bloq).ponFila(id.fila()).ponCol(id.col()); :};
-    
-	declaracion ::= ID_TYPE tipo:t IDENTIFICADOR:id
-		{: RESULT = (Dec) sem.decType(t, id.str()).ponFila(id.fila()).ponCol(id.col()); :};
 	
 	declaracion ::= tipo:t IDENTIFICADOR:id
 		{: RESULT = (Dec) sem.decVar(t, id.str()).ponFila(id.fila()).ponCol(id.col()); :};
@@ -193,46 +191,46 @@ action code {:
     expresion ::= E0:e0
     	{: RESULT = e0; :};
     
-    E0 ::= E1:e1 ASIGNACION E0:e0
-    	{: RESULT = sem.asignacion(e1, e0); :};
+    E0 ::= E1:e1 ASIGNACION:op E0:e0
+    	{: RESULT = (Exp) sem.asignacion(e1, e0).ponFila(op.fila()).ponCol(op.col()); :};
 	E0 ::= E1:e1
 		{: RESULT = e1; :};
     
     E1 ::= E1:e1 OP1:op E2:e2
-    	{: RESULT = sem.mkop1(op, e1, e2); :};
+    	{: RESULT = (Exp) sem.mkop1(op.str(), e1, e2).ponFila(op.fila()).ponCol(op.col()); :};
 	E1 ::= E2:e2
 		{: RESULT = e2; :};
 		
-    E2	::= E2:e2 SUMA E3:e3
-    	{: RESULT = sem.suma(e2, e3); :};
-    E2	::= E3:e3a RESTA E3:e3b
-    	{: RESULT = sem.resta(e3a, e3b); :};
+    E2	::= E2:e2 SUMA:op E3:e3
+    	{: RESULT = (Exp) sem.suma(e2, e3).ponFila(op.fila()).ponCol(op.col()); :};
+    E2	::= E3:e3a RESTA:op E3:e3b
+    	{: RESULT = (Exp) sem.resta(e3a, e3b).ponFila(op.fila()).ponCol(op.col()); :};
     E2	::= E3:e3
     	{: RESULT = e3; :};
     	
-    E3 ::= E4:e4 ID_AND E3:e3
-    	{: RESULT = sem.and(e4, e3); :};
-	E3 ::= E4:e41 ID_OR E4:e42
-		{: RESULT = sem.or(e41, e42); :};
+    E3 ::= E4:e4 ID_AND:op E3:e3
+    	{: RESULT = (Exp) sem.and(e4, e3).ponFila(op.fila()).ponCol(op.col()); :};
+	E3 ::= E4:e41 ID_OR:op E4:e42
+		{: RESULT = (Exp) sem.or(e41, e42).ponFila(op.fila()).ponCol(op.col()); :};
 	E3 ::= E4:e4
 		{: RESULT = e4; :};
     	
     E4 ::= E4:e4 OP4:op E5:e5
-    	{: RESULT = sem.mkop4(op, e4, e5); :};
+    	{: RESULT = (Exp) sem.mkop4(op.str(), e4, e5).ponFila(op.fila()).ponCol(op.col()); :};
 	E4 ::= E5:e5
 		{: RESULT = e5; :};
     	
     E5 ::= OP5:op E5:e5
-    	{: RESULT = sem.mkop5(op, e5); :};
+    	{: RESULT = (Exp) sem.mkop5(op.str(), e5).ponFila(op.fila()).ponCol(op.col()); :};
 	E5 ::= E6:e6
 		{: RESULT = e6; :};
 		
-    E6	::= E6:e6 CORCHETE_APERTURA E0:e0 CORCHETE_CIERRE
-    	{: RESULT = sem.array(e6, e0); :};
+    E6	::= E6:e6 CORCHETE_APERTURA:ca E0:e0 CORCHETE_CIERRE
+    	{: RESULT = (Exp) sem.array(e6, e0).ponFila(ca.fila()).ponCol(ca.col()); :};
 	E6  ::= E6:e6 PUNTO IDENTIFICADOR:id
     	{: RESULT = (Exp) sem.expCampo(e6, id.str()).ponFila(id.fila()).ponCol(id.col()); :};
-	E6  ::= E6:e6 INDIRECCION
-    	{: RESULT = sem.punt(e6); :};
+	E6  ::= E6:e6 INDIRECCION:i
+    	{: RESULT = (Exp) sem.punt(e6).ponFila(i.fila()).ponCol(i.col()); :};
     E6	::= E7:e7
     	{: RESULT = e7; :};
     	
@@ -248,31 +246,31 @@ action code {:
 		{: RESULT = sem._true(); :};
 	E7 ::= FALSE
 		{: RESULT = sem._false(); :};
-	E7 ::= ID_NULL
-		{: RESULT = sem._null(); :};
+	E7 ::= ID_NULL:nul
+		{: RESULT = (Exp) sem._null().ponFila(nul.fila()).ponCol(nul.col()); :};
 	E7 ::= PARENTESIS_APERTURA E0:e0 PARENTESIS_CIERRE
 		{: RESULT = e0; :};
     
     OP1 ::= MENOR:op
-    	{: RESULT = op.toString(); :};
+    	{: RESULT = op; :};
     OP1 ::= MAYOR:op
-    	{: RESULT = op.toString(); :};
+    	{: RESULT = op; :};
     OP1 ::= MENOR_IGUAL:op
-    	{: RESULT = op.toString(); :};
+    	{: RESULT = op; :};
     OP1 ::= MAYOR_IGUAL:op
-    	{: RESULT = op.toString(); :};
+    	{: RESULT = op; :};
     OP1 ::= DESIGUAL:op
-    	{: RESULT = op.toString(); :};
+    	{: RESULT = op; :};
     OP1 ::= IGUAL:op
-    	{: RESULT = op.toString(); :};
+    	{: RESULT = op; :};
     	
     OP4 ::= MULTIPLICACION:op
-    	{: RESULT = op.toString(); :};
+    	{: RESULT = op; :};
 	OP4 ::= DIVISION:op
-		{: RESULT = op.toString(); :};
+		{: RESULT = op; :};
 	OP4 ::= MODULO:op
-		{: RESULT = op.toString(); :};	
+		{: RESULT = op; :};	
     OP5	::= RESTA:op
-    	{: RESULT = op.toString(); :};
+    	{: RESULT = op; :};
     OP5	::= ID_NOT:op
-    	{: RESULT = op.toString(); :};
+    	{: RESULT = op; :};
