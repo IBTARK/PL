@@ -715,12 +715,12 @@ Exp e1,e2;
   final public Exp RE0(Exp eh) throws ParseException {
     trace_call("RE0");
     try {
-Exp e;
+Exp e; Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 46:{
-        jj_consume_token(46);
+        op = jj_consume_token(46);
         e = E0();
-{if ("" != null) return sem.asignacion(eh, e);}
+{if ("" != null) return (Exp) sem.asignacion(eh, e).ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       default:
@@ -749,7 +749,7 @@ Exp e1,e2;
   final public Exp RE1(Exp eh) throws ParseException {
     trace_call("RE1");
     try {
-String op; Exp e2,e1;
+Token op; Exp e2,e1;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 50:
       case 51:
@@ -759,8 +759,8 @@ String op; Exp e2,e1;
       case 55:{
         op = OP1();
         e2 = E2();
-        e1 = RE1(sem.mkop1(op,eh,e2));
-{if ("" != null) return e1;}
+        e1 = RE1(sem.mkop1(op.image,eh,e2));
+{if ("" != null) return (Exp) e1.ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       default:
@@ -790,12 +790,12 @@ Exp e3,re2,rec2;
   final public Exp RE2(Exp ah) throws ParseException {
     trace_call("RE2");
     try {
-Exp e3;
+Exp e3; Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 47:{
-        jj_consume_token(47);
+        op = jj_consume_token(47);
         e3 = E3();
-{if ("" != null) return sem.resta(ah, e3);}
+{if ("" != null) return (Exp) sem.resta(ah, e3).ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       default:
@@ -811,13 +811,13 @@ Exp e3;
   final public Exp REC2(Exp ah) throws ParseException {
     trace_call("REC2");
     try {
-Exp e3,rec2;
+Exp e3,rec2; Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 48:{
-        jj_consume_token(48);
+        op = jj_consume_token(48);
         e3 = E3();
         rec2 = REC2(sem.suma(ah, e3));
-{if ("" != null) return rec2;}
+{if ("" != null) return (Exp) rec2.ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       default:
@@ -846,18 +846,18 @@ Exp e4,re3;
   final public Exp RE3(Exp ah) throws ParseException {
     trace_call("RE3");
     try {
-Exp e3,e4,re3;
+Exp e3,e4,re3; Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case and_id:{
-        jj_consume_token(and_id);
+        op = jj_consume_token(and_id);
         e3 = E3();
-{if ("" != null) return sem.and(ah, e3);}
+{if ("" != null) return (Exp) sem.and(ah, e3).ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       case or_id:{
-        jj_consume_token(or_id);
+        op = jj_consume_token(or_id);
         e4 = E4();
-{if ("" != null) return sem.or(ah, e4);}
+{if ("" != null) return (Exp) sem.or(ah, e4).ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       default:
@@ -886,15 +886,15 @@ Exp e5,e4;
   final public Exp RE4(Exp eh) throws ParseException {
     trace_call("RE4");
     try {
-String op; Exp e5,e4;
+Token op; Exp e5,e4;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 56:
       case 57:
       case 58:{
         op = OP4();
         e5 = E5();
-        e4 = RE4(sem.mkop4(op,eh,e5));
-{if ("" != null) return e4;}
+        e4 = RE4(sem.mkop4(op.image,eh,e5));
+{if ("" != null) return (Exp) e4.ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       default:
@@ -910,13 +910,13 @@ String op; Exp e5,e4;
   final public Exp E5() throws ParseException {
     trace_call("E5");
     try {
-String op; Exp e5,e6;
+Token op; Exp e5,e6;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case not_id:
       case 47:{
         op = OP5();
         e5 = E5();
-{if ("" != null) return sem.mkop5(op,e5);}
+{if ("" != null) return (Exp) sem.mkop5(op.image,e5).ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       case literalEntero:
@@ -958,27 +958,27 @@ Exp e7,re6;
   final public Exp RE6(Exp ah) throws ParseException {
     trace_call("RE6");
     try {
-Exp e0,re6; Token id;
+Exp e0,re6; Token id,op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 42:{
-        jj_consume_token(42);
+        op = jj_consume_token(42);
         e0 = E0();
         jj_consume_token(43);
         re6 = RE6(sem.array(ah,e0));
-{if ("" != null) return re6;}
+{if ("" != null) return (Exp) re6.ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       case 49:{
         jj_consume_token(49);
         id = jj_consume_token(iden);
         re6 = RE6((Exp) sem.expCampo(ah,id.image).ponFila(id.beginLine).ponCol(id.beginColumn));
-{if ("" != null) return re6;}
+{if ("" != null) return (Exp) re6.ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
         }
       case 44:{
-        jj_consume_token(44);
+        op = jj_consume_token(44);
         re6 = RE6(sem.punt(ah));
-{if ("" != null) return re6;}
+{if ("" != null) return (Exp) re6.ponFila(op.beginLine).ponCol(op.endColumn);}
         break;
         }
       default:
@@ -1049,39 +1049,39 @@ Token lit; Exp e0;
     }
 }
 
-  final public String OP1() throws ParseException {
+  final public Token OP1() throws ParseException {
     trace_call("OP1");
     try {
-
+Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 50:{
-        jj_consume_token(50);
-{if ("" != null) return "<";}
+        op = jj_consume_token(50);
+{if ("" != null) return op;}
         break;
         }
       case 51:{
-        jj_consume_token(51);
-{if ("" != null) return ">";}
+        op = jj_consume_token(51);
+{if ("" != null) return op;}
         break;
         }
       case 52:{
-        jj_consume_token(52);
-{if ("" != null) return "<=";}
+        op = jj_consume_token(52);
+{if ("" != null) return op;}
         break;
         }
       case 53:{
-        jj_consume_token(53);
-{if ("" != null) return ">=";}
+        op = jj_consume_token(53);
+{if ("" != null) return op;}
         break;
         }
       case 54:{
-        jj_consume_token(54);
-{if ("" != null) return "==";}
+        op = jj_consume_token(54);
+{if ("" != null) return op;}
         break;
         }
       case 55:{
-        jj_consume_token(55);
-{if ("" != null) return "!=";}
+        op = jj_consume_token(55);
+{if ("" != null) return op;}
         break;
         }
       default:
@@ -1095,24 +1095,24 @@ Token lit; Exp e0;
     }
 }
 
-  final public String OP4() throws ParseException {
+  final public Token OP4() throws ParseException {
     trace_call("OP4");
     try {
-
+Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 56:{
-        jj_consume_token(56);
-{if ("" != null) return "*";}
+        op = jj_consume_token(56);
+{if ("" != null) return op;}
         break;
         }
       case 57:{
-        jj_consume_token(57);
-{if ("" != null) return "/";}
+        op = jj_consume_token(57);
+{if ("" != null) return op;}
         break;
         }
       case 58:{
-        jj_consume_token(58);
-{if ("" != null) return "%";}
+        op = jj_consume_token(58);
+{if ("" != null) return op;}
         break;
         }
       default:
@@ -1126,19 +1126,19 @@ Token lit; Exp e0;
     }
 }
 
-  final public String OP5() throws ParseException {
+  final public Token OP5() throws ParseException {
     trace_call("OP5");
     try {
-
+Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case 47:{
-        jj_consume_token(47);
-{if ("" != null) return "-";}
+        op = jj_consume_token(47);
+{if ("" != null) return op;}
         break;
         }
       case not_id:{
-        jj_consume_token(not_id);
-{if ("" != null) return "not";}
+        op = jj_consume_token(not_id);
+op.image = "<not>"; {if ("" != null) return op;}
         break;
         }
       default:

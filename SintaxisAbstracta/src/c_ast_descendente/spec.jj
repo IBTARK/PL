@@ -350,10 +350,10 @@ PARSER_END(ConstructorASTs)
 		}
         
 	Exp RE0(Exp eh): 
-		{Exp e;} 
+		{Exp e; Token op;} 
 		{
-			"=" e = E0() 
-			{return sem.asignacion(eh, e);}
+			op = "=" e = E0() 
+			{return (Exp) sem.asignacion(eh, e).ponFila(op.beginLine).ponCol(op.beginColumn);}
 			|
 			{return eh;}
 		}
@@ -366,10 +366,10 @@ PARSER_END(ConstructorASTs)
 		}
 	
 	Exp RE1(Exp eh): 
-		{String op; Exp e2,e1;} 
+		{Token op; Exp e2,e1;} 
 		{
-			op = OP1() e2 = E2() e1 = RE1(sem.mkop1(op,eh,e2)) 
-			{return e1;}
+			op = OP1() e2 = E2() e1 = RE1(sem.mkop1(op.image,eh,e2)) 
+			{return (Exp) e1.ponFila(op.beginLine).ponCol(op.beginColumn);}
 			|
 			{return eh;}
 		}
@@ -382,19 +382,19 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	Exp RE2(Exp ah):
-		{Exp e3;}
+		{Exp e3; Token op;}
 		{
-			"-" e3 = E3()
-			{return sem.resta(ah, e3);}
+			op = "-" e3 = E3()
+			{return (Exp) sem.resta(ah, e3).ponFila(op.beginLine).ponCol(op.beginColumn);}
 			|
 			{return ah;}
 		}
 		
 	Exp REC2(Exp ah):
-		{Exp e3,rec2;}
+		{Exp e3,rec2; Token op;}
 		{
-			"+" e3 = E3() rec2 = REC2(sem.suma(ah, e3))
-			{return rec2;}
+			op = "+" e3 = E3() rec2 = REC2(sem.suma(ah, e3))
+			{return (Exp) rec2.ponFila(op.beginLine).ponCol(op.beginColumn);}
 			|
 			{return ah;}
 		}
@@ -407,13 +407,13 @@ PARSER_END(ConstructorASTs)
 		}
 		
 	Exp RE3(Exp ah): 
-		{Exp e3,e4,re3;} 
+		{Exp e3,e4,re3; Token op;} 
 		{
-			<and_id> e3 = E3()
-			{return sem.and(ah, e3);}
+			op = <and_id> e3 = E3()
+			{return (Exp) sem.and(ah, e3).ponFila(op.beginLine).ponCol(op.beginColumn);}
 			| 
-			<or_id> e4 = E4()
-			{return sem.or(ah, e4);}
+			op = <or_id> e4 = E4()
+			{return (Exp) sem.or(ah, e4).ponFila(op.beginLine).ponCol(op.beginColumn);}
 			| 
 			{return ah;}
 		}
@@ -426,19 +426,19 @@ PARSER_END(ConstructorASTs)
 		}
 
 	Exp RE4(Exp eh): 
-		{String op; Exp e5,e4;} 
+		{Token op; Exp e5,e4;} 
 		{
-			op = OP4() e5 = E5() e4 = RE4(sem.mkop4(op,eh,e5)) 
-			{return e4;}
+			op = OP4() e5 = E5() e4 = RE4(sem.mkop4(op.image,eh,e5)) 
+			{return (Exp) e4.ponFila(op.beginLine).ponCol(op.beginColumn);}
 			|
 			{return eh;}
 		}
 		
 	Exp E5(): 
-		{String op; Exp e5,e6;} 
+		{Token op; Exp e5,e6;} 
 		{ 
 			op = OP5() e5 = E5() 
-			{return sem.mkop5(op,e5);}
+			{return (Exp) sem.mkop5(op.image,e5).ponFila(op.beginLine).ponCol(op.beginColumn);}
 			| 
 			e6 = E6() 
 			{return e6;}
@@ -452,16 +452,16 @@ PARSER_END(ConstructorASTs)
 		}
 
 	Exp RE6(Exp ah): 
-		{Exp e0,re6; Token id;}
+		{Exp e0,re6; Token id,op;}
 		{
-			"[" e0 = E0() "]" re6 = RE6(sem.array(ah,e0))
-			{return re6;}
+			op = "[" e0 = E0() "]" re6 = RE6(sem.array(ah,e0))
+			{return (Exp) re6.ponFila(op.beginLine).ponCol(op.beginColumn);}
 			|
 			"." id = <iden> re6 = RE6((Exp) sem.expCampo(ah,id.image).ponFila(id.beginLine).ponCol(id.beginColumn))
-			{return re6;}
+			{return (Exp) re6.ponFila(id.beginLine).ponCol(id.beginColumn);}
 			|
-			"^" re6 = RE6(sem.punt(ah))
-			{return re6;}
+			op = "^" re6 = RE6(sem.punt(ah))
+			{return (Exp) re6.ponFila(op.beginLine).ponCol(op.endColumn);}
 			|
 			{return ah;}
 		}
@@ -494,47 +494,47 @@ PARSER_END(ConstructorASTs)
 			{return e0;}
 		}
 
-	String OP1():       
-		{} 
+	Token OP1():       
+		{Token op;} 
 		{
-			"<" 
-			{return "<";} 
+			op = "<" 
+			{return op;} 
 			|
-			">" 
-			{return ">";}
+			op = ">" 
+			{return op;}
 			|
-			"<=" 
-			{return "<=";} 
+			op = "<=" 
+			{return op;} 
 			|
-			">=" 
-			{return ">=";} 
+			op = ">=" 
+			{return op;} 
 			|
-			"==" 
-			{return "==";} 
+			op = "==" 
+			{return op;} 
 			|
-			"!=" 
-			{return "!=";} 
+			op = "!=" 
+			{return op;} 
        	}
        	
-    String OP4(): 
-    	{} 
+    Token OP4(): 
+    	{Token op;} 
     	{ 
-    		"*" 
-    		{return "*";}
+    		op = "*" 
+    		{return op;}
     		| 
-    		"/" 
-    		{return "/";}
+    		op = "/" 
+    		{return op;}
     		| 
-    		"%" 
-    		{return "%";}
+    		op = "%" 
+    		{return op;}
     		}
        
-	String OP5():       
-		{} 
+	Token OP5():       
+		{Token op;} 
 		{
-			"-" 
-			{return "-";} 
+			op = "-" 
+			{return op;} 
 			|
-			<not_id> 
-			{return "not";}
+			op = <not_id> 
+			{op.image = "<not>"; return op;}
        	}

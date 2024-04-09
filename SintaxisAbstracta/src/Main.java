@@ -4,6 +4,7 @@ import java.io.Reader;
 
 import alex.AnalizadorLexicoTiny;
 import asint.SintaxisAbstracta.Prog;
+import c_ast_descendente.ParseException;
 import errors.GestionErroresTiny.ErrorSintactico;
 import procesamiento.Impresion;
 import procesamiento.ProcRecursivo;
@@ -34,7 +35,7 @@ public class Main {
 			System.out.println("IMPRESION VISITANTE");
 			prog.procesa(new Impresion());
 		}
-		catch (ErrorSintactico e) {
+		catch (ErrorSintactico | ParseException e) {
 			System.out.println("ERROR_SINTACTICO");
 		}
 	}
