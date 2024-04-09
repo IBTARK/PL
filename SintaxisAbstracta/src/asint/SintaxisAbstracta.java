@@ -1,6 +1,8 @@
 package asint;
 
 public class SintaxisAbstracta {
+	
+	private static final String FORMAT = "%s$f:%d,c:%d$\n";
 
     public static abstract class Nodo  {
        public Nodo() {
@@ -89,8 +91,7 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			ldecs.imprime();
-			System.out.println();
-			System.out.println("&& ");
+			System.out.println("&&");
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -185,10 +186,9 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println("<proc> ");
-			System.out.println(iden);
+			System.out.println("<proc>");
+			System.out.printf(FORMAT, iden, leeFila(), leeCol());
 			params.imprime();
-			System.out.print(" ");
 			bloq.imprime();
 		} 
 		@Override
@@ -212,8 +212,7 @@ public class SintaxisAbstracta {
 		public void imprime() {
 			System.out.println("<type>");
 			tipo.imprime();
-			System.out.print(" "); 
-			System.out.println(iden);
+			System.out.printf(FORMAT, iden, leeFila(), leeCol());
 		} 
 		@Override
 		public void procesa(Procesamiento p) {
@@ -233,8 +232,7 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			tipo.imprime();
-			System.out.print(" "); 
-			System.out.println(iden);
+			System.out.printf(FORMAT, iden, leeFila(), leeCol());
 		} 
 		@Override
 		public void procesa(Procesamiento p) {
@@ -255,7 +253,7 @@ public class SintaxisAbstracta {
     	@Override
 		public void imprime() {
 			t.imprime();
-			System.out.println(" " + id);
+			System.out.printf(FORMAT, id, leeFila(), leeCol());
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -277,8 +275,8 @@ public class SintaxisAbstracta {
     	@Override
 		public void imprime() {
 			t.imprime();
-			System.out.print("&");
-			System.out.println(id);
+			System.out.println("&");
+			System.out.printf(FORMAT, id, leeFila(), leeCol());
 		}
     	
 		@Override
@@ -297,7 +295,7 @@ public class SintaxisAbstracta {
         public LParams lparams() { return lparams; }
 		@Override
 		public void imprime() {
-			System.out.print("(");
+			System.out.println("(");
 			lparams.imprime();
 			System.out.println(")");
 		}
@@ -312,7 +310,8 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println("()");
+			System.out.println("(");
+			System.out.println(")");
 		} 
 		@Override
 		public void procesa(Procesamiento p) {
@@ -348,7 +347,7 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			lparams.imprime();
-			System.out.print(",");
+			System.out.println(",");
 			param.imprime();
 		}
 		@Override
@@ -377,7 +376,9 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			t.imprime();
-			System.out.print("["+litEnt+"]");
+			System.out.println("[");
+			System.out.println(litEnt);
+			System.out.printf(FORMAT, "]", leeFila(), leeCol());
 		} 
 		@Override
 		public void procesa(Procesamiento p) {
@@ -394,7 +395,7 @@ public class SintaxisAbstracta {
         public Tipo tipo() {return t;}
 		@Override
 		public void imprime() {
-			System.out.print("^ ");
+			System.out.println("^");
 			t.imprime();
 		} 
 		@Override
@@ -408,7 +409,7 @@ public class SintaxisAbstracta {
      	}
  		@Override
  		public void imprime() {
- 			System.out.print("<int>");
+ 			System.out.println("<int>");
  		} 
 		@Override
 		public void procesa(Procesamiento p) {
@@ -421,7 +422,7 @@ public class SintaxisAbstracta {
      	}
  		@Override
  		public void imprime() {
- 			System.out.print("<real>");
+ 			System.out.println("<real>");
  		} 
 		@Override
 		public void procesa(Procesamiento p) {
@@ -434,7 +435,7 @@ public class SintaxisAbstracta {
      	}
  		@Override
  		public void imprime() {
- 			System.out.print("<bool>");
+ 			System.out.println("<bool>");
  		} 
 		@Override
 		public void procesa(Procesamiento p) {
@@ -447,7 +448,7 @@ public class SintaxisAbstracta {
      	}
  		@Override
  		public void imprime() {
- 			System.out.print("<string>");
+ 			System.out.println("<string>");
  		} 
 		@Override
 		public void procesa(Procesamiento p) {
@@ -462,7 +463,7 @@ public class SintaxisAbstracta {
      	}
  		@Override
  		public void imprime() {
- 			System.out.print(iden);
+			System.out.printf(FORMAT, iden, leeFila(), leeCol());
  		} 
         public String iden() {return iden;}
 		@Override
@@ -478,9 +479,10 @@ public class SintaxisAbstracta {
     	}
  		@Override
  		public void imprime() {
- 			System.out.println("<struct> {");
+ 			System.out.println("<struct>");
+ 			System.out.println("{");
  			lcampos.imprime();
- 			System.out.print("\n}");
+ 			System.out.println("}");
  		} 
         public LCampos lcampos() {return lcampos;}
 		@Override
@@ -499,19 +501,16 @@ public class SintaxisAbstracta {
     public static class MuchosCamps extends LCampos{
     	private LCampos lcampos;
     	private Campo c;
-    	
     	public MuchosCamps(LCampos lcampos, Campo c) {
     		this.lcampos = lcampos;
     		this.c = c;
     	}
-    	
     	@Override
  		public void imprime() {
  			lcampos.imprime();
- 			System.out.println(", ");
+ 			System.out.println(",");
  			c.imprime();
  		} 
-    	
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
@@ -522,16 +521,13 @@ public class SintaxisAbstracta {
     
     public static class UnCamp extends LCampos{
     	private Campo c;
-    	
     	public UnCamp(Campo c) {
     		this.c = c;
     	}
-    	
     	@Override
  		public void imprime() {
  			c.imprime();
- 		} 
-    	
+ 		}
 		@Override
 		public void procesa(Procesamiento p) {
 			p.procesa(this);
@@ -542,7 +538,6 @@ public class SintaxisAbstracta {
     public static class Campo extends Nodo {
         private Tipo t;
         private String id;
-        
         public Campo(Tipo t, String id2){
             this.t = t;
             this.id = id2;
@@ -550,7 +545,7 @@ public class SintaxisAbstracta {
         @Override
  		public void imprime() {
  			t.imprime();
- 			System.out.println(" " + id);
+			System.out.printf(FORMAT, id, leeFila(), leeCol());
  		} 
 		@Override
 		public void procesa(Procesamiento p) {
@@ -625,7 +620,7 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			linstrs.imprime();
- 			System.out.println("; ");
+ 			System.out.println(";");
  			instr.imprime();
 		}
 		@Override
@@ -651,13 +646,13 @@ public class SintaxisAbstracta {
 		} 
     }
     
-    public static class ArrobaInstr  extends  Instr {
+    public static class ArrobaInstr extends Instr {
     	private Exp exp;
         public ArrobaInstr(Exp exp) {
     		this.exp = exp;
         }
         public void imprime() {
-			System.out.print("@");
+			System.out.println("@");
 			exp.imprime();
 		}
 		@Override
@@ -676,8 +671,8 @@ public class SintaxisAbstracta {
     		this.iden = iden;
         }
         public void imprime() {
-			System.out.print("<call> ");
-			System.out.print(iden);
+			System.out.println("<call>");
+			System.out.printf(FORMAT, iden, leeFila(), leeCol());
 			params.imprime();
 		}
 		@Override
@@ -693,7 +688,7 @@ public class SintaxisAbstracta {
         public NlInstr() {
         }
         public void imprime() {
-			System.out.print("<nl>");
+			System.out.println("<nl>");
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -707,7 +702,7 @@ public class SintaxisAbstracta {
     		this.exp = exp;
         }
         public void imprime() {
-			System.out.print("<new> ");
+			System.out.println("<new>");
 			exp.imprime();
 		}
 		@Override
@@ -723,7 +718,7 @@ public class SintaxisAbstracta {
     		this.exp = exp;
         }
         public void imprime() {
-			System.out.print("<read>");
+			System.out.println("<read>");
 			exp.imprime();
 		}
 		@Override
@@ -739,7 +734,7 @@ public class SintaxisAbstracta {
     		this.exp = exp;
         }
         public void imprime() {
-			System.out.print("<write>");
+			System.out.println("<write>");
 			exp.imprime();
 		}
 		@Override
@@ -755,7 +750,7 @@ public class SintaxisAbstracta {
     		this.exp = exp;
         }
         public void imprime() {
-			System.out.print("<delete>");
+			System.out.println("<delete>");
 			exp.imprime();
 		}
 		@Override
@@ -773,9 +768,8 @@ public class SintaxisAbstracta {
     		this.bloq = bloq;
         }
         public void imprime() {
-			System.out.print("<while>");
+			System.out.println("<while>");
 			exp.imprime();
-			System.out.print(" ");
 			bloq.imprime();
 		}
 		@Override
@@ -796,12 +790,10 @@ public class SintaxisAbstracta {
     		this.bloq2 = bloq2;
         }
         public void imprime() {
-			System.out.print("<if> ");
+			System.out.println("<if>");
 			exp.imprime();
-			System.out.print(" ");
 			bloq1.imprime();
-			System.out.println();
-			System.out.print("<else> ");
+			System.out.println("<else>");
 			bloq2.imprime();
 		}
 		@Override
@@ -821,9 +813,8 @@ public class SintaxisAbstracta {
     		this.bloq = bloq;
         }
         public void imprime() {
-			System.out.print("<if>");
+			System.out.println("<if>");
 			exp.imprime();
-			System.out.print(" ");
 			bloq.imprime();
 		}
 		@Override
@@ -869,14 +860,16 @@ public class SintaxisAbstracta {
         }
         public void imprimeOpnd(Exp opnd, int minPrior) {
             if(opnd.prioridad() < minPrior){
-            	System.out.print("(");
+            	System.out.println("(");
             }
             opnd.imprime();
             if(opnd.prioridad() < minPrior) {
-              	System.out.print(")");
+              	System.out.println(")");
             }
         }
         public abstract int prioridad();
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
 
    	public static class SiExp extends ParamReales {
@@ -887,9 +880,9 @@ public class SintaxisAbstracta {
 	   	public LExp lexps() {return lexps;}
 		@Override
 		public void imprime() {
-			System.out.print("(");
+			System.out.println("(");
 			lexps.imprime();
-			System.out.print(")");
+			System.out.println(")");
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -902,7 +895,8 @@ public class SintaxisAbstracta {
 	   	}
 		@Override
 		public void imprime() {
-			System.out.print("()");
+			System.out.println("(");
+			System.out.println(")");
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -938,7 +932,7 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			lexps.imprime();
-			System.out.print(",");
+			System.out.println(",");
 			exp.imprime();
 		}
 		@Override
@@ -957,7 +951,7 @@ public class SintaxisAbstracta {
         }
         public void imprimeExpBin(Exp opnd0, String op, Exp opnd1, int np0, int np1) {
         	imprimeOpnd(opnd0,np0);
-        	System.out.print(" " + op + " ");
+			System.out.printf(FORMAT, op, leeFila(), leeCol());
         	imprimeOpnd(opnd1,np1);
         }
         public Exp opnd0() {return opnd0;}
@@ -972,7 +966,7 @@ public class SintaxisAbstracta {
         }
         public Exp opnd() {return opnd;}
         public void imprimeExpUn(String op, Exp opnd, int np) {
-        	System.out.print(op + " ");
+			System.out.printf(FORMAT, op, leeFila(), leeCol());
         	imprimeOpnd(opnd,np);
         }
     }
@@ -1005,7 +999,7 @@ public class SintaxisAbstracta {
         }
         @Override
 		public void imprime() {
-			imprimeExpBin(opnd0,"and",opnd1,4,3);
+			imprimeExpBin(opnd0,"<and>",opnd1,4,3);
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1023,7 +1017,7 @@ public class SintaxisAbstracta {
         }
         @Override
 		public void imprime() {
-			imprimeExpBin(opnd0,"or",opnd1,4,4);
+			imprimeExpBin(opnd0,"<or>",opnd1,4,4);
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1041,7 +1035,7 @@ public class SintaxisAbstracta {
         }
         @Override
 		public void imprime() {
-			imprimeExpBin(opnd0,"< ",opnd1,1,2);
+			imprimeExpBin(opnd0,"<",opnd1,1,2);
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1113,7 +1107,7 @@ public class SintaxisAbstracta {
         }
         @Override
 		public void imprime() {
-			imprimeExpBin(opnd0,"=",opnd1,1,2);
+			imprimeExpBin(opnd0,"==",opnd1,1,2);
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1259,7 +1253,7 @@ public class SintaxisAbstracta {
 		}
 		@Override
 		public void imprime() {
-			imprimeExpUn("not",opnd,5);
+			imprimeExpUn("<not>",opnd,5);
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1282,8 +1276,9 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			imprimeOpnd(opnd, 6);
-			imprimeExpUn("[",idx,0);
-        	System.out.print("]");
+			System.out.printf(FORMAT, "[", leeFila(), leeCol());
+			idx.imprime();
+        	System.out.println("]");
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1306,7 +1301,8 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			imprimeOpnd(opnd, 6);
-			System.out.print("."+campo);
+			System.out.println(".");
+			System.out.printf(FORMAT, campo, leeFila(), leeCol());
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1326,7 +1322,7 @@ public class SintaxisAbstracta {
 		@Override
 		public void imprime() {
 			imprimeOpnd(opnd, 6);
-			System.out.print("^");
+			System.out.printf(FORMAT, "^", leeFila(), leeCol());
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1345,7 +1341,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println(lit);
+			System.out.printf(FORMAT, lit, leeFila(), leeCol());
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1365,7 +1361,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println(lit);
+			System.out.printf(FORMAT, lit, leeFila(), leeCol());
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1385,7 +1381,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println(lit);
+			System.out.printf(FORMAT, lit, leeFila(), leeCol());
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1405,7 +1401,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println(lit);
+			System.out.printf(FORMAT, lit, leeFila(), leeCol());
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1424,7 +1420,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println("<true>");
+			System.out.printf(FORMAT, "<true>", leeFila(), leeCol());
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1442,7 +1438,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println("<false>");
+			System.out.printf(FORMAT, "<false>", leeFila(), leeCol());
 		}
 		@Override
 		public void procesa(Procesamiento p) {
@@ -1460,7 +1456,7 @@ public class SintaxisAbstracta {
         }
 		@Override
 		public void imprime() {
-			System.out.println("<null>");
+			System.out.printf(FORMAT, "<null>", leeFila(), leeCol());
 		}
 		@Override
 		public void procesa(Procesamiento p) {

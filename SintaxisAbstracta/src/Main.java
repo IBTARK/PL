@@ -30,7 +30,7 @@ public class Main {
 			System.out.println("IMPRESION RECURSIVA");
 			new ProcRecursivo().imprime(prog);
 			System.out.println("IMPRESION INTERPRETE");
-			//prog.imprime();
+			prog.imprime();
 			System.out.println("IMPRESION VISITANTE");
 			//prog.procesa(new Impresion());
 		}
