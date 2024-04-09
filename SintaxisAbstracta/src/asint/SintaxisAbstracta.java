@@ -69,12 +69,15 @@ public class SintaxisAbstracta {
     public static abstract class Decs extends Nodo {
     	public Decs() {
     	}
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
     
     public static abstract class LDecs extends Nodo {
         public LDecs() {
- 		   super();
         }
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
      }
     
     public static class SiDecs extends Decs {
@@ -97,7 +100,6 @@ public class SintaxisAbstracta {
     
     public static class NoDecs extends Decs {
     	public NoDecs() {
-    		super();
     	}
 		@Override
 		public void imprime() {} 
@@ -147,21 +149,29 @@ public class SintaxisAbstracta {
     public static abstract class Dec extends Nodo {
     	public Dec() {
     	}
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
     
     public static abstract class ParamForms extends Nodo {
     	public ParamForms() {
     	}
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
 
     public static abstract class LParams extends Nodo {
     	public LParams() {
     	}
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
     
     public static abstract class ParamForm extends Nodo {
     	public ParamForm() {
     	}
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
     
     public static class DecProc extends Dec {
@@ -350,6 +360,8 @@ public class SintaxisAbstracta {
     public static abstract class Tipo extends Nodo {
      	public Tipo() {
      	}
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
      
     public static class TArray extends Tipo {
@@ -480,6 +492,8 @@ public class SintaxisAbstracta {
     public static abstract class LCampos extends Nodo {
     	public LCampos() {
     	}
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
     
     public static class MuchosCamps extends LCampos{
@@ -549,17 +563,23 @@ public class SintaxisAbstracta {
     public static abstract class Instrs extends Nodo {
         public Instrs() {
         }
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
       
     public static abstract class LInstrs extends Nodo {
         public LInstrs() {
    		   	super();
         }
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
     
     public static abstract class Instr extends Nodo {
         public Instr() {
         }
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
      }
       
     public static class SiInstrs extends Instrs {
@@ -832,11 +852,15 @@ public class SintaxisAbstracta {
     public static abstract class ParamReales extends Nodo {
        	public ParamReales() {
        	}
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
 
     public static abstract class LExp extends Nodo {
        	public LExp() {
        	}
+    	@Override public void imprime() { throw new UnsupportedOperationException("Imprime() no soportado"); }
+    	@Override public void procesa(Procesamiento p) { throw new UnsupportedOperationException("Procesa() no soportado"); }
     }
 
     public static abstract class Exp extends Nodo {
