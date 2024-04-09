@@ -4,21 +4,28 @@ import asint.Procesamiento;
 import asint.SintaxisAbstracta.*;
 
 public class Impresion implements Procesamiento {
+
+	private static final String FORMAT = "%s$f:%d,c:%d$\n";
     
     private void imprimeOpnd(Exp opnd, int minPrior) {
        	if(opnd.prioridad() < minPrior){
-       		System.out.print("(");
+       		System.out.println("(");
        	}
        	opnd.procesa(this);
        	if(opnd.prioridad() < minPrior) {
-       		System.out.print(")");
+       		System.out.println(")");
        	}
     }
 
-    private void imprimeExpBin(Exp opnd0, String op, Exp opnd1, int np0, int np1) {
+    private void imprimeExpBin(Exp opnd0, String op, Exp opnd1, int np0, int np1, Exp exp) {
     	imprimeOpnd(opnd0,np0);
-    	System.out.print(" " + op + " ");
+		System.out.printf(FORMAT, op, exp.leeFila(), exp.leeCol());
     	imprimeOpnd(opnd1,np1);
+    }
+    
+    private void imprimeExpUn(String op, Exp opnd, int np, Exp a) {
+		System.out.printf(FORMAT, op, a.leeFila(), a.leeCol());
+    	imprimeOpnd(opnd,np);
     }
     
     @Override
@@ -31,14 +38,13 @@ public class Impresion implements Procesamiento {
     	System.out.println("{");
 		a.decs().procesa(this);
 		a.instrs().procesa(this);
-		System.out.print("\n}");
+		System.out.println("}");
 	}
 
 	@Override
 	public void procesa(SiDecs a) {
 		a.ldecs().procesa(this);
-		System.out.print("\n&&");
-		System.out.println();
+		System.out.println("&&");
 	}
 
 	@Override
@@ -48,7 +54,7 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(MuchasDecs a) {
 		a.ldecs().procesa(this);
-		System.out.print(";\n");
+		System.out.println(";");
 		a.dec().procesa(this);
 	}
 
@@ -59,39 +65,37 @@ public class Impresion implements Procesamiento {
 	
 	@Override
 	public void procesa(DecProc a) {
-		System.out.print("<proc>");
-		System.out.print(a.iden());
+		System.out.println("<proc>");
+		System.out.printf(FORMAT, a.iden(), a.leeFila(), a.leeCol());
 		a.params().procesa(this); 
-		System.out.print(" ");
 		a.bloq().procesa(this);
 	}
 	
 	
 	@Override
 	public void procesa(DecType a) {
-		System.out.print("<type>");
+		System.out.println("<type>");
 		a.tipo().procesa(this); 
-		System.out.print(" ");
-		System.out.print(a.iden());
+		System.out.printf(FORMAT, a.iden(), a.leeFila(), a.leeCol());
 	}
 	
 	@Override
 	public void procesa(DecVar a) {
 		a.tipo().procesa(this); 
-		System.out.print(" ");
-		System.out.print(a.iden());
+		System.out.printf(FORMAT, a.iden(), a.leeFila(), a.leeCol());
 	}
 
 	@Override
 	public void procesa(SiParam a) {
-		System.out.print("(");
+		System.out.println("(");
 		a.lparams().procesa(this);
-		System.out.print(")");
+		System.out.println(")");
 	}
 
 	@Override
 	public void procesa(NoParam a) {
-		System.out.print("()");
+		System.out.println("(");
+		System.out.println(")");
 	}
 
 	@Override
@@ -102,71 +106,74 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(MuchosParams a) {
 		a.lparam().procesa(this);
-		System.out.print(",");
+		System.out.println(",");
 		a.param().procesa(this);
 	}
 	
 	@Override
 	public void procesa(ParamFormRef a) {
 		a.tipo().procesa(this);
-		System.out.print(" & ");
-		System.out.print(a.id());
+		System.out.println("&");
+		System.out.printf(FORMAT, a.id(), a.leeFila(), a.leeCol());
 	}
 	
 	@Override
 	public void procesa(ParamFormal a) {
 		a.tipo().procesa(this);
-		System.out.print(" " + a.id());
+		System.out.printf(FORMAT, a.id(), a.leeFila(), a.leeCol());
 	}
 
 	@Override
 	public void procesa(TArray a) {
 		a.tipo().procesa(this);
-		System.out.print("["+a.litEnt()+"]");
+		System.out.println("[");
+		System.out.println(a.litEnt());
+		System.out.printf(FORMAT, "]", a.leeFila(), a.leeCol());
 	}
 	
 	@Override
 	public void procesa(TPunt a) {
-		System.out.print("^");
+		System.out.println("^");
 		a.tipo().procesa(this);
 	}
 
 	@Override
 	public void procesa(TInt a) {
-		System.out.print("<int>");
+		System.out.println("<int>");
 	}
 
 	@Override
 	public void procesa(TReal a) {
-		System.out.print("<real>");
+		System.out.println("<real>");
 	}
 
 	@Override
 	public void procesa(TBool a) {
-		System.out.print("<bool>");
+		System.out.println("<bool>");
 	}
 
 	@Override
 	public void procesa(TString a) {
-		System.out.print("<string>");
+		System.out.println("<string>");
 	}
 
 	@Override
 	public void procesa(TIden a) {
-		System.out.print(a.iden());
+		System.out.printf(FORMAT, a.iden(), a.leeFila(), a.leeCol());
 	}
 
 	@Override
 	public void procesa(TStruct a) {
-		System.out.println("<struct>{");
+		System.out.println("<struct>");
+		System.out.println("{");
 		a.lcampos().procesa(this);
-		System.out.print("\n}");
+		System.out.println("}");
 	}
 	
 	@Override
 	public void procesa(MuchosCamps a) {
 		a.lcampos().procesa(this);
-		System.out.println(", ");
+		System.out.println(",");
 		a.campo().procesa(this);
 	}
 	
@@ -178,7 +185,7 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(Campo a) {
 		a.tipo().procesa(this);
-		System.out.print(" " + a.iden());
+		System.out.printf(FORMAT, a.iden(), a.leeFila(), a.leeCol());
 	}
 	
 	@Override
@@ -193,7 +200,7 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(MuchasInstrs a) {
 		a.linstrs().procesa(this);
-		System.out.print(";\n");
+		System.out.println(";");
 		a.instr().procesa(this);
 	}
 	
@@ -204,70 +211,66 @@ public class Impresion implements Procesamiento {
 	
 	@Override
 	public void procesa(ArrobaInstr a) {
-		System.out.print("@");
+		System.out.println("@");
 		a.exp().procesa(this);
 	}
 	
 	@Override
 	public void procesa(ProcInstr a) {
-		System.out.print("<call>");
-		System.out.print(a.iden());
+		System.out.println("<call>");
+		System.out.printf(FORMAT, a.iden(), a.leeFila(), a.leeCol());
 		a.paramReales().procesa(this);
 	}
 	
 	@Override
 	public void procesa(NlInstr a) {
-		System.out.print("<nl>");
+		System.out.println("<nl>");
 	}
 	
 	@Override
 	public void procesa(NewInstr a) {
-		System.out.print("<new>");
+		System.out.println("<new>");
 		a.exp().procesa(this);
 	}
 	
 	@Override
 	public void procesa(ReadInstr a) {
-		System.out.print("<read>");
+		System.out.println("<read>");
 		a.exp().procesa(this);
 	}
 	
 	@Override
 	public void procesa(WriteInstr a) {
-		System.out.print("<write>");
+		System.out.println("<write>");
 		a.exp().procesa(this);
 	}
 	
 	@Override
 	public void procesa(DeleteInstr a) {
-		System.out.print("<delete>");
+		System.out.println("<delete>");
 		a.exp().procesa(this);
 	}
 	
 	@Override
 	public void procesa(WhileInstr a) {
-		System.out.print("<while>");
+		System.out.println("<while>");
 		a.exp().procesa(this);
-		System.out.print(" ");
 		a.bloq().procesa(this);
 	}
 	
 	@Override
 	public void procesa(IfElseInstr a) {
-		System.out.print("<if>");
+		System.out.println("<if>");
 		a.exp().procesa(this);
-		System.out.print(" ");
 		a.bloq1().procesa(this);
-		System.out.print("\n}");
-		System.out.print("<else> ");
+		System.out.println("<else>");
 		a.bloq2().procesa(this);
 	}
 	
 	@Override
 	public void procesa(IfInstr a) {
-		System.out.print("<if> ");
+		System.out.println("<if>");
 		a.exp().procesa(this);
-		System.out.print(" ");
 		a.bloq().procesa(this);
 	}
 	
@@ -278,14 +281,15 @@ public class Impresion implements Procesamiento {
 
 	@Override
 	public void procesa(SiExp a) {
-		System.out.print("(");
+		System.out.println("(");
 		a.lexps().procesa(this);
-		System.out.print(")");
+		System.out.println(")");
 	}
 
 	@Override
 	public void procesa(NoExp a) {
-		System.out.print("()");
+		System.out.println("(");
+		System.out.println(")");
 	}
 
 	@Override
@@ -296,144 +300,143 @@ public class Impresion implements Procesamiento {
 	@Override
 	public void procesa(MuchasExp a) {
 		a.lexp().procesa(this);
-		System.out.print(", ");
+		System.out.println(",");
 		a.exp().procesa(this);
 	}
 	
 	@Override
 	public void procesa(LitEnt a) {
-		System.out.print(a.lit());
+		System.out.printf(FORMAT, a.lit(), a.leeFila(), a.leeCol());
 	}
 	
 	@Override
 	public void procesa(LitReal a) {
-		System.out.print(a.lit());
+		System.out.printf(FORMAT, a.lit(), a.leeFila(), a.leeCol());
 	}
 	
 	@Override
 	public void procesa(Iden a) {
-		System.out.print(a.id());
+		System.out.printf(FORMAT, a.id(), a.leeFila(), a.leeCol());
 	}
 	
 	@Override
 	public void procesa(True a) {
-		a.imprime();
+		System.out.printf(FORMAT, "<true>", a.leeFila(), a.leeCol());
 	}
 	
 	@Override
 	public void procesa(False a) {
-		a.imprime();
+		System.out.printf(FORMAT, "<false>", a.leeFila(), a.leeCol());
 	}
 	
 	@Override
 	public void procesa(LitCad a) {
-		a.imprime();
+		System.out.printf(FORMAT, a.lit(), a.leeFila(), a.leeCol());
 	}
 	
 	@Override
 	public void procesa(Null a) {
-		a.imprime();
+		System.out.printf(FORMAT, "<null>", a.leeFila(), a.leeCol());
 	}
 	
 	@Override
 	public void procesa(Asignacion a) {
-		imprimeExpBin(a.opnd0(),"=",a.opnd1(),1,0);
+		imprimeExpBin(a.opnd0(),"=",a.opnd1(),1,0, a);
 	}
 
 	@Override
 	public void procesa(Suma a) {
-		imprimeExpBin(a.opnd0(),"+",a.opnd1(),2,3);
+		imprimeExpBin(a.opnd0(),"+",a.opnd1(),2,3, a);
 	}
 
 	@Override
 	public void procesa(Resta a) {
-		imprimeExpBin(a.opnd0(),"-",a.opnd1(),3,3);
+		imprimeExpBin(a.opnd0(),"-",a.opnd1(),3,3, a);
 	}
 	
 	@Override
 	public void procesa(And a) {
-		imprimeExpBin(a.opnd0(),"and",a.opnd1(),4,5);
+		imprimeExpBin(a.opnd0(),"<and>",a.opnd1(),4,5, a);
 	}
 	
 	@Override
 	public void procesa(Or a) {
-		imprimeExpBin(a.opnd0(),"or",a.opnd1(),4,5);
+		imprimeExpBin(a.opnd0(),"<or>",a.opnd1(),4,5, a);
 	}
 	
 	@Override
 	public void procesa(Mul a) {
-		imprimeExpBin(a.opnd0(),"*",a.opnd1(),4,5);
+		imprimeExpBin(a.opnd0(),"*",a.opnd1(),4,5, a);
 	}
 	
 	@Override
 	public void procesa(Div a) {
-		imprimeExpBin(a.opnd0(),"/",a.opnd1(),4,5);
+		imprimeExpBin(a.opnd0(),"/",a.opnd1(),4,5, a);
 	}
 	
 	@Override
 	public void procesa(Mod a) {
-		imprimeExpBin(a.opnd0(),"%",a.opnd1(),4,5);
+		imprimeExpBin(a.opnd0(),"%",a.opnd1(),4,5, a);
 	}
 	
 	@Override
 	public void procesa(Menor a) {
-		imprimeExpBin(a.opnd0(),"<",a.opnd1(),1,2);
+		imprimeExpBin(a.opnd0(),"<",a.opnd1(),1,2, a);
 	}
 	
 	@Override
 	public void procesa(Mayor a) {
-		imprimeExpBin(a.opnd0(),">",a.opnd1(),1,2);
+		imprimeExpBin(a.opnd0(),">",a.opnd1(),1,2, a);
 	}
 	
 	@Override
 	public void procesa(MenorIgual a) {
-		imprimeExpBin(a.opnd0(),"<=",a.opnd1(),1,2);
+		imprimeExpBin(a.opnd0(),"<=",a.opnd1(),1,2, a);
 	}
 	
 	@Override
 	public void procesa(MayorIgual a) {
-		imprimeExpBin(a.opnd0(),">=",a.opnd1(),1,2);
+		imprimeExpBin(a.opnd0(),">=",a.opnd1(),1,2, a);
 	}
 	
 	@Override
 	public void procesa(Igual a) {
-		imprimeExpBin(a.opnd0(),"==",a.opnd1(),1,2);
+		imprimeExpBin(a.opnd0(),"==",a.opnd1(),1,2, a);
 	}
 	
 	@Override
 	public void procesa(Desigual a) {
-		imprimeExpBin(a.opnd0(),"!=",a.opnd1(),1,2);
+		imprimeExpBin(a.opnd0(),"!=",a.opnd1(),1,2, a);
 	}
 
 	@Override
 	public void procesa(Array a) {
 		imprimeOpnd(a.opnd(), 6);
-    	System.out.print("[");
-    	imprimeOpnd(a.idx(), 0);
-    	System.out.print("]");
+		System.out.printf(FORMAT, "[", a.leeFila(), a.leeCol());
+    	a.idx().procesa(this);
+    	System.out.println("]");
 	}
 
 	@Override
 	public void procesa(ExpCampo a) {
 		imprimeOpnd(a.opnd(), 6);
-		System.out.print("."+a.campo());
+		System.out.println(".");
+		System.out.printf(FORMAT, a.campo(), a.leeFila(), a.leeCol());
 	}
 
 	@Override
 	public void procesa(Punt a) {
 		imprimeOpnd(a.opnd(), 6);
-		System.out.print("^");
+		System.out.printf(FORMAT, "^", a.leeFila(), a.leeCol());
 	}
 
 	@Override
 	public void procesa(Neg a) {
-		System.out.println("-");
-		imprimeOpnd(a.opnd(), 5);
+		imprimeExpUn("-", a.opnd(), 5, a);
 	}
 
 	@Override
 	public void procesa(Not a) {
-		System.out.println("<not>");
-		imprimeOpnd(a.opnd(), 5);
+		imprimeExpUn("<not>", a.opnd(), 5, a);
 	}
 }

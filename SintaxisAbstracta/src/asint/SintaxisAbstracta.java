@@ -825,7 +825,7 @@ public class SintaxisAbstracta {
 		public Bloque bloq() {return bloq;} 
     }
     
-    public static class BloqueInstr  extends  Instr {
+    public static class BloqueInstr extends Instr {
     	private Bloque bloq;
         public BloqueInstr(Bloque bloq) {
     		this.bloq = bloq;
