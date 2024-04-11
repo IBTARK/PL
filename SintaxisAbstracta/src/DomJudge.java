@@ -3,6 +3,8 @@ import java.io.Reader;
 
 import alex.AnalizadorLexicoTiny;
 import asint.SintaxisAbstracta.Prog;
+import c_ast_descendente.ParseException;
+import errors.GestionErroresTiny.ErrorLexico;
 import errors.GestionErroresTiny.ErrorSintactico;
 import procesamiento.Impresion;
 import procesamiento.ProcRecursivo;
@@ -33,7 +35,10 @@ public class DomJudge {
 			System.out.println("IMPRESION VISITANTE");
 			prog.procesa(new Impresion());
 		}
-		catch (ErrorSintactico e) {
+		catch (ErrorSintactico | ParseException e) {
+			System.out.println("ERROR_SINTACTICO");
+		}
+		catch (ErrorLexico e) {
 			System.out.println("ERROR_SINTACTICO");
 		}
 	}

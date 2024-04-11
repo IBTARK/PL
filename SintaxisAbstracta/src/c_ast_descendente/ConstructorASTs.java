@@ -759,8 +759,8 @@ Token op; Exp e2,e1;
       case 55:{
         op = OP1();
         e2 = E2();
-        e1 = RE1(sem.mkop1(op.image,eh,e2));
-{if ("" != null) return (Exp) e1.ponFila(op.beginLine).ponCol(op.beginColumn);}
+        e1 = RE1((Exp) sem.mkop1(op.image,eh,e2).ponFila(op.beginLine).ponCol(op.beginColumn));
+{if ("" != null) return e1;}
         break;
         }
       default:
@@ -816,8 +816,8 @@ Exp e3,rec2; Token op;
       case 48:{
         op = jj_consume_token(48);
         e3 = E3();
-        rec2 = REC2(sem.suma(ah, e3));
-{if ("" != null) return (Exp) rec2.ponFila(op.beginLine).ponCol(op.beginColumn);}
+        rec2 = REC2((Exp) sem.suma(ah, e3).ponFila(op.beginLine).ponCol(op.beginColumn));
+{if ("" != null) return rec2;}
         break;
         }
       default:
@@ -893,8 +893,8 @@ Token op; Exp e5,e4;
       case 58:{
         op = OP4();
         e5 = E5();
-        e4 = RE4(sem.mkop4(op.image,eh,e5));
-{if ("" != null) return (Exp) e4.ponFila(op.beginLine).ponCol(op.beginColumn);}
+        e4 = RE4((Exp) sem.mkop4(op.image,eh,e5).ponFila(op.beginLine).ponCol(op.beginColumn));
+{if ("" != null) return e4;}
         break;
         }
       default:
@@ -964,21 +964,21 @@ Exp e0,re6; Token id,op;
         op = jj_consume_token(42);
         e0 = E0();
         jj_consume_token(43);
-        re6 = RE6(sem.array(ah,e0));
-{if ("" != null) return (Exp) re6.ponFila(op.beginLine).ponCol(op.beginColumn);}
+        re6 = RE6((Exp) sem.array(ah,e0).ponFila(op.beginLine).ponCol(op.beginColumn));
+{if ("" != null) return re6;}
         break;
         }
       case 49:{
         jj_consume_token(49);
         id = jj_consume_token(iden);
         re6 = RE6((Exp) sem.expCampo(ah,id.image).ponFila(id.beginLine).ponCol(id.beginColumn));
-{if ("" != null) return (Exp) re6.ponFila(id.beginLine).ponCol(id.beginColumn);}
+{if ("" != null) return re6;}
         break;
         }
       case 44:{
         op = jj_consume_token(44);
-        re6 = RE6(sem.punt(ah));
-{if ("" != null) return (Exp) re6.ponFila(op.beginLine).ponCol(op.endColumn);}
+        re6 = RE6((Exp) sem.punt(ah).ponFila(op.beginLine).ponCol(op.beginColumn));
+{if ("" != null) return re6;}
         break;
         }
       default:

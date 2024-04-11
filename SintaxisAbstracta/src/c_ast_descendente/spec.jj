@@ -368,8 +368,8 @@ PARSER_END(ConstructorASTs)
 	Exp RE1(Exp eh): 
 		{Token op; Exp e2,e1;} 
 		{
-			op = OP1() e2 = E2() e1 = RE1(sem.mkop1(op.image,eh,e2)) 
-			{return (Exp) e1.ponFila(op.beginLine).ponCol(op.beginColumn);}
+			op = OP1() e2 = E2() e1 = RE1((Exp) sem.mkop1(op.image,eh,e2).ponFila(op.beginLine).ponCol(op.beginColumn)) 
+			{return e1;}
 			|
 			{return eh;}
 		}
@@ -393,8 +393,8 @@ PARSER_END(ConstructorASTs)
 	Exp REC2(Exp ah):
 		{Exp e3,rec2; Token op;}
 		{
-			op = "+" e3 = E3() rec2 = REC2(sem.suma(ah, e3))
-			{return (Exp) rec2.ponFila(op.beginLine).ponCol(op.beginColumn);}
+			op = "+" e3 = E3() rec2 = REC2((Exp) sem.suma(ah, e3).ponFila(op.beginLine).ponCol(op.beginColumn))
+			{return rec2;}
 			|
 			{return ah;}
 		}
@@ -428,8 +428,8 @@ PARSER_END(ConstructorASTs)
 	Exp RE4(Exp eh): 
 		{Token op; Exp e5,e4;} 
 		{
-			op = OP4() e5 = E5() e4 = RE4(sem.mkop4(op.image,eh,e5)) 
-			{return (Exp) e4.ponFila(op.beginLine).ponCol(op.beginColumn);}
+			op = OP4() e5 = E5() e4 = RE4((Exp) sem.mkop4(op.image,eh,e5).ponFila(op.beginLine).ponCol(op.beginColumn)) 
+			{return e4;}
 			|
 			{return eh;}
 		}
@@ -454,14 +454,14 @@ PARSER_END(ConstructorASTs)
 	Exp RE6(Exp ah): 
 		{Exp e0,re6; Token id,op;}
 		{
-			op = "[" e0 = E0() "]" re6 = RE6(sem.array(ah,e0))
-			{return (Exp) re6.ponFila(op.beginLine).ponCol(op.beginColumn);}
+			op = "[" e0 = E0() "]" re6 = RE6((Exp) sem.array(ah,e0).ponFila(op.beginLine).ponCol(op.beginColumn))
+			{return re6;}
 			|
 			"." id = <iden> re6 = RE6((Exp) sem.expCampo(ah,id.image).ponFila(id.beginLine).ponCol(id.beginColumn))
-			{return (Exp) re6.ponFila(id.beginLine).ponCol(id.beginColumn);}
+			{return re6;}
 			|
-			op = "^" re6 = RE6(sem.punt(ah))
-			{return (Exp) re6.ponFila(op.beginLine).ponCol(op.endColumn);}
+			op = "^" re6 = RE6((Exp) sem.punt(ah).ponFila(op.beginLine).ponCol(op.beginColumn))
+			{return re6;}
 			|
 			{return ah;}
 		}
