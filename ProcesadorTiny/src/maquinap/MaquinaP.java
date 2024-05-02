@@ -152,7 +152,7 @@ public class MaquinaP {
       public String toString() {return "copia("+tam+")";};
    }
    
-   private IApilaind IAPILAIND;
+   private IApilaind FETCH;
    private class IApilaind implements Instruccion {
       public void ejecuta() {
         int dir = pilaEvaluacion.pop().valorInt();
@@ -164,7 +164,7 @@ public class MaquinaP {
       public String toString() {return "apila-ind";};
    }
 
-   private IDesapilaind IDESAPILAIND;
+   private IDesapilaind STORE;
    private class IDesapilaind implements Instruccion {
       public void ejecuta() {
         Valor valor = pilaEvaluacion.pop();
@@ -276,9 +276,9 @@ public class MaquinaP {
    }
    
    
-   private class IApilad implements Instruccion {
+   private class IApilaDisp implements Instruccion {
        private int nivel;
-       public IApilad(int nivel) {
+       public IApilaDisp(int nivel) {
          this.nivel = nivel;  
        }
        public void ejecuta() {
@@ -291,7 +291,7 @@ public class MaquinaP {
 
    }
    
-   private Instruccion IIRIND;
+   private Instruccion IIRD;
    private class IIrind implements Instruccion {
        public void ejecuta() {
           pc = pilaEvaluacion.pop().valorInt();  
@@ -301,25 +301,46 @@ public class MaquinaP {
        }
    }
 
-   public Instruccion suma() {return ISUMA;}
-   public Instruccion mul() {return IMUL;}
-   public Instruccion and() {return IAND;}
+   public Instruccion desapila() {return DESAPILA;}
    public Instruccion apilaInt(int val) {return new IApilaInt(val);}
    public Instruccion apilaBool(boolean val) {return new IApilaBool(val);}
-   public Instruccion apilaDisp(int nivel) {return new IApilad(nivel);}
-   public Instruccion apilaInd() {return IAPILAIND;}
-   public Instruccion desapilaInd() {return IDESAPILAIND;}
+   public Instruccion apilaString(String val) {return new IApilaString(val);}
+   public Instruccion apilaDir(int val) {return new IApilaDir(val);}
+   public Instruccion desapilaDir(int val) {return new IDesapilaDir(val);}
+   public Instruccion castReal() {return CASTREAL;}
+   public Instruccion fetch() {return FETCH;}
+   public Instruccion store() {return STORE;}
    public Instruccion copia(int tam) {return new ICopia(tam);}
-   public Instruccion irA(int dir) {return new IIrA(dir);}
-   public Instruccion irF(int dir) {return new IIrF(dir);}
-   public Instruccion irInd() {return IIRIND;}
+   public Instruccion suma() {return ISUMA;}
+   public Instruccion resta() {return IRESTA;}
+   public Instruccion mul() {return IMUL;}
+   public Instruccion div() {return IDIV;}
+   public Instruccion mod() {return IMOD;}
+   public Instruccion and() {return IAND;}
+   public Instruccion or() {return IOR;}
+   public Instruccion mayor() {return IMAYOR;}
+   public Instruccion menor() {return IMENOR;}
+   public Instruccion mayorIgual() {return IMAYORIGUAL;}
+   public Instruccion menorIgual() {return IMENORIGUAL;}
+   public Instruccion igual() {return IIGUAL;}
+   public Instruccion desigual() {return IDESIGUAL;}
+   public Instruccion not() {return INOT;}
+   public Instruccion menosUnario() {return IMENOS;}
    public Instruccion alloc(int tam) {return new IAlloc(tam);} 
    public Instruccion dealloc(int tam) {return new IDealloc(tam);} 
+   public Instruccion irA(int dir) {return new IIrA(dir);}
+   public Instruccion irF(int dir) {return new IIrF(dir);}
+   public Instruccion irD() {return IIRD;}
    public Instruccion activa(int nivel,int tam, int dirretorno) {return new IActiva(nivel,tam,dirretorno);}
    public Instruccion desactiva(int nivel, int tam) {return new IDesactiva(nivel,tam);}
+   public Instruccion apilaDisp(int nivel) {return new IApilaDisp(nivel);}
    public Instruccion desapilaDisp(int nivel) {return new IDesapilad(nivel);}
    public Instruccion dup() {return IDUP;}
    public Instruccion stop() {return ISTOP;}
+   public Instruccion read() {return IREAD;}
+   public Instruccion write() {return IWRITE;}
+   public Instruccion idx(int tam) {return new IIdx(tam);}
+   public Instruccion acc(int tam) {return new IAcc(tam);}
    public void emit(Instruccion i) {
       codigoP.add(i); 
    }
@@ -338,9 +359,9 @@ public class MaquinaP {
       ISUMA = new ISuma();
       IAND = new IAnd();
       IMUL = new IMul();
-      IAPILAIND = new IApilaind();
-      IDESAPILAIND = new IDesapilaind();
-      IIRIND = new IIrind();
+      FETCH = new IApilaind();
+      STORE = new IDesapilaind();
+      IIRD = new IIrind();
       IDUP = new IDup();
       ISTOP = new IStop();
       gestorPilaActivaciones = new GestorPilaActivaciones(tamdatos,(tamdatos+tampila)-1,ndisplays); 
@@ -394,7 +415,7 @@ public class MaquinaP {
        m.emit(m.apilaInt(0));
        m.emit(m.suma());
        m.emit(m.apilaInt(5));
-       m.emit(m.desapilaInd());
+       m.emit(m.store());
        m.emit(m.desapilaDisp(1));
        m.emit(m.irA(9));
        m.emit(m.stop());
@@ -404,7 +425,7 @@ public class MaquinaP {
        m.emit(m.suma());
        m.emit(m.copia(1));
        m.emit(m.desactiva(1,1));
-       m.emit(m.irInd());       
+       m.emit(m.irD());       
        m.muestraCodigo();
        m.ejecuta();
        m.muestraEstado();

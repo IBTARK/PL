@@ -1,5 +1,8 @@
 package procesamiento;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import asint.Procesamiento;
 import asint.SintaxisAbstracta.And;
 import asint.SintaxisAbstracta.Array;
@@ -14,6 +17,7 @@ import asint.SintaxisAbstracta.DecVar;
 import asint.SintaxisAbstracta.DeleteInstr;
 import asint.SintaxisAbstracta.Desigual;
 import asint.SintaxisAbstracta.Div;
+import asint.SintaxisAbstracta.Exp;
 import asint.SintaxisAbstracta.ExpCampo;
 import asint.SintaxisAbstracta.False;
 import asint.SintaxisAbstracta.Iden;
@@ -41,6 +45,7 @@ import asint.SintaxisAbstracta.NoDecs;
 import asint.SintaxisAbstracta.NoExp;
 import asint.SintaxisAbstracta.NoInstrs;
 import asint.SintaxisAbstracta.NoParam;
+import asint.SintaxisAbstracta.Nodo;
 import asint.SintaxisAbstracta.Not;
 import asint.SintaxisAbstracta.Null;
 import asint.SintaxisAbstracta.Or;
@@ -72,8 +77,58 @@ import asint.SintaxisAbstracta.UnaExp;
 import asint.SintaxisAbstracta.UnaInstr;
 import asint.SintaxisAbstracta.WhileInstr;
 import asint.SintaxisAbstracta.WriteInstr;
+import maquinap.MaquinaP;
 
 public class GeneracionCodigo implements Procesamiento {
+	
+	private List<DecProc> procPendientes = new ArrayList<>();
+	private MaquinaP m;
+	
+	
+	private boolean esDesignador(Exp e) {
+		Class<?> c = e.getClass();
+		return c == Iden.class
+			|| c == Array.class
+			|| c == ExpCampo.class
+			|| c == Punt.class;
+	}
+	
+	private Nodo ref(Nodo t) {
+		if (t.getClass() == TIden.class)
+			return ref(((DecType) t.getVinculo()).tipo());
+		return t;
+	}
+	
+	private void accVal(Exp e) {
+		if (esDesignador(e))
+			m.emit(m.fetch());
+	}
+	
+	private void genCodBin(Exp e1, Exp e2) {
+		e1.procesa(this);
+		accVal(e1);
+		e2.procesa(this);
+		accVal(e2);
+	}
+	
+	private void castAritm(Exp exp, Exp e) {
+		if (ref(e.getTipo()).getClass() == TReal.class && ref(exp.getTipo()).getClass() == TInt.class)
+			m.emit(m.castReal());
+	}
+	
+	private void genCodBinAritm(Exp e1, Exp e2, Exp e) {
+		e1.procesa(this);
+		accVal(e1);
+		castAritm(e1, e);
+		e2.procesa(this);
+		accVal(e2);
+		castAritm(e2, e);
+	}
+	
+	
+	public GeneracionCodigo(MaquinaP mp) {
+		m = mp;
+	}
 
 	@Override
 	public void procesa(Prog a) {
@@ -130,28 +185,16 @@ public class GeneracionCodigo implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(SiParam a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(SiParam a) {}
 
 	@Override
-	public void procesa(NoParam a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NoParam a) {}
 
 	@Override
-	public void procesa(MuchosParams a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(MuchosParams a) {}
 
 	@Override
-	public void procesa(UnParam a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(UnParam a) {}
 
 	@Override
 	public void procesa(ParamFormRef a) {
@@ -178,40 +221,22 @@ public class GeneracionCodigo implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(TInt a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TInt a) {}
 
 	@Override
-	public void procesa(TReal a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TReal a) {}
 
 	@Override
-	public void procesa(TBool a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TBool a) {}
 
 	@Override
-	public void procesa(TString a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TString a) {}
 
 	@Override
-	public void procesa(TIden a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TIden a) {}
 
 	@Override
-	public void procesa(TStruct a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TStruct a) {}
 
 	@Override
 	public void procesa(MuchosCamps a) {
@@ -323,26 +348,21 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(SiExp a) {
-		// TODO Auto-generated method stub
-		
+		a.lexps().procesa(this);
 	}
 
 	@Override
-	public void procesa(NoExp a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NoExp a) {}
 
 	@Override
 	public void procesa(MuchasExp a) {
-		// TODO Auto-generated method stub
-		
+		a.lexp().procesa(this);
+		a.exp().procesa(this);
 	}
 
 	@Override
 	public void procesa(UnaExp a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
 	}
 
 	@Override
@@ -353,8 +373,8 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Suma a) {
-		// TODO Auto-generated method stub
-		
+		genCodBinAritm(a.opnd0(), a.opnd1(), a);
+		m.emit(m.suma());
 	}
 
 	@Override
@@ -371,8 +391,8 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Resta a) {
-		// TODO Auto-generated method stub
-		
+		genCodBinAritm(a.opnd0(), a.opnd1(), a);
+		m.emit(m.resta());
 	}
 
 	@Override
@@ -437,20 +457,23 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Array a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd().procesa(this);
+		a.idx().procesa(this);
+		accVal(a.idx());
+		m.emit(m.idx(ref(a.opnd()).getTipo().getTam()));
 	}
 
 	@Override
 	public void procesa(ExpCampo a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd();
+		m.emit(m.apilaString(a.campo()));
+		m.emit(m.acc(a.getTipo().getTam()));
 	}
 
 	@Override
 	public void procesa(Punt a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd().procesa(this);
+		m.emit(m.fetch());
 	}
 
 	@Override
