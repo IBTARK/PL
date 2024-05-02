@@ -151,27 +151,30 @@ public class Tipado implements Procesamiento {
     private boolean unificables (Set<String> c, Nodo t0, Nodo t1){
 		Nodo t2 = ref(t0);
 		Nodo t3 = ref(t1);
-        if (t2 == t3 && (t2 == tBool() || t2 == tInt() || t2 == tString())){
+        if ((t2 == t3) && (t2 == tBool() || t2 == tInt() || t2 == tString())){
             return true;
         }
-        else if T0’ == tReal() and (T1’== tInt() or T1’ == tReal()) then 
-            return true
-        else if T0’ == tArray(T’’,litEnt(e1)) and T1’ == tArray(T’’’,litEnt(e2)) then
-            if e1 == e2 then
-                return sonUnificables(T’’, T’’’)
-            else
-                return false
-            end if
+        else if (t2 == tReal() && (t3== tInt() || t3 == tReal())){ 
+            return true;
+        }
+        else if (t2 == tArray(T’’,litEnt(e1)) and t3 == tArray(T’’’,litEnt(e2))){
+            if (e1 == e2){
+                return sonUnificables(T’’, T’’’);
+            }
+            else {
+                return false;
+            }
+        }
         else if T0’ == tStruct(LC1) and T1’ == tStruct(LC2) then 
             return compatibles(LC1, LC2)
         else if (T0’ == tPunt(T’’) and T1 == null) then
             return true
         else if (T0’ == tPunt(T’’) and T1’ == tPunt(T’’’)) then
             return sonUnificables(T’’, T’’’)
-        else
+        else {
             return false
+        }
         end if
-    end let
 
 	}
 

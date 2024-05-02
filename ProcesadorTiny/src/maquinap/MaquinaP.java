@@ -286,7 +286,7 @@ public class MaquinaP {
          pc++;
        }
        public String toString() {
-          return "apilad("+nivel+")";                 
+          return "apilad("+nivel+")";
        }
 
    }
