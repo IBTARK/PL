@@ -25,6 +25,10 @@ public class SintaxisAbstracta {
 	    public int leeCol() {
 	    	return col; 
 	    }
+	    @Override
+	    public boolean equals(Object o) {
+	    	return this.getClass() == o.getClass();
+	    }
 	    public abstract void imprime();
 	    public abstract void procesa(Procesamiento p);
 		public Nodo getVinculo() {

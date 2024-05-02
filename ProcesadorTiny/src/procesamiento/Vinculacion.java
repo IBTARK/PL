@@ -121,9 +121,9 @@ public class Vinculacion implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(SiDecs a) {
-		// TODO Auto-generated method stub
-		
+	public void procesa(SiDecs a) { //He hecho este como ejemplo de dos pasadas
+		a.ldecs().procesa(this);
+		a.ldecs().procesa(new Vinculacion2());
 	}
 
 	@Override
@@ -511,4 +511,124 @@ public class Vinculacion implements Procesamiento {
 		
 	}
 
+	
+	
+	public class Vinculacion2 extends ProcesamientoAuxiliar {
+
+		@Override
+		public void procesa(MuchasDecs a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(UnaDec a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(DecProc a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(DecType a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(DecVar a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(SiParam a) {
+			a.lparams().procesa(this);
+		}
+
+		@Override
+		public void procesa(NoParam a) {}
+
+		@Override
+		public void procesa(MuchosParams a) {
+			a.lparam().procesa(this);
+			a.param().procesa(this);
+		}
+
+		@Override
+		public void procesa(UnParam a) {
+			a.param().procesa(this);
+		}
+
+		@Override
+		public void procesa(ParamFormRef a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(ParamFormal a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(TArray a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(TPunt a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(TInt a) {}
+
+		@Override
+		public void procesa(TReal a) {}
+
+		@Override
+		public void procesa(TBool a) {}
+
+		@Override
+		public void procesa(TString a) {}
+
+		@Override
+		public void procesa(TIden a) {}
+
+		@Override
+		public void procesa(TStruct a) {
+			a.lcampos().procesa(this);
+		}
+
+		@Override
+		public void procesa(MuchosCamps a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(UnCamp a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(Campo a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		Nodo sol() {
+			return null;
+		}
+	}
 }

@@ -76,10 +76,6 @@ import procesamiento.Vinculacion.TablaSimbolos;
 
 public class Vinculacion2 implements Procesamiento {
 	
-	public class ErrorVinculacion extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
-	
 	private TablaSimbolos ts;
 	public Vinculacion2(TablaSimbolos t) {
 		ts = t;

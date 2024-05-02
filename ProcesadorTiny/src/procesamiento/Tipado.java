@@ -41,6 +41,7 @@ import asint.SintaxisAbstracta.NoDecs;
 import asint.SintaxisAbstracta.NoExp;
 import asint.SintaxisAbstracta.NoInstrs;
 import asint.SintaxisAbstracta.NoParam;
+import asint.SintaxisAbstracta.Nodo;
 import asint.SintaxisAbstracta.Not;
 import asint.SintaxisAbstracta.Null;
 import asint.SintaxisAbstracta.Or;
@@ -74,6 +75,50 @@ import asint.SintaxisAbstracta.WhileInstr;
 import asint.SintaxisAbstracta.WriteInstr;
 
 public class Tipado implements Procesamiento {
+	
+	public static class ErrorTipado extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+	}
+	
+	public static class Ok extends Nodo {
+		@Override public void imprime() {}
+		@Override public void procesa(Procesamiento p) {}
+	}
+	
+	public static class Error extends Nodo {
+		@Override public void imprime() {}
+		@Override public void procesa(Procesamiento p) {}
+	}
+	
+	private static final Ok OK = new Ok();
+	private static final Error ERROR = new Error();
+	
+	private Nodo procesaTipo(ProcesamientoAuxiliar p, Nodo a) {
+		a.procesa(p);
+		return p.sol();
+	}
+	
+	private Nodo ref(Nodo t) {
+		if (t.getClass() == TIden.class)
+			return ref(((DecType) t.getVinculo()).tipo());
+		return t;
+	}
+	
+	private Nodo ambosOk(Nodo t1, Nodo t2) {
+		if (t1 == OK && t2 == OK)
+			return OK;
+		return ERROR;
+	}
+	
+	private Nodo tipadoBinArit(Nodo t0, Nodo t1) {
+		Nodo tt0 = ref(t0), tt1 = ref(t1);
+		if (tt0.equals(tt1) && tt0.equals(new TInt()))
+			return new TInt();
+		else if ((tt0.getClass() == TReal.class || tt0.getClass() == TInt.class)
+			  && (tt1.getClass() == TReal.class || tt1.getClass() == TInt.class))
+			return new TReal();
+		return ERROR;
+	}
 
 	@Override
 	public void procesa(Prog a) {
@@ -130,28 +175,16 @@ public class Tipado implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(SiParam a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(SiParam a) {}
 
 	@Override
-	public void procesa(NoParam a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NoParam a) {}
 
 	@Override
-	public void procesa(MuchosParams a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(MuchosParams a) {}
 
 	@Override
-	public void procesa(UnParam a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(UnParam a) {}
 
 	@Override
 	public void procesa(ParamFormRef a) {
@@ -178,40 +211,22 @@ public class Tipado implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(TInt a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TInt a) {}
 
 	@Override
-	public void procesa(TReal a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TReal a) {}
 
 	@Override
-	public void procesa(TBool a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TBool a) {}
 
 	@Override
-	public void procesa(TString a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TString a) {}
 
 	@Override
-	public void procesa(TIden a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TIden a) {}
 
 	@Override
-	public void procesa(TStruct a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TStruct a) {}
 
 	@Override
 	public void procesa(MuchosCamps a) {
@@ -323,26 +338,32 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(SiExp a) {
-		// TODO Auto-generated method stub
-		
+		a.lexps().procesa(this);
+		a.setTipo(a.lexps().getTipo());
 	}
 
 	@Override
 	public void procesa(NoExp a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(OK);
 	}
 
 	@Override
 	public void procesa(MuchasExp a) {
-		// TODO Auto-generated method stub
-		
+		a.lexp().procesa(this);
+		a.exp().procesa(this);
+		if (a.exp().getTipo() != ERROR)
+			a.setTipo(a.lexp().getTipo());
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override
 	public void procesa(UnaExp a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		if (a.exp().getTipo() != ERROR)
+			a.setTipo(OK);
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override
@@ -353,8 +374,7 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Suma a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
@@ -371,8 +391,7 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Resta a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
@@ -437,20 +456,31 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Array a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd().procesa(this);
+		a.idx().procesa(this);
+		Nodo t = ref(a.opnd().getTipo());
+		if (t.getClass() == TArray.class && ref(a.idx().getTipo()).getClass() == TInt.class)
+			a.setTipo(((TArray) t).tipo());
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override
 	public void procesa(ExpCampo a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd().procesa(this);
+		Nodo t = ref(a.opnd().getTipo());
+		if (t.getClass() == TStruct.class)
+			a.setTipo(new TieneCampo(a.campo()).resuelve(((TStruct) t).lcampos()));
 	}
 
 	@Override
 	public void procesa(Punt a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd().procesa(this);
+		Nodo t = ref(a.opnd().getTipo());
+		if (t.getClass() == TPunt.class)
+			a.setTipo(((TPunt) t).tipo());
+		else 
+			a.setTipo(ERROR);
 	}
 
 	@Override
@@ -500,5 +530,31 @@ public class Tipado implements Procesamiento {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
+	
+	private static class TieneCampo extends ProcesamientoAuxiliar {
+		String id;
+		Nodo sol;
+		public TieneCampo(String id) {
+			this.id = id;
+		}
+		@Override
+		public void procesa(MuchosCamps a) {
+			if (a.campo().iden().equals(id))
+				sol = OK;
+			else
+				a.lcampos().procesa(this);
+		}
+		@Override
+		public void procesa(UnCamp a) {
+			if (a.campo().iden().equals(id))
+				sol = OK;
+			else
+				sol = ERROR;
+		}
+		@Override
+		public Nodo sol() {
+			return sol;
+		}
+	}
 }
