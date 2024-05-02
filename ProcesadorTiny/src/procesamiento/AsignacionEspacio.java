@@ -41,6 +41,7 @@ import asint.SintaxisAbstracta.NoDecs;
 import asint.SintaxisAbstracta.NoExp;
 import asint.SintaxisAbstracta.NoInstrs;
 import asint.SintaxisAbstracta.NoParam;
+import asint.SintaxisAbstracta.Nodo;
 import asint.SintaxisAbstracta.Not;
 import asint.SintaxisAbstracta.Null;
 import asint.SintaxisAbstracta.Or;
@@ -74,11 +75,20 @@ import asint.SintaxisAbstracta.WhileInstr;
 import asint.SintaxisAbstracta.WriteInstr;
 
 public class AsignacionEspacio implements Procesamiento {
+	
+	private int dir, nivel, maxDir;
+	
+	private void incrDir(int n) {
+		dir += n;
+		if (dir > maxDir)
+			maxDir = dir;
+	}
 
 	@Override
 	public void procesa(Prog a) {
-		// TODO Auto-generated method stub
-		
+		nivel = 0;
+		a.bloq().procesa(this);
+		a.bloq().procesa(new AsignacionEspacio2());
 	}
 
 	@Override
@@ -131,26 +141,21 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(SiParam a) {
-		// TODO Auto-generated method stub
-		
+		a.lparams().procesa(this);
 	}
 
 	@Override
-	public void procesa(NoParam a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NoParam a) {}
 
 	@Override
 	public void procesa(MuchosParams a) {
-		// TODO Auto-generated method stub
-		
+		a.lparam().procesa(this);
+		a.param().procesa(this);
 	}
 
 	@Override
 	public void procesa(UnParam a) {
-		// TODO Auto-generated method stub
-		
+		a.param().procesa(this);
 	}
 
 	@Override
@@ -179,38 +184,34 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(TInt a) {
-		// TODO Auto-generated method stub
-		
+		a.setTam(1);
 	}
 
 	@Override
 	public void procesa(TReal a) {
-		// TODO Auto-generated method stub
-		
+		a.setTam(1);
 	}
 
 	@Override
 	public void procesa(TBool a) {
-		// TODO Auto-generated method stub
-		
+		a.setTam(1);
 	}
 
 	@Override
 	public void procesa(TString a) {
-		// TODO Auto-generated method stub
-		
+		a.setTam(1);
 	}
 
 	@Override
 	public void procesa(TIden a) {
-		// TODO Auto-generated method stub
-		
+		Nodo t = ((DecType) a.getVinculo()).tipo();
+		t.procesa(this);
+		a.setTam(t.getTam());
 	}
 
 	@Override
 	public void procesa(TStruct a) {
-		// TODO Auto-generated method stub
-		
+		a.lcampos().procesa(this);
 	}
 
 	@Override
@@ -322,28 +323,16 @@ public class AsignacionEspacio implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(SiExp a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(SiExp a) {}
 
 	@Override
-	public void procesa(NoExp a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NoExp a) {}
 
 	@Override
-	public void procesa(MuchasExp a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(MuchasExp a) {}
 
 	@Override
-	public void procesa(UnaExp a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(UnaExp a) {}
 
 	@Override
 	public void procesa(Asignacion a) {
@@ -352,10 +341,7 @@ public class AsignacionEspacio implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(Suma a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Suma a) {}
 
 	@Override
 	public void procesa(And a) {
@@ -370,10 +356,7 @@ public class AsignacionEspacio implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(Resta a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Resta a) {}
 
 	@Override
 	public void procesa(Menor a) {
@@ -436,22 +419,13 @@ public class AsignacionEspacio implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(Array a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Array a) {}
 
 	@Override
-	public void procesa(ExpCampo a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(ExpCampo a) {}
 
 	@Override
-	public void procesa(Punt a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Punt a) {}
 
 	@Override
 	public void procesa(Not a) {
@@ -501,4 +475,215 @@ public class AsignacionEspacio implements Procesamiento {
 		
 	}
 
+	
+	
+	public class AsignacionEspacio2 extends ProcesamientoAuxiliar {
+
+		@Override
+		public void procesa(Bloque a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(SiDecs a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(NoDecs a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(MuchasDecs a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(UnaDec a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(DecProc a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(DecType a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(DecVar a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(SiParam a) {
+			a.lparams().procesa(this);
+		}
+
+		@Override
+		public void procesa(MuchosParams a) {
+			a.lparam().procesa(this);
+			a.param().procesa(this);
+		}
+
+		@Override
+		public void procesa(UnParam a) {
+			a.param().procesa(this);
+		}
+
+		@Override
+		public void procesa(ParamFormRef a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(ParamFormal a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(TArray a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(TPunt a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(TStruct a) {
+			a.lcampos().procesa(this);
+			a.setTam(a.lcampos().getTam());
+		}
+
+		@Override
+		public void procesa(MuchosCamps a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(UnCamp a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(Campo a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(SiInstrs a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(NoInstrs a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(MuchasInstrs a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(UnaInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(ArrobaInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(ProcInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(NlInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(NewInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(ReadInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(WriteInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(DeleteInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(WhileInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(IfElseInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(IfInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void procesa(BloqueInstr a) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		Nodo sol() {
+			return null;
+		}
+	}
 }

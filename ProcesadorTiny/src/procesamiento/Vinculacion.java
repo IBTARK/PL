@@ -81,10 +81,6 @@ import asint.SintaxisAbstracta.WriteInstr;
 
 public class Vinculacion implements Procesamiento {
 	
-	public static class ErrorVinculacion extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
-	
 	public static class TablaSimbolos {
 		private List<Map<String, Nodo>> ts;
 		
@@ -93,7 +89,7 @@ public class Vinculacion implements Procesamiento {
 				if (ts.get(i).containsKey(id))
 					return ts.get(i).get(id);
 			
-			throw new ErrorVinculacion();
+			//TODO errores
 		}
 		
 		public boolean contiene(String id) {
@@ -127,21 +123,17 @@ public class Vinculacion implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(NoDecs a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NoDecs a) {}
 
 	@Override
 	public void procesa(MuchasDecs a) {
-		// TODO Auto-generated method stub
-		
+		a.ldecs().procesa(this);
+		a.dec().procesa(this);
 	}
 
 	@Override
 	public void procesa(UnaDec a) {
-		// TODO Auto-generated method stub
-		
+		a.dec().procesa(this);
 	}
 
 	@Override
@@ -195,8 +187,15 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(TArray a) {
-		// TODO Auto-generated method stub
-		
+		if(a.tipo().getClass() != TIden.class) {
+			a.tipo().procesa(this);
+		}
+		if(a.litEnt().charAt(0) == '-') {
+			error;
+		}
+		else {
+			error;
+		}
 	}
 
 	@Override
@@ -221,7 +220,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(TIden a) {
 		a.setVinculo(ts.vinculoDe(a.iden()));
 		if (a.getVinculo().getClass() != DecType.class)
-			throw new ErrorVinculacion();
+			error;
 	}
 
 	@Override
@@ -250,26 +249,21 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(SiInstrs a) {
-		// TODO Auto-generated method stub
-		
+		a.linstrs().procesa(this);
 	}
 
 	@Override
-	public void procesa(NoInstrs a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NoInstrs a) {}
 
 	@Override
 	public void procesa(MuchasInstrs a) {
-		// TODO Auto-generated method stub
-		
+		a.linstrs().procesa(this);
+		a.instr().procesa(this);
 	}
 
 	@Override
 	public void procesa(UnaInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.instr().procesa(this);
 	}
 
 	@Override
@@ -359,8 +353,8 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Asignacion a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
 	}
 
 	@Override
@@ -425,20 +419,20 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Mul a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Div a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Mod a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);	
 	}
 
 	@Override
@@ -517,14 +511,13 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(MuchasDecs a) {
-			// TODO Auto-generated method stub
-			
+			a.ldecs().procesa(this);
+			a.dec().procesa(this);
 		}
 
 		@Override
 		public void procesa(UnaDec a) {
-			// TODO Auto-generated method stub
-			
+			a.dec().procesa(this);
 		}
 
 		@Override
@@ -551,9 +544,6 @@ public class Vinculacion implements Procesamiento {
 		}
 
 		@Override
-		public void procesa(NoParam a) {}
-
-		@Override
 		public void procesa(MuchosParams a) {
 			a.lparam().procesa(this);
 			a.param().procesa(this);
@@ -578,8 +568,15 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(TArray a) {
-			// TODO Auto-generated method stub
-			
+			if(a.tipo().getClass() == TIden.class) {
+				a.setVinculo(ts.vinculoDe(a.litEnt()));
+				if(a.getVinculo().getClass() != DecType.class) {
+					error;
+				}
+			}
+			else {
+				a.tipo().procesa(this);
+			}
 		}
 
 		@Override
@@ -587,21 +584,6 @@ public class Vinculacion implements Procesamiento {
 			// TODO Auto-generated method stub
 			
 		}
-
-		@Override
-		public void procesa(TInt a) {}
-
-		@Override
-		public void procesa(TReal a) {}
-
-		@Override
-		public void procesa(TBool a) {}
-
-		@Override
-		public void procesa(TString a) {}
-
-		@Override
-		public void procesa(TIden a) {}
 
 		@Override
 		public void procesa(TStruct a) {

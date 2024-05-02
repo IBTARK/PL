@@ -1,5 +1,8 @@
 package procesamiento;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import asint.Procesamiento;
 import asint.SintaxisAbstracta.And;
 import asint.SintaxisAbstracta.Array;
@@ -14,6 +17,7 @@ import asint.SintaxisAbstracta.DecVar;
 import asint.SintaxisAbstracta.DeleteInstr;
 import asint.SintaxisAbstracta.Desigual;
 import asint.SintaxisAbstracta.Div;
+import asint.SintaxisAbstracta.Exp;
 import asint.SintaxisAbstracta.ExpCampo;
 import asint.SintaxisAbstracta.False;
 import asint.SintaxisAbstracta.Iden;
@@ -119,6 +123,57 @@ public class Tipado implements Procesamiento {
 			return new TReal();
 		return ERROR;
 	}
+	
+	private boolean esDesignador(Exp e) {
+		Class<?> c = e.getClass();
+		return c == Iden.class
+			|| c == Array.class
+			|| c == ExpCampo.class
+			|| c == Punt.class;
+	}
+	
+	private boolean compatibles(Nodo t0, Nodo t1){
+		Set<String> c = new HashSet<>();
+		c.add(t0.toString()+"="+t1.toString());
+		return unificables(c, t0, t1);
+	}
+	
+	private boolean sonUnificables(Set<String> c, Nodo t0, Nodo t1){
+    	if (!c.contains(t0.toString()+"="+t1.toString())){
+     		c.add(t0.toString()+"="+t1.toString());
+        	return unificables(c, t0, t1);
+     	}
+    	else {
+        	return true;
+        }
+    }
+    
+    private boolean unificables (Set<String> c, Nodo t0, Nodo t1){
+		Nodo t2 = ref(t0);
+		Nodo t3 = ref(t1);
+        if (t2 == t3 && (t2 == tBool() || t2 == tInt() || t2 == tString())){
+            return true;
+        }
+        else if T0’ == tReal() and (T1’== tInt() or T1’ == tReal()) then 
+            return true
+        else if T0’ == tArray(T’’,litEnt(e1)) and T1’ == tArray(T’’’,litEnt(e2)) then
+            if e1 == e2 then
+                return sonUnificables(T’’, T’’’)
+            else
+                return false
+            end if
+        else if T0’ == tStruct(LC1) and T1’ == tStruct(LC2) then 
+            return compatibles(LC1, LC2)
+        else if (T0’ == tPunt(T’’) and T1 == null) then
+            return true
+        else if (T0’ == tPunt(T’’) and T1’ == tPunt(T’’’)) then
+            return sonUnificables(T’’, T’’’)
+        else
+            return false
+        end if
+    end let
+
+	}
 
 	@Override
 	public void procesa(Prog a) {
@@ -134,26 +189,26 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(SiDecs a) {
-		// TODO Auto-generated method stub
-		
+		a.ldecs().procesa(this);
+		a.setTipo(a.ldecs().getTipo());
 	}
 
 	@Override
 	public void procesa(NoDecs a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(OK);
 	}
 
 	@Override
 	public void procesa(MuchasDecs a) {
-		// TODO Auto-generated method stub
-		
+		a.ldecs().procesa(this);
+		a.dec().procesa(this);
+		a.setTipo(ambosOk(a.ldecs().getTipo(), a.dec().getTipo()));
 	}
 
 	@Override
 	public void procesa(UnaDec a) {
-		// TODO Auto-generated method stub
-		
+		a.dec().procesa(this);
+		a.setTipo(a.dec().getTipo());	
 	}
 
 	@Override
@@ -199,10 +254,7 @@ public class Tipado implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(TArray a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TArray a) {}
 
 	@Override
 	public void procesa(TPunt a) {
@@ -248,26 +300,26 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(SiInstrs a) {
-		// TODO Auto-generated method stub
-		
+		a.linstrs().procesa(this);
+		a.setTipo(a.linstrs().getTipo());
 	}
 
 	@Override
 	public void procesa(NoInstrs a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(OK);
 	}
 
 	@Override
 	public void procesa(MuchasInstrs a) {
-		// TODO Auto-generated method stub
-		
+		a.linstrs().procesa(this);
+		a.instr().procesa(this);
+		a.setTipo(ambosOk(a.linstrs().getTipo(), a.instr().getTipo()));
 	}
 
 	@Override
 	public void procesa(UnaInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.instr().procesa(this);
+		a.setTipo(a.instr().getTipo());
 	}
 
 	@Override
@@ -368,8 +420,14 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Asignacion a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
+	    if (esDesignador(a.opnd0()) && compatibles(a.opnd0().getTipo(), a.opnd1().getTipo())){
+			a.setTipo(a.opnd0().getTipo());
+		}
+	    else {
+			a.setTipo(ERROR);
+		}
 	}
 
 	@Override
@@ -432,20 +490,26 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Mul a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
 	public void procesa(Div a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
 	public void procesa(Mod a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
+		Nodo t0 = ref(a.opnd0().getTipo());
+		Nodo t1 = ref(a.opnd1().getTipo());
+        if (t0 == t1 && t0.getClass() == TInt.class){
+             a.setTipo(t0.getTipo());
+        }
+        else {
+			 a.setTipo(ERROR);
+		}
 	}
 
 	@Override
