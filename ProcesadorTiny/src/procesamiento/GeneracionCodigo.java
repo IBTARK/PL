@@ -467,7 +467,7 @@ public class GeneracionCodigo implements Procesamiento {
 	public void procesa(ExpCampo a) {
 		a.opnd();
 		m.emit(m.apilaString(a.campo()));
-		m.emit(m.acc(a.getTipo().getTam()));
+		m.emit(m.acc((TStruct) a.getTipo()));
 	}
 
 	@Override
