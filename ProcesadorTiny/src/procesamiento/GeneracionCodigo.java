@@ -24,6 +24,8 @@ import asint.SintaxisAbstracta.Iden;
 import asint.SintaxisAbstracta.IfElseInstr;
 import asint.SintaxisAbstracta.IfInstr;
 import asint.SintaxisAbstracta.Igual;
+import asint.SintaxisAbstracta.LExp;
+import asint.SintaxisAbstracta.LParams;
 import asint.SintaxisAbstracta.LitCad;
 import asint.SintaxisAbstracta.LitEnt;
 import asint.SintaxisAbstracta.LitReal;
@@ -49,8 +51,11 @@ import asint.SintaxisAbstracta.Nodo;
 import asint.SintaxisAbstracta.Not;
 import asint.SintaxisAbstracta.Null;
 import asint.SintaxisAbstracta.Or;
+import asint.SintaxisAbstracta.ParamForm;
 import asint.SintaxisAbstracta.ParamFormRef;
 import asint.SintaxisAbstracta.ParamFormal;
+import asint.SintaxisAbstracta.ParamForms;
+import asint.SintaxisAbstracta.ParamReales;
 import asint.SintaxisAbstracta.ProcInstr;
 import asint.SintaxisAbstracta.Prog;
 import asint.SintaxisAbstracta.Punt;
@@ -124,6 +129,119 @@ public class GeneracionCodigo implements Procesamiento {
 		accVal(e2);
 		castAritm(e2, e);
 	}
+	
+	private void genPasoParams(ParamForms params, ParamReales exps) {
+		if (params.getClass() == SiParam.class && exps.getClass() == SiExp.class)
+			genPasoParams(((SiParam) params).lparams(), ((SiExp) exps).lexps());
+		
+		else if (params.getClass() != NoParam.class && exps.getClass() != NoExp.class)
+			error
+	}
+	
+	private void genPasoParams(LParams params, LExp exps) {
+		if (params.getClass() == UnParam.class && exps.getClass() == UnaExp.class)
+			genPasoParam(((UnParam) params).param(), ((UnaExp) exps).exp());
+		else if (params.getClass() == MuchosParams.class && exps.getClass() == MuchasExp.class) {
+			genPasoParams(((MuchosParams) params).lparam(), ((MuchasExp) exps).lexp());
+			genPasoParam(((MuchosParams) params).param(), ((MuchasExp) exps).exp());
+		}
+		else
+			error
+	}
+	
+	private void genPasoParam(ParamForm param, Exp exp) {
+		m.emit(m.dup());
+		m.emit(m.apilaInt(param.getDir()));
+		m.emit(m.suma());
+		m.emit(m.dup());
+		
+		if (param.getClass() == ParamFormRef.class) {
+			if (!esDesignador(exp))
+				error
+			m.emit(m.alloc(1));
+			m.emit(m.store());
+			m.emit(m.fetch());
+			exp.procesa(this);
+			m.emit(m.store());
+		}
+		else {
+			m.emit(m.alloc(1));
+			m.emit(m.store());
+			m.emit(m.fetch());
+			exp.procesa(this);
+			Class<?> t1 = ref(param.getTipo()).getClass(), t2 = exp.getTipo().getClass();
+			if (t1 == TReal.class && t2 == TInt.class) {
+				accVal(exp);
+				m.emit(m.castReal());
+				m.emit(m.store());
+			}
+			else if (esDesignador(exp))
+				m.emit(m.copia(param.getTipo().getTam()));
+			else
+				m.emit(m.store());
+		}
+	}
+	
+	private class GenLiberaParam extends ProcesamientoAuxiliar<Object> {
+		@Override
+		public void procesa(SiParam a) {
+			a.lparams().procesa(this);
+		}
+		@Override
+		public void procesa(UnParam a) {
+			a.param().procesa(this);
+		}
+		@Override
+		public void procesa(MuchosParams a) {
+			a.lparam().procesa(this);
+			a.param().procesa(this);
+		}
+		@Override
+		public void procesa(ParamFormal a) {
+			m.emit(m.dup());
+			m.emit(m.apilaInt(a.getDir()));
+			m.emit(m.suma());
+			m.emit(m.fetch());
+			m.emit(m.dealloc(1));
+		}
+		@Override
+		public void procesa(ParamFormRef a) {
+			m.emit(m.dup());
+			m.emit(m.apilaInt(a.getDir()));
+			m.emit(m.suma());
+			m.emit(m.fetch());
+			m.emit(m.dealloc(a.getTipo().getTam()));
+		}
+		@Override
+		Object sol() {
+			return null;
+		}
+	}
+
+	private static class Desplazamiento extends ProcesamientoAuxiliar<Integer> {
+		private Integer sol;
+		private String id;
+		public Desplazamiento(String id) {
+			this.id = id;
+		}
+		@Override
+		public void procesa(UnCamp a) {
+			sol = a.campo().getDir();
+		}
+		@Override
+		public void procesa(MuchosCamps a) {
+			Campo c = (Campo) a.campo();
+			if (c.iden().equals(id))
+				sol = c.getDir();
+			else
+				a.lcampos().procesa(this);
+		}
+		@Override
+		Integer sol() {
+			return sol;
+		}
+	}
+	
 	
 	
 	public GeneracionCodigo(MaquinaP mp) {
@@ -465,7 +583,7 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(ExpCampo a) {
-		a.opnd();
+		a.opnd().procesa(this);
 		TStruct t = (TStruct) ref(a.opnd().getTipo());
 		m.emit(m.apilaInt(new Desplazamiento(a.campo()).resuelve(t.lcampos())));
 		m.emit(m.suma());
@@ -523,29 +641,5 @@ public class GeneracionCodigo implements Procesamiento {
 	public void procesa(Null a) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	private static class Desplazamiento extends ProcesamientoAuxiliar<Integer> {
-		private Integer sol;
-		private String id;
-		public Desplazamiento(String id) {
-			this.id = id;
-		}
-		@Override
-		public void procesa(UnCamp a) {
-			sol = a.campo().getDir();
-		}
-		@Override
-		public void procesa(MuchosCamps a) {
-			Campo c = (Campo) a.campo();
-			if (c.iden().equals(id))
-				sol = c.getDir();
-			else
-				a.lcampos().procesa(this);
-		}
-		@Override
-		Integer sol() {
-			return sol;
-		}
 	}
 }

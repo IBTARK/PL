@@ -24,6 +24,8 @@ import asint.SintaxisAbstracta.Iden;
 import asint.SintaxisAbstracta.IfElseInstr;
 import asint.SintaxisAbstracta.IfInstr;
 import asint.SintaxisAbstracta.Igual;
+import asint.SintaxisAbstracta.LExp;
+import asint.SintaxisAbstracta.LParams;
 import asint.SintaxisAbstracta.LitCad;
 import asint.SintaxisAbstracta.LitEnt;
 import asint.SintaxisAbstracta.LitReal;
@@ -49,8 +51,11 @@ import asint.SintaxisAbstracta.Nodo;
 import asint.SintaxisAbstracta.Not;
 import asint.SintaxisAbstracta.Null;
 import asint.SintaxisAbstracta.Or;
+import asint.SintaxisAbstracta.ParamForm;
 import asint.SintaxisAbstracta.ParamFormRef;
 import asint.SintaxisAbstracta.ParamFormal;
+import asint.SintaxisAbstracta.ParamForms;
+import asint.SintaxisAbstracta.ParamReales;
 import asint.SintaxisAbstracta.ProcInstr;
 import asint.SintaxisAbstracta.Prog;
 import asint.SintaxisAbstracta.Punt;
@@ -97,15 +102,18 @@ public class Tipado implements Procesamiento {
 	private static final Ok OK = new Ok();
 	private static final Error ERROR = new Error();
 	
-	private Nodo procesaTipo(ProcesamientoAuxiliar p, Nodo a) {
-		a.procesa(p);
-		return p.sol();
-	}
-	
 	private Nodo ref(Nodo t) {
 		if (t.getClass() == TIden.class)
 			return ref(((DecType) t.getVinculo()).tipo());
 		return t;
+	}
+	
+	private boolean esDesignador(Exp e) {
+		Class<?> c = e.getClass();
+		return c == Iden.class
+			|| c == Array.class
+			|| c == ExpCampo.class
+			|| c == Punt.class;
 	}
 	
 	private Nodo ambosOk(Nodo t1, Nodo t2) {
@@ -115,21 +123,44 @@ public class Tipado implements Procesamiento {
 	}
 	
 	private Nodo tipadoBinArit(Nodo t0, Nodo t1) {
-		Nodo tt0 = ref(t0), tt1 = ref(t1);
-		if (tt0.equals(tt1) && tt0.equals(new TInt()))
+		Class<?> tt0 = ref(t0).getClass(), tt1 = ref(t1).getClass();
+		if (tt0 == tt1 && tt0 == TInt.class)
 			return new TInt();
-		else if ((tt0.getClass() == TReal.class || tt0.getClass() == TInt.class)
-			  && (tt1.getClass() == TReal.class || tt1.getClass() == TInt.class))
+		else if ((tt0 == TReal.class || tt0 == TInt.class)
+			  && (tt1 == TReal.class || tt1 == TInt.class))
 			return new TReal();
 		return ERROR;
 	}
 	
-	private boolean esDesignador(Exp e) {
-		Class<?> c = e.getClass();
-		return c == Iden.class
-			|| c == Array.class
-			|| c == ExpCampo.class
-			|| c == Punt.class;
+	private Nodo tipadoBinLog(Nodo t0, Nodo t1) {
+		Class<?> tt0 = ref(t0).getClass(), tt1 = ref(t1).getClass();
+		if (tt0 == tt1 && tt0 == TBool.class)
+			return new TBool();
+		else
+			return ERROR;
+	}
+	
+	private Nodo tipadoBinRel(Nodo t0, Nodo t1) {
+		Class<?> tt0 = ref(t0).getClass(), tt1 = ref(t1).getClass();
+		if ((tt0 == TInt.class || tt0 == TReal.class) && (tt1 == TInt.class || tt1 == TReal.class))
+			return new TBool();
+		else if (tt0 == tt1 && tt0 == TBool.class)
+			return new TBool();
+		else if (tt0 == tt1 && tt0 == TString.class)
+			return new TBool();
+		else
+			return ERROR;
+	}
+	
+	private Nodo tipadoBinComp(Nodo t0, Nodo t1) {
+		if (tipadoBinRel(t0, t1) != ERROR)
+			return new TBool();
+		
+		Class<?> tt0 = ref(t0).getClass(), tt1 = ref(t1).getClass();
+		if ((tt0 == TPunt.class || tt0 == Null.class) && (tt1 == TPunt.class || tt1 == Null.class))
+			return new TBool();
+		else
+			return ERROR;
 	}
 	
 	private boolean compatibles(Nodo t0, Nodo t1){
@@ -177,6 +208,69 @@ public class Tipado implements Procesamiento {
         end if
 
 	}
+    
+    private Nodo tipoParams(ParamForms pform, ParamReales preales) {
+    	if (pform.getClass() == SiParam.class && preales.getClass() == SiExp.class)
+    		return tipoSiParams(((SiParam) pform).lparams(), ((SiExp) preales).lexps());
+    	else if (pform.getClass() == NoParam.class && preales.getClass() == NoExp.class)
+    		return OK;
+    	else
+    		return ERROR;
+    }
+    
+    private Nodo tipoSiParams(LParams params, LExp exps) {
+    	if (params.getClass() == UnParam.class && exps.getClass() == UnaExp.class)
+    		return tipoParam(((UnParam) params).param(), ((UnaExp) exps).exp());
+    	
+    	else if (params.getClass() == MuchosParams.class && exps.getClass() == MuchasExp.class) {
+    		Nodo t1 = tipoSiParams(((MuchosParams) params).lparam(), ((MuchasExp) exps).lexp());
+    		Nodo t2 = tipoParam(((MuchosParams) params).param(), ((MuchasExp) exps).exp());
+    		return ambosOk(t1, t2);
+    	}
+    	else
+    		return ERROR;
+    }
+    
+    private Nodo tipoParam(ParamForm param, Exp exp) {
+    	if (param.getClass() == ParamFormal.class && compatibles(param.getTipo(), exp.getTipo()))
+    		return OK;
+    	else if (param.getClass() == ParamFormRef.class && esDesignador(exp) && compatibles(param.getTipo(), exp.getTipo())) {
+    		Class<?> t1 = ref(param.getTipo()).getClass(), t2 = ref(exp.getTipo()).getClass();
+    		if (!(t1 == TReal.class && t2 == TReal.class) && (t1 == TReal.class || t2 == TReal.class))
+    			return ERROR;
+    		else
+    			return OK;
+    	}
+    	else
+    		return ERROR;
+    }
+
+	private static class TieneCampo extends ProcesamientoAuxiliar<Nodo> {
+		String id;
+		Nodo sol;
+		public TieneCampo(String id) {
+			this.id = id;
+		}
+		@Override
+		public void procesa(MuchosCamps a) {
+			if (a.campo().iden().equals(id))
+				sol = OK;
+			else
+				a.lcampos().procesa(this);
+		}
+		@Override
+		public void procesa(UnCamp a) {
+			if (a.campo().iden().equals(id))
+				sol = OK;
+			else
+				sol = ERROR;
+		}
+		@Override
+		public Nodo sol() {
+			return sol;
+		}
+	}
+    
 
 	@Override
 	public void procesa(Prog a) {
@@ -596,32 +690,5 @@ public class Tipado implements Procesamiento {
 	public void procesa(Null a) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	
-	private static class TieneCampo extends ProcesamientoAuxiliar<Nodo> {
-		String id;
-		Nodo sol;
-		public TieneCampo(String id) {
-			this.id = id;
-		}
-		@Override
-		public void procesa(MuchosCamps a) {
-			if (a.campo().iden().equals(id))
-				sol = OK;
-			else
-				a.lcampos().procesa(this);
-		}
-		@Override
-		public void procesa(UnCamp a) {
-			if (a.campo().iden().equals(id))
-				sol = OK;
-			else
-				sol = ERROR;
-		}
-		@Override
-		public Nodo sol() {
-			return sol;
-		}
 	}
 }

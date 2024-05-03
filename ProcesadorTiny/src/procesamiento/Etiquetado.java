@@ -24,6 +24,8 @@ import asint.SintaxisAbstracta.Iden;
 import asint.SintaxisAbstracta.IfElseInstr;
 import asint.SintaxisAbstracta.IfInstr;
 import asint.SintaxisAbstracta.Igual;
+import asint.SintaxisAbstracta.LExp;
+import asint.SintaxisAbstracta.LParams;
 import asint.SintaxisAbstracta.LitCad;
 import asint.SintaxisAbstracta.LitEnt;
 import asint.SintaxisAbstracta.LitReal;
@@ -49,8 +51,11 @@ import asint.SintaxisAbstracta.Nodo;
 import asint.SintaxisAbstracta.Not;
 import asint.SintaxisAbstracta.Null;
 import asint.SintaxisAbstracta.Or;
+import asint.SintaxisAbstracta.ParamForm;
 import asint.SintaxisAbstracta.ParamFormRef;
 import asint.SintaxisAbstracta.ParamFormal;
+import asint.SintaxisAbstracta.ParamForms;
+import asint.SintaxisAbstracta.ParamReales;
 import asint.SintaxisAbstracta.ProcInstr;
 import asint.SintaxisAbstracta.Prog;
 import asint.SintaxisAbstracta.Punt;
@@ -123,6 +128,62 @@ public class Etiquetado implements Procesamiento {
 		accVal(e2);
 		castAritm(e2, e);
 	}
+	
+	private void etiquetadoPasoParams(ParamForms params, ParamReales exps) {
+		if (params.getClass() == SiParam.class && exps.getClass() == SiExp.class)
+			etiquetadoPasoParams(((SiParam) params).lparams(), ((SiExp) exps).lexps());
+	}
+	
+	private void etiquetadoPasoParams(LParams params, LExp exps) {
+		if (params.getClass() == UnParam.class && exps.getClass() == UnaExp.class)
+			etiquetadoPasoParam(((UnParam) params).param(), ((UnaExp) exps).exp());
+		else if (params.getClass() == MuchosParams.class && exps.getClass() == MuchasExp.class) {
+			etiquetadoPasoParams(((MuchosParams) params).lparam(), ((MuchasExp) exps).lexp());
+			etiquetadoPasoParam(((MuchosParams) params).param(), ((MuchasExp) exps).exp());
+		}
+	}
+	
+	private void etiquetadoPasoParam(ParamForm param, Exp exp) {
+		etq += 7;
+		exp.procesa(this);
+		
+		Class<?> t1 = ref(param.getTipo()).getClass(), t2 = exp.getTipo().getClass();
+		if (param.getClass() == ParamFormal.class && t1 == TReal.class && t2 == TInt.class) {
+			accVal(exp);
+			etq++;
+		}
+		etq++;
+	}
+	
+	private class EtiquetadoLiberaParam extends ProcesamientoAuxiliar<Object> {
+		@Override
+		public void procesa(SiParam a) {
+			a.lparams().procesa(this);
+		}
+		@Override
+		public void procesa(UnParam a) {
+			a.param().procesa(this);
+		}
+		@Override
+		public void procesa(MuchosParams a) {
+			a.lparam().procesa(this);
+			a.param().procesa(this);
+		}
+		@Override
+		public void procesa(ParamFormal a) {
+			etq += 5;
+		}
+		@Override
+		public void procesa(ParamFormRef a) {
+			etq += 5;
+		}
+		@Override
+		Object sol() {
+			return null;
+		}
+	}
+	
+	
 
 	@Override
 	public void procesa(Prog a) {

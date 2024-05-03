@@ -445,7 +445,7 @@ public class AsignacionEspacio implements Procesamiento {
 
 	
 	
-	public class AsignacionEspacio2 extends ProcesamientoAuxiliar {
+	public class AsignacionEspacio2 extends ProcesamientoAuxiliar<Object> {
 
 		@Override
 		public void procesa(Bloque a) {
@@ -652,7 +652,7 @@ public class AsignacionEspacio implements Procesamiento {
 		}
 		
 		@Override
-		Nodo sol() {
+		Object sol() {
 			return null;
 		}
 	}
