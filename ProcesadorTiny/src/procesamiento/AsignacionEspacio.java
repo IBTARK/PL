@@ -123,20 +123,23 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(DecProc a) {
-		// TODO Auto-generated method stub
-		
+		nivel++;
+		this.nivel = nivel;
+		a.paramForms().procesa(this);
+		a.bloq().procesa(this);
+		nivel--;
 	}
 
 	@Override
 	public void procesa(DecType a) {
-		// TODO Auto-generated method stub
-		
+		a.setTam(a.tipo().getTam());
+		this.nivel = nivel;
 	}
 
 	@Override
 	public void procesa(DecVar a) {
-		// TODO Auto-generated method stub
-		
+		a.setTam(a.tipo().getTam());
+		this.nivel = nivel;
 	}
 
 	@Override
@@ -178,8 +181,10 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(TPunt a) {
-		// TODO Auto-generated method stub
-		
+		if(a.tipo() != new tIden(a))
+			a.setTam(a.tipo().getTam());
+		else
+			a.setTam(1);
 	}
 
 	@Override
@@ -258,68 +263,51 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(ArrobaInstr a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(ProcInstr a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(NlInstr a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(NewInstr a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(ReadInstr a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(WriteInstr a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(DeleteInstr a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(WhileInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.bloq().procesa();
 	}
 
 	@Override
-	public void procesa(IfElseInstr a) {
-		// TODO Auto-generated method stub
-		
+	public void procesa(IfElseInstr a) {//se que esta mal pero no se como sacar el bloque1 y el bloque2
+		a.bloq().procesa();
+		a.bloq().procesa();
 	}
 
 	@Override
 	public void procesa(IfInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.bloq().procesa();
 	}
 
 	@Override
 	public void procesa(BloqueInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.bloq().procesa();
 	}
 
 	@Override
@@ -360,62 +348,42 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Menor a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(Mayor a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(MenorIgual a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(MayorIgual a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(Igual a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(Desigual a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(Mul a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(Div a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(Mod a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(Neg a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -511,20 +479,25 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(DecProc a) {
-			// TODO Auto-generated method stub
-			
+			int dirAnt = dir;
+			dir = 0;
+			this.dir = dir;
+			a.paramForm().procesa(new AsignacionEspacio2());
+			a.bloq().procesa(new AsignacionEspacio2());
+			this.tam.setTam(dir);
+			dir = dirAnt;
 		}
 
 		@Override
 		public void procesa(DecType a) {
-			// TODO Auto-generated method stub
-			
+			a.setTam(a.tipo().getTam());//se supone que es asigTam2 pero no se como ponerlo
 		}
 
 		@Override
 		public void procesa(DecVar a) {
-			// TODO Auto-generated method stub
-			
+			this.dir = dir;
+			a.setTam(a.tipo().getTam());
+			incrDir(a.tipo().getTam());
 		}
 
 		@Override
@@ -563,8 +536,8 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(TPunt a) {
-			// TODO Auto-generated method stub
-			
+			if(a.tipo() != new tIden(a))
+				a.setTam(a.tipo().getTam());
 		}
 
 		@Override
@@ -659,26 +632,23 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(WhileInstr a) {
-			// TODO Auto-generated method stub
-			
+			a.bloq().procesa();
 		}
 
 		@Override
 		public void procesa(IfElseInstr a) {
-			// TODO Auto-generated method stub
-			
+			a.bloq().procesa();
+			a.bloq().procesa();
 		}
 
 		@Override
 		public void procesa(IfInstr a) {
-			// TODO Auto-generated method stub
-			
+			a.bloq().procesa();
 		}
 
 		@Override
 		public void procesa(BloqueInstr a) {
-			// TODO Auto-generated method stub
-			
+			a.bloq().procesa();
 		}
 		
 		@Override

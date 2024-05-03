@@ -138,20 +138,32 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(DecProc a) {
-		// TODO Auto-generated method stub
-		
+		//abreAmbito(ts);
+		a.paramForms().procesa();
+		a.bloq().procesa();
+		//cierraAmbito(ts);
+		if (ts.contiene(a.id()))
+			error;
+		else
+			ts.inserta(a.id(), this);
 	}
 
 	@Override
 	public void procesa(DecType a) {
-		// TODO Auto-generated method stub
-		
+		a.tipo().procesa();
+		if (ts.contiene(a.id()))
+			error;
+		else
+			ts.inserta(a.id(), this);
 	}
 
 	@Override
 	public void procesa(DecVar a) {
-		// TODO Auto-generated method stub
-		
+		a.tipo().procesa();
+		if (ts.contiene(a.id()))
+			error;
+		else
+			ts.inserta(a.id(), this);
 	}
 
 	@Override
@@ -522,20 +534,17 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(DecProc a) {
-			// TODO Auto-generated method stub
-			
+			a.paramForms().procesa(new Vinculacion2());
 		}
 
 		@Override
 		public void procesa(DecType a) {
-			// TODO Auto-generated method stub
-			
+			a.tipo().procesa(new Vinculacion2());
 		}
 
 		@Override
 		public void procesa(DecVar a) {
-			// TODO Auto-generated method stub
-			
+			a.tipo().procesa(new Vinculacion2());
 		}
 
 		@Override
