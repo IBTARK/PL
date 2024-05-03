@@ -3,11 +3,11 @@ package procesamiento;
 import asint.ProcesamientoAbstracto;
 import asint.SintaxisAbstracta.Nodo;
 
-public abstract class ProcesamientoAuxiliar extends ProcesamientoAbstracto {
+public abstract class ProcesamientoAuxiliar<T> extends ProcesamientoAbstracto {
 	
-	public Nodo resuelve(Nodo a) {
+	public T resuelve(Nodo a) {
 		a.procesa(this);
 		return sol();
 	}
-    abstract Nodo sol();
+    abstract T sol();
 }

@@ -181,7 +181,7 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(TPunt a) {
-		if(a.tipo() != new tIden(a))
+		if(a.tipo() != new TIden(a))
 			a.setTam(a.tipo().getTam());
 		else
 			a.setTam(1);
@@ -482,8 +482,8 @@ public class AsignacionEspacio implements Procesamiento {
 			int dirAnt = dir;
 			dir = 0;
 			this.dir = dir;
-			a.paramForm().procesa(new AsignacionEspacio2());
-			a.bloq().procesa(new AsignacionEspacio2());
+			a.paramForm().procesa(this);
+			a.bloq().procesa(this);
 			this.tam.setTam(dir);
 			dir = dirAnt;
 		}
@@ -536,7 +536,7 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(TPunt a) {
-			if(a.tipo() != new tIden(a))
+			if(a.tipo() != new TIden(a))
 				a.setTam(a.tipo().getTam());
 		}
 

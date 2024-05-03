@@ -7,11 +7,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
-import asint.SintaxisAbstracta.LCampos;
-import asint.SintaxisAbstracta.MuchosCamps;
-import asint.SintaxisAbstracta.TStruct;
-import asint.SintaxisAbstracta.UnCamp;
-
 
 
 
@@ -562,33 +557,6 @@ public class MaquinaP {
       } 
       public String toString() {return "idx("+tam+")";};
    }
-
-   private class IAcc implements Instruccion {
-      private TStruct tipo;
-      private int dir;
-      private boolean encontrado = false;
-      public IAcc(TStruct tipo) {
-    	  this.tipo = tipo;  
-      }
-      public void ejecuta() {
-    	  String camp = pilaEvaluacion.pop().valorString();
-    	  dir = pilaEvaluacion.pop().valorInt();
-    	  busca(tipo.lcampos(), camp);
-    	  pilaEvaluacion.add(new ValorInt(dir));
-      } 
-      private int busca(LCampos lcamps, String campo) {
-    	  if (lcamps.getClass() == UnCamp.class) {
-    		  if (((UnCamp) lcamps).campo().iden().equals(campo)) encontrado = true;
-    		  return encontrado ? 0 : ((UnCamp) lcamps).campo().tipo().getTam();
-    	  }
-    	  else {
-    		  dir += busca(((MuchosCamps) lcamps).lcampos(), campo);
-    		  if (((MuchosCamps) lcamps).campo().iden().equals(campo)) encontrado = true;
-    		  return encontrado ? 0 : ((MuchosCamps) lcamps).campo().tipo().getTam();
-    	  }
-      }
-      public String toString() {return "acc("+tipo+")";};
-   }
    
 
    public Instruccion desapila() {return DESAPILA;}
@@ -628,7 +596,6 @@ public class MaquinaP {
    public Instruccion read() {return IREAD;}
    public Instruccion write() {return IWRITE;}
    public Instruccion idx(int tam) {return new IIdx(tam);}
-   public Instruccion acc(TStruct tam) {return new IAcc(tam);}
    public void emit(Instruccion i) {
       codigoP.add(i); 
    }

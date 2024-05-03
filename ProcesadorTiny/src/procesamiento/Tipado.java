@@ -599,7 +599,7 @@ public class Tipado implements Procesamiento {
 	}
 	
 	
-	private static class TieneCampo extends ProcesamientoAuxiliar {
+	private static class TieneCampo extends ProcesamientoAuxiliar<Nodo> {
 		String id;
 		Nodo sol;
 		public TieneCampo(String id) {

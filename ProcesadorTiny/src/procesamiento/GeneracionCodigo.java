@@ -466,8 +466,9 @@ public class GeneracionCodigo implements Procesamiento {
 	@Override
 	public void procesa(ExpCampo a) {
 		a.opnd();
-		m.emit(m.apilaString(a.campo()));
-		m.emit(m.acc((TStruct) a.getTipo()));
+		TStruct t = (TStruct) ref(a.opnd().getTipo());
+		m.emit(m.apilaInt(new Desplazamiento(a.campo()).resuelve(t.lcampos())));
+		m.emit(m.suma());
 	}
 
 	@Override
@@ -524,4 +525,27 @@ public class GeneracionCodigo implements Procesamiento {
 		
 	}
 
+	private static class Desplazamiento extends ProcesamientoAuxiliar<Integer> {
+		private Integer sol;
+		private String id;
+		public Desplazamiento(String id) {
+			this.id = id;
+		}
+		@Override
+		public void procesa(UnCamp a) {
+			sol = a.campo().getDir();
+		}
+		@Override
+		public void procesa(MuchosCamps a) {
+			Campo c = (Campo) a.campo();
+			if (c.iden().equals(id))
+				sol = c.getDir();
+			else
+				a.lcampos().procesa(this);
+		}
+		@Override
+		Integer sol() {
+			return sol;
+		}
+	}
 }
