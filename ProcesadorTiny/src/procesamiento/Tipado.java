@@ -1,6 +1,8 @@
 package procesamiento;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import asint.Procesamiento;
@@ -24,6 +26,7 @@ import asint.SintaxisAbstracta.Iden;
 import asint.SintaxisAbstracta.IfElseInstr;
 import asint.SintaxisAbstracta.IfInstr;
 import asint.SintaxisAbstracta.Igual;
+import asint.SintaxisAbstracta.LCampos;
 import asint.SintaxisAbstracta.LExp;
 import asint.SintaxisAbstracta.LParams;
 import asint.SintaxisAbstracta.LitCad;
@@ -82,12 +85,9 @@ import asint.SintaxisAbstracta.UnaExp;
 import asint.SintaxisAbstracta.UnaInstr;
 import asint.SintaxisAbstracta.WhileInstr;
 import asint.SintaxisAbstracta.WriteInstr;
+import errors.GestionErroresTiny;
 
 public class Tipado implements Procesamiento {
-	
-	public static class ErrorTipado extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
 	
 	public static class Ok extends Nodo {
 		@Override public void imprime() {}
@@ -99,8 +99,30 @@ public class Tipado implements Procesamiento {
 		@Override public void procesa(Procesamiento p) {}
 	}
 	
+	private static class Unificaciones {
+		private Map<Nodo,Set<Nodo>> unif = new HashMap<>();
+		public boolean contiene(Nodo n1, Nodo n2) {
+			return unif.containsKey(n1) && unif.get(n1).contains(n2);
+		}
+		public void inserta(Nodo n1, Nodo n2) {
+			if (!unif.containsKey(n1))
+				unif.put(n1, new HashSet<>());
+			if (!unif.containsKey(n2))
+				unif.put(n2, new HashSet<>());
+			
+			unif.get(n1).add(n2);
+			unif.get(n2).add(n1);
+		}
+	}
+	
 	private static final Ok OK = new Ok();
 	private static final Error ERROR = new Error();
+	private GestionErroresTiny error;
+	private Unificaciones unif = new Unificaciones();
+	
+	public Tipado(GestionErroresTiny error) {
+		this.error = error;
+	}
 	
 	private Nodo ref(Nodo t) {
 		if (t.getClass() == TIden.class)
@@ -122,8 +144,10 @@ public class Tipado implements Procesamiento {
 		return ERROR;
 	}
 	
-	private Nodo tipadoBinArit(Nodo t0, Nodo t1) {
-		Class<?> tt0 = ref(t0).getClass(), tt1 = ref(t1).getClass();
+	private Nodo tipadoBinArit(Exp e0, Exp e1) {
+		e0.procesa(this);
+		e1.procesa(this);
+		Class<?> tt0 = ref(e0.getTipo()).getClass(), tt1 = ref(e1.getTipo()).getClass();
 		if (tt0 == tt1 && tt0 == TInt.class)
 			return new TInt();
 		else if ((tt0 == TReal.class || tt0 == TInt.class)
@@ -132,16 +156,16 @@ public class Tipado implements Procesamiento {
 		return ERROR;
 	}
 	
-	private Nodo tipadoBinLog(Nodo t0, Nodo t1) {
-		Class<?> tt0 = ref(t0).getClass(), tt1 = ref(t1).getClass();
+	private Nodo tipadoBinLog(Exp e0, Exp e1) {
+		Class<?> tt0 = ref(e0.getTipo()).getClass(), tt1 = ref(e1.getTipo()).getClass();
 		if (tt0 == tt1 && tt0 == TBool.class)
 			return new TBool();
 		else
 			return ERROR;
 	}
 	
-	private Nodo tipadoBinRel(Nodo t0, Nodo t1) {
-		Class<?> tt0 = ref(t0).getClass(), tt1 = ref(t1).getClass();
+	private Nodo tipadoBinRel(Exp e0, Exp e1) {
+		Class<?> tt0 = ref(e0.getTipo()).getClass(), tt1 = ref(e1.getTipo()).getClass();
 		if ((tt0 == TInt.class || tt0 == TReal.class) && (tt1 == TInt.class || tt1 == TReal.class))
 			return new TBool();
 		else if (tt0 == tt1 && tt0 == TBool.class)
@@ -152,62 +176,65 @@ public class Tipado implements Procesamiento {
 			return ERROR;
 	}
 	
-	private Nodo tipadoBinComp(Nodo t0, Nodo t1) {
-		if (tipadoBinRel(t0, t1) != ERROR)
+	private Nodo tipadoBinComp(Exp e0, Exp e1) {
+		if (tipadoBinRel(e0, e1) != ERROR)
 			return new TBool();
-		
-		Class<?> tt0 = ref(t0).getClass(), tt1 = ref(t1).getClass();
+
+		Class<?> tt0 = ref(e0.getTipo()).getClass(), tt1 = ref(e1.getTipo()).getClass();
 		if ((tt0 == TPunt.class || tt0 == Null.class) && (tt1 == TPunt.class || tt1 == Null.class))
 			return new TBool();
 		else
 			return ERROR;
 	}
 	
-	private boolean compatibles(Nodo t0, Nodo t1){
-		Set<String> c = new HashSet<>();
-		c.add(t0.toString()+"="+t1.toString());
-		return unificables(c, t0, t1);
+	private boolean compatibles(Nodo t0, Nodo t1) {
+		unif = new Unificaciones();
+		unif.inserta(t0, t1);
+		return unificables(t0, t1);
 	}
 	
-	private boolean sonUnificables(Set<String> c, Nodo t0, Nodo t1){
-    	if (!c.contains(t0.toString()+"="+t1.toString())){
-     		c.add(t0.toString()+"="+t1.toString());
-        	return unificables(c, t0, t1);
+	private boolean sonUnificables(Nodo t0, Nodo t1){
+    	if (!unif.contiene(t0, t1)) {
+    		unif.inserta(t0, t1);
+        	return unificables(t0, t1);
      	}
-    	else {
+    	else
         	return true;
-        }
     }
     
-    private boolean unificables (Set<String> c, Nodo t0, Nodo t1){
-		Nodo t2 = ref(t0);
-		Nodo t3 = ref(t1);
-        if ((t2 == t3) && (t2 == tBool() || t2 == tInt() || t2 == tString())){
+    private boolean unificables(Nodo t0, Nodo t1){
+    	Nodo tipo0 = ref(t0), tipo1 = ref(t1);
+		Class<?> tt0 = tipo0.getClass(), tt1 = tipo1.getClass();
+        if ((tt0 == tt1) && (tt0 == TBool.class || tt0 == TInt.class || tt0 == TString.class))
             return true;
-        }
-        else if (t2 == tReal() && (t3== tInt() || t3 == tReal())){ 
+        else if (tt0 == TReal.class && (tt1 == TInt.class || tt1 == TReal.class))
             return true;
-        }
-        else if (t2 == tArray(T’’,litEnt(e1)) and t3 == tArray(T’’’,litEnt(e2))){
-            if (e1 == e2){
-                return sonUnificables(T’’, T’’’);
-            }
-            else {
+        else if (tt0 == TArray.class && tt1 == TArray.class) {
+        	TArray a0 = (TArray) tipo0, a1 = (TArray) tipo1;
+            if (a0.litEnt().equals(a1.litEnt()))
+                return sonUnificables(a0.tipo(), a1.tipo());
+            else
                 return false;
-            }
         }
-        else if T0’ == tStruct(LC1) and T1’ == tStruct(LC2) then 
-            return compatibles(LC1, LC2)
-        else if (T0’ == tPunt(T’’) and T1 == null) then
-            return true
-        else if (T0’ == tPunt(T’’) and T1’ == tPunt(T’’’)) then
-            return sonUnificables(T’’, T’’’)
-        else {
-            return false
-        }
-        end if
-
+        else if (tt0 == TStruct.class && tt1 == TStruct.class)
+            return compatibles(((TStruct) tipo0).lcampos(), ((TStruct) tipo1).lcampos());
+        else if (tt0 == TPunt.class && t1.getClass() == Null.class)
+            return true;
+        else if (tt0 == TPunt.class && tt1 == TPunt.class)
+            return sonUnificables(((TPunt) tipo0).tipo(), ((TPunt) tipo1).tipo());
+        else
+            return false;
 	}
+    
+    private boolean compatibles(LCampos lc1, LCampos lc2) {
+    	if (lc1.getClass() == lc2.getClass() && lc1.getClass() == UnCamp.class)
+    		return unificables(((UnCamp) lc1).campo(), ((UnCamp) lc2).campo());
+    	else if (lc1.getClass() == lc2.getClass())
+    		return unificables(((MuchosCamps) lc1).campo(), ((MuchosCamps) lc2).campo())
+    			&& compatibles(((MuchosCamps) lc1).lcampos(), ((MuchosCamps) lc2).lcampos());
+    	else
+    		return false;
+    }
     
     private Nodo tipoParams(ParamForms pform, ParamReales preales) {
     	if (pform.getClass() == SiParam.class && preales.getClass() == SiExp.class)
@@ -670,7 +697,7 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Iden a) {
-
+		//TODO
 	}
 
 	@Override
