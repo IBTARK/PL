@@ -1,6 +1,7 @@
 package procesamiento;
 
 import asint.Procesamiento;
+import asint.ProcesamientoAbstracto;
 import asint.SintaxisAbstracta.And;
 import asint.SintaxisAbstracta.Array;
 import asint.SintaxisAbstracta.ArrobaInstr;
@@ -124,8 +125,8 @@ public class AsignacionEspacio implements Procesamiento {
 	@Override
 	public void procesa(DecProc a) {
 		nivel++;
-		this.nivel = nivel;
-		a.paramForms().procesa(this);
+		a.setNivel(nivel);
+		a.params().procesa(this);
 		a.bloq().procesa(this);
 		nivel--;
 	}
@@ -181,7 +182,7 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(TPunt a) {
-		if(a.tipo() != new TIden(a))
+		if(a.tipo().getClass() != TIden.class)
 			a.setTam(a.tipo().getTam());
 		else
 			a.setTam(1);
@@ -292,23 +293,23 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(WhileInstr a) {
-		a.bloq().procesa();
+		a.bloq().procesa(this);
 	}
 
 	@Override
-	public void procesa(IfElseInstr a) {//se que esta mal pero no se como sacar el bloque1 y el bloque2
-		a.bloq().procesa();
-		a.bloq().procesa();
+	public void procesa(IfElseInstr a) {
+		a.bloq1().procesa(this);
+		a.bloq2().procesa(this);
 	}
 
 	@Override
 	public void procesa(IfInstr a) {
-		a.bloq().procesa();
+		a.bloq().procesa(this);
 	}
 
 	@Override
 	public void procesa(BloqueInstr a) {
-		a.bloq().procesa();
+		a.bloq().procesa(this);
 	}
 
 	@Override
@@ -446,7 +447,7 @@ public class AsignacionEspacio implements Procesamiento {
 
 	
 	
-	public class AsignacionEspacio2 extends ProcesamientoAuxiliar<Object> {
+	public class AsignacionEspacio2 extends ProcesamientoAbstracto {
 
 		@Override
 		public void procesa(Bloque a) {
@@ -482,22 +483,22 @@ public class AsignacionEspacio implements Procesamiento {
 		public void procesa(DecProc a) {
 			int dirAnt = dir;
 			dir = 0;
-			this.dir = dir;
-			a.paramForm().procesa(this);
+			a.setDir(dir);
+			a.params().procesa(this);
 			a.bloq().procesa(this);
-			this.tam.setTam(dir);
+			a.setTam(dir);
 			dir = dirAnt;
 		}
 
 		@Override
 		public void procesa(DecType a) {
-			a.setTam(a.tipo().getTam());//se supone que es asigTam2 pero no se como ponerlo
+			a.tipo().procesa(this);
 		}
 
 		@Override
 		public void procesa(DecVar a) {
-			this.dir = dir;
-			a.setTam(a.tipo().getTam());
+			a.setDir(dir);
+			a.tipo().procesa(this);
 			incrDir(a.tipo().getTam());
 		}
 
@@ -537,14 +538,17 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(TPunt a) {
-			if(a.tipo() != new TIden(a))
-				a.setTam(a.tipo().getTam());
+			if(a.tipo().getClass() == TIden.class)
+				a.tipo().procesa(this);
 		}
 
 		@Override
 		public void procesa(TStruct a) {
+			int dirAnt = dir;
+			dir = 0;
 			a.lcampos().procesa(this);
-			a.setTam(a.lcampos().getTam());
+			a.setTam(dir);
+			dir = dirAnt;
 		}
 
 		@Override
@@ -633,28 +637,23 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(WhileInstr a) {
-			a.bloq().procesa();
+			a.bloq().procesa(this);
 		}
 
 		@Override
 		public void procesa(IfElseInstr a) {
-			a.bloq().procesa();
-			a.bloq().procesa();
+			a.bloq1().procesa(this);
+			a.bloq2().procesa(this);
 		}
 
 		@Override
 		public void procesa(IfInstr a) {
-			a.bloq().procesa();
+			a.bloq().procesa(this);
 		}
 
 		@Override
 		public void procesa(BloqueInstr a) {
-			a.bloq().procesa();
-		}
-		
-		@Override
-		Object sol() {
-			return null;
+			a.bloq().procesa(this);
 		}
 	}
 }
