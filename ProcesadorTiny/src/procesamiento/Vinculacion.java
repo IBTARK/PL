@@ -1,11 +1,12 @@
 package procesamiento;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import asint.Procesamiento;
+import asint.ProcesamientoAbstracto;
 import asint.SintaxisAbstracta.And;
 import asint.SintaxisAbstracta.Array;
 import asint.SintaxisAbstracta.ArrobaInstr;
@@ -78,18 +79,19 @@ import asint.SintaxisAbstracta.UnaExp;
 import asint.SintaxisAbstracta.UnaInstr;
 import asint.SintaxisAbstracta.WhileInstr;
 import asint.SintaxisAbstracta.WriteInstr;
+import errors.GestionErroresTiny;
 
 public class Vinculacion implements Procesamiento {
 	
 	public static class TablaSimbolos {
-		private List<Map<String, Nodo>> ts;
+		private List<Map<String, Nodo>> ts = new ArrayList<>();
 		
 		public Nodo vinculoDe(String id) {
 			for (int i = ts.size()-1; i >= 0; i--)
 				if (ts.get(i).containsKey(id))
 					return ts.get(i).get(id);
 			
-			//TODO errores
+			return null;
 		}
 		
 		public boolean contiene(String id) {
@@ -99,10 +101,22 @@ public class Vinculacion implements Procesamiento {
 		public void inserta(String id, Nodo vinculo) {
 			ts.get(ts.size()-1).put(id, vinculo);
 		}
+		
+		public void abreAmbito() {
+			ts.add(new HashMap<>());
+		}
+		
+		public void cierraAmbito() {
+			ts.remove(ts.size()-1);
+		}
 	}
 	
+	private GestionErroresTiny error;
 	private TablaSimbolos ts;
-	private Set<String> conjCampos;
+	
+	public Vinculacion(GestionErroresTiny error) {
+		this.error = error;
+	}
 
 	@Override
 	public void procesa(Prog a) {
@@ -112,14 +126,14 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Bloque a) {
-		//abreAmbito(ts);
+		ts.abreAmbito();
 		a.decs().procesa(this);
 		a.instrs().procesa(this);
-		//cierraAmbito(ts);
+		ts.cierraAmbito();
 	}
 
 	@Override
-	public void procesa(SiDecs a) { //He hecho este como ejemplo de dos pasadas
+	public void procesa(SiDecs a) {
 		a.ldecs().procesa(this);
 		a.ldecs().procesa(new Vinculacion2());
 	}
@@ -140,32 +154,32 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(DecProc a) {
-		//abreAmbito(ts);
-		a.paramForms().procesa();
-		a.bloq().procesa();
-		//cierraAmbito(ts);
-		if (ts.contiene(a.id()))
-			error;
+		ts.abreAmbito();
+		a.params().procesa(this);
+		a.bloq().procesa(this);
+		ts.cierraAmbito();
+		if (ts.contiene(a.iden()))
+			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: decProc");
 		else
-			ts.inserta(a.id(), this);
+			ts.inserta(a.iden(), a);
 	}
 
 	@Override
 	public void procesa(DecType a) {
-		a.tipo().procesa();
-		if (ts.contiene(a.id()))
-			error;
+		a.tipo().procesa(this);
+		if (ts.contiene(a.iden()))
+			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: decType");
 		else
-			ts.inserta(a.id(), this);
+			ts.inserta(a.iden(), a);
 	}
 
 	@Override
 	public void procesa(DecVar a) {
-		a.tipo().procesa();
-		if (ts.contiene(a.id()))
-			error;
+		a.tipo().procesa(this);
+		if (ts.contiene(a.iden()))
+			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: decVar");
 		else
-			ts.inserta(a.id(), this);
+			ts.inserta(a.iden(), a);
 	}
 
 	@Override
@@ -191,10 +205,10 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(ParamFormRef a) {
 		a.tipo().procesa(this);
 		if(ts.contiene(a.id())) {
-			error;
+			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: paramFormRef");
 		}
 		else {
-			ts.inserta(a.id(), );
+			ts.inserta(a.id(), a);
 		}
 	}
 
@@ -202,24 +216,17 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(ParamFormal a) {
 		a.tipo().procesa(this);
 		if(ts.contiene(a.id())) {
-			error;
+			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: paramFormal");
 		}
 		else {
-			ts.inserta(a.id(), );
+			ts.inserta(a.id(), a);
 		}
 	}
 
 	@Override
 	public void procesa(TArray a) {
-		if(a.tipo().getClass() != TIden.class) {
+		if(a.tipo().getClass() != TIden.class)
 			a.tipo().procesa(this);
-		}
-		if(a.litEnt().charAt(0) == '-') {
-			error;
-		}
-		else {
-			error;
-		}
 	}
 
 	@Override
@@ -243,13 +250,10 @@ public class Vinculacion implements Procesamiento {
 	@Override
 	public void procesa(TIden a) {
 		a.setVinculo(ts.vinculoDe(a.iden()));
-		if (a.getVinculo().getClass() != DecType.class)
-			error;
 	}
 
 	@Override
 	public void procesa(TStruct a) {
-		conjCampos = new HashSet<>();
 		a.lcampos().procesa(this);
 	}
 
@@ -266,9 +270,8 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Campo a) {
-		if(a.tipo().getClass() != TIden.class) {
+		if(a.tipo().getClass() != TIden.class)
 			a.tipo().procesa(this);
-		}
 	}
 
 	@Override
@@ -493,9 +496,9 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Iden a) {
-		if(!ts.contiene(a.id())) {
-			error;
-		}
+		if(!ts.contiene(a.id()))
+			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: iden");
+		
 		a.setVinculo(ts.vinculoDe(a.id()));
 	}
 
@@ -512,7 +515,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(Null a) {}
 	
 	
-	public class Vinculacion2 extends ProcesamientoAuxiliar {
+	public class Vinculacion2 extends ProcesamientoAbstracto {
 
 		@Override
 		public void procesa(MuchasDecs a) {
@@ -527,17 +530,17 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(DecProc a) {
-			a.paramForms().procesa(new Vinculacion2());
+			a.params().procesa(this);
 		}
 
 		@Override
 		public void procesa(DecType a) {
-			a.tipo().procesa(new Vinculacion2());
+			a.tipo().procesa(this);
 		}
 
 		@Override
 		public void procesa(DecVar a) {
-			a.tipo().procesa(new Vinculacion2());
+			a.tipo().procesa(this);
 		}
 
 		@Override
@@ -568,15 +571,10 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(TArray a) {
-			if(a.tipo().getClass() == TIden.class) {
+			if(a.tipo().getClass() == TIden.class)
 				a.setVinculo(ts.vinculoDe(a.litEnt()));
-				if(a.getVinculo().getClass() != DecType.class) {
-					error;
-				}
-			}
-			else {
+			else
 				a.tipo().procesa(this);
-			}
 		}
 
 		@Override
@@ -603,17 +601,10 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(Campo a) {
-			if(a.tipo().getClass() != TIden.class) {
+			if(a.tipo().getClass() != TIden.class)
 				a.setVinculo(ts.vinculoDe(a.iden()));
-			}
-			else {
+			else
 				a.tipo().procesa(this);
-			}
-		}
-
-		@Override
-		Nodo sol() {
-			return null;
 		}
 	}
 }
