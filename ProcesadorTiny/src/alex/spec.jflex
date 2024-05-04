@@ -30,6 +30,8 @@ import errors.GestionErroresTiny;
   ops = new ALexOperations(this);
 %init}
 
+eof = \$
+
 letra  = ([A-Z]|[a-z]|_)
 digitoPositivo = [1-9]
 digito = ({digitoPositivo}|0)
@@ -94,6 +96,8 @@ literal_real = {literal_entero}(\.{parteDecimal}|((\.{parteDecimal})?(e|E){liter
 comentario = ##([^\n])*
 
 %%
+{eof}						{return ops.unidadEOF();}
+
 {int}						{return ops.unidadID_INT();}
 {real}						{return ops.unidadID_REAL();}
 {string}					{return ops.unidadID_STRING();}

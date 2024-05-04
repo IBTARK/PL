@@ -13,6 +13,7 @@ import maquinap.MaquinaP;
 import procesamiento.AsignacionEspacio;
 import procesamiento.Etiquetado;
 import procesamiento.GeneracionCodigo;
+import procesamiento.Pretipado;
 import procesamiento.Tipado;
 import procesamiento.Vinculacion;
 
@@ -58,7 +59,7 @@ public class DomJudge {
  		GestionErroresTiny errores = new GestionErroresTiny();
  		new Vinculacion(errores).procesa(p);
  		if(!errores.hayError()) {
- 			new Pretipado(errores).procesa(p); //TODO .-.
+ 			new Pretipado(errores).procesa(p);
  		}
  		if(!errores.hayError()) {
  			new Tipado(errores).procesa(p);
@@ -73,7 +74,7 @@ public class DomJudge {
  	}
 	
  	public static void main(String[] args) throws Exception {
- 		Reader r = new InputStreamReader(System.in);
+ 		Reader r = new BISReader(System.in);
  		char constructor = (char) r.read();
  		Prog prog = construye_ast(r,constructor);
  		if(prog != null) {

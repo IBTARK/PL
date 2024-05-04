@@ -8,8 +8,6 @@ import java.util.Scanner;
 import java.util.Stack;
 
 
-
-
 public class MaquinaP {
    public static class EAccesoIlegitimo extends RuntimeException {
 	private static final long serialVersionUID = 1L;} 

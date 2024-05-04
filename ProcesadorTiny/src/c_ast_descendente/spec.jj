@@ -50,8 +50,14 @@ PARSER_END(ConstructorASTs)
 	Prog analiza(): 
 		{Prog prog;} 
 		{
-			prog = programa() <EOF> 
+			prog = programa() fin()
 			{return prog;} 
+		}
+		
+	void fin():
+		{}
+		{
+			<EOF> | "$$"
 		}
 	
 	Prog programa(): 
