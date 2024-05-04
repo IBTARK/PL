@@ -93,8 +93,8 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Bloque a) {
-		// TODO Auto-generated method stub
-		
+		a.decs().procesa(this);
+		a.instrs().procesa(this);
 	}
 
 	@Override
@@ -133,13 +133,13 @@ public class AsignacionEspacio implements Procesamiento {
 	@Override
 	public void procesa(DecType a) {
 		a.setTam(a.tipo().getTam());
-		this.nivel = nivel;
+		a.setNivel(nivel);
 	}
 
 	@Override
 	public void procesa(DecVar a) {
 		a.setTam(a.tipo().getTam());
-		this.nivel = nivel;
+		a.setNivel(nivel);
 	}
 
 	@Override
@@ -163,14 +163,14 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(ParamFormRef a) {
-		// TODO Auto-generated method stub
-		
+		a.setTam(a.tipo().getTam());
+		a.setNivel(nivel);
 	}
 
 	@Override
 	public void procesa(ParamFormal a) {
-		// TODO Auto-generated method stub
-		
+		a.setTam(a.tipo().getTam());
+		a.setNivel(nivel);
 	}
 
 	@Override
@@ -221,20 +221,21 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(MuchosCamps a) {
-		// TODO Auto-generated method stub
-		
+		a.lcampos().procesa(this);
+		a.campo().procesa(this);
 	}
 
 	@Override
 	public void procesa(UnCamp a) {
-		// TODO Auto-generated method stub
-		
+		a.campo().procesa(this);
 	}
 
 	@Override
 	public void procesa(Campo a) {
-		// TODO Auto-generated method stub
-		
+		if(a.tipo().getClass() != TIden.class) {
+			a.tipo().procesa(this);
+			a.setTam(a.tipo().getTam());
+		}
 	}
 
 	@Override

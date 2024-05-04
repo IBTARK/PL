@@ -7,7 +7,7 @@ public class SintaxisAbstracta {
     public static abstract class Nodo  {
  	    private int fila, col;
  	    private Nodo vinculo, tipo;
- 	    private int dir, tam, prim, sig;
+ 	    private int dir, tam, prim, sig, nivel;
         public Nodo() {
 		    fila=col=-1;
         }   
@@ -66,6 +66,12 @@ public class SintaxisAbstracta {
 		}
 		public void setDir(int dir) {
 			this.dir = dir;
+		}
+		public int getNivel() {
+			return nivel;
+		}
+		public void setNivel(int nivel) {
+			this.nivel = nivel;
 		}
     }
     

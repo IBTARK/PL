@@ -670,7 +670,7 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Iden a) {
-		
+
 	}
 
 	@Override
