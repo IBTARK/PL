@@ -525,11 +525,15 @@ public class MaquinaP {
       public void ejecuta() {
          int dir = pilaEvaluacion.pop().valorInt();
          if (datos[dir].getClass() == ValorString.class)
-        	 pilaEvaluacion.push(new ValorString(in.next()));
-         else if (datos[dir].getClass() == ValorInt.class)
+        	 pilaEvaluacion.push(new ValorString(in.nextLine()));
+         else if (datos[dir].getClass() == ValorInt.class) {
         	 pilaEvaluacion.push(new ValorInt(in.nextInt()));
-         else if (datos[dir].getClass() == ValorReal.class)
+        	 in.nextLine();
+         }
+         else if (datos[dir].getClass() == ValorReal.class) {
         	 pilaEvaluacion.push(new ValorReal(in.nextDouble()));
+        	 in.nextLine();
+         }
          pc++;
       } 
       public String toString() {return "read";};

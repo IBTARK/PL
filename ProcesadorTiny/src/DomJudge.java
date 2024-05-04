@@ -3,44 +3,81 @@ import java.io.Reader;
 
 import alex.AnalizadorLexicoTiny;
 import asint.SintaxisAbstracta.Prog;
+import c_ast_ascendente.ConstructorASTs;
 import c_ast_descendente.ParseException;
+import c_ast_descendente.TokenMgrError;
+import errors.GestionErroresTiny;
 import errors.GestionErroresTiny.ErrorLexico;
 import errors.GestionErroresTiny.ErrorSintactico;
-import procesamiento.Impresion;
-import procesamiento.ProcRecursivo;
+import maquinap.MaquinaP;
+import procesamiento.AsignacionEspacio;
+import procesamiento.Etiquetado;
+import procesamiento.GeneracionCodigo;
+import procesamiento.Tipado;
+import procesamiento.Vinculacion;
 
 public class DomJudge {
-	public static void main(String[] args) throws Exception {
-		try {
-			Reader input = new InputStreamReader(System.in);
-			int op = input.read();
-			Prog prog = null;
-			if(op == 'a') {
-				System.out.println("CONSTRUCCION AST ASCENDENTE");
-				AnalizadorLexicoTiny alex = new AnalizadorLexicoTiny(input);
-				c_ast_ascendente.ConstructorASTs asint = new c_ast_ascendente.ConstructorASTsDJ(alex);
-				prog = (Prog)asint.debug_parse().value;
-			}
-			else if (op == 'd') {
-				System.out.println("CONSTRUCCION AST DESCENDENTE");
-				c_ast_descendente.ConstructorASTs asint = new c_ast_descendente.ConstructorASTsDJ(input);
-				asint.disable_tracing();
-				prog = asint.analiza();
-			}
 	
-			System.out.println("IMPRESION RECURSIVA");
-			new ProcRecursivo().imprime(prog);
-			System.out.println("IMPRESION INTERPRETE");
-			prog.imprime();
-			System.out.println("IMPRESION VISITANTE");
-			prog.procesa(new Impresion());
+	private static Prog construye_ast(Reader input, char constructor) throws Exception {
+		if(constructor == 'a') {
+			try {
+				AnalizadorLexicoTiny alex = new AnalizadorLexicoTiny(input);
+				ConstructorASTs asint = new ConstructorASTs(alex);
+				Prog p = (Prog) asint.parse().value;
+				return p;
+			}
+			catch(ErrorLexico e) {
+				System.out.println("ERROR_LEXICO");
+			}
+			catch(ErrorSintactico e) {
+				System.out.println("ERROR_SINTACTICO");
+				System.exit(0);
+			}
 		}
-		catch (ErrorSintactico | ParseException e) {
-			System.out.println("ERROR_SINTACTICO");
+		else if(constructor == 'd') {
+			try {
+				c_ast_descendente.ConstructorASTs asint = new c_ast_descendente.ConstructorASTs(input);
+				asint.disable_tracing();
+				return asint.analiza();
+			}
+			catch(TokenMgrError e) {
+				System.out.println("ERROR_LEXICO");
+			}
+			catch(ParseException e) {
+				System.out.println("ERROR_SINTACTICO");
+				System.exit(0);
+			}
 		}
-		catch (ErrorLexico e) {
-			System.out.println("ERROR_SINTACTICO");
+		else {
+			System.err.println("Metodo de construccion no soportado:"+constructor);
 		}
+		return null;
 	}
-
+	
+	public static void procesa(Prog p, Reader datos) throws Exception {
+ 		GestionErroresTiny errores = new GestionErroresTiny();
+ 		new Vinculacion(errores).procesa(p);
+ 		if(!errores.hayError()) {
+ 			new Pretipado(errores).procesa(p); //TODO .-.
+ 		}
+ 		if(!errores.hayError()) {
+ 			new Tipado(errores).procesa(p);
+ 		}
+ 		if(!errores.hayError()) {
+ 			new AsignacionEspacio().procesa(p);
+ 			new Etiquetado().procesa(p);
+ 			MaquinaP m = new MaquinaP(datos,500,5000,5000,10);
+ 			new GeneracionCodigo(m).procesa(p);
+ 			m.ejecuta();
+ 		}
+ 	}
+	
+ 	public static void main(String[] args) throws Exception {
+ 		Reader r = new InputStreamReader(System.in);
+ 		char constructor = (char) r.read();
+ 		Prog prog = construye_ast(r,constructor);
+ 		if(prog != null) {
+ 			procesa(prog, r);
+ 		}
+ 	}
 }
