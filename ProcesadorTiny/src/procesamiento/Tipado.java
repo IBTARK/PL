@@ -274,14 +274,15 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Prog a) {
-		// TODO Auto-generated method stub
-		
+		a.bloq().procesa(this);
+		a.setTipo(a.bloq().getTipo());
 	}
 
 	@Override
 	public void procesa(Bloque a) {
-		// TODO Auto-generated method stub
-		
+		a.decs().procesa(this);
+		a.instrs().procesa(this);
+		a.setTipo(ambosOk(a.decs().getTipo(), a.instrs().getTipo()));
 	}
 
 	@Override
@@ -339,16 +340,10 @@ public class Tipado implements Procesamiento {
 	public void procesa(UnParam a) {}
 
 	@Override
-	public void procesa(ParamFormRef a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(ParamFormRef a) {}
 
 	@Override
-	public void procesa(ParamFormal a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(ParamFormal a) {}
 
 	@Override
 	public void procesa(TArray a) {}
@@ -534,14 +529,12 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(And a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinLog(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
 	public void procesa(Or a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinLog(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
@@ -611,8 +604,17 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Neg a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd().procesa(this);
+		Nodo t = ref(a.opnd().getTipo());
+		if(t.getClass() == TInt.class) {
+			a.setTipo(t.getTipo());
+		}
+		else if(t.getClass() == TReal.class) {
+			a.setTipo(t.getTipo());
+		}
+		else {
+			a.setTipo(ERROR);
+		}
 	}
 
 	@Override
@@ -646,49 +648,48 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Not a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd().procesa(this);
+		Nodo t = ref(a.opnd().getTipo());
+		if(t.getClass() == TBool.class) {
+			a.setTipo(t.getTipo());
+		}
+		else {
+			a.setTipo(ERROR);
+		}
 	}
 
 	@Override
 	public void procesa(LitEnt a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(new TInt());
 	}
 
 	@Override
 	public void procesa(LitReal a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(new TReal());
 	}
 
 	@Override
 	public void procesa(Iden a) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void procesa(True a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(new TBool());
 	}
 
 	@Override
 	public void procesa(False a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(new TBool());
 	}
 
 	@Override
 	public void procesa(LitCad a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(new TString());
 	}
 
 	@Override
 	public void procesa(Null a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(null);
 	}
 }
