@@ -89,6 +89,9 @@ public class GeneracionCodigo implements Procesamiento {
 	private List<DecProc> procPendientes = new ArrayList<>();
 	private MaquinaP m;
 	
+	private void apila(DecProc dp) {
+		procPendientes.add(dp);
+	}
 	
 	private boolean esDesignador(Exp e) {
 		Class<?> c = e.getClass();
@@ -279,20 +282,15 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(DecProc a) {
-		// TODO Auto-generated method stub
-		
+		apila(a);
 	}
 
 	@Override
 	public void procesa(DecType a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(DecVar a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -393,68 +391,78 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(ArrobaInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		m.emit(m.desapila());
 	}
 
 	@Override
 	public void procesa(ProcInstr a) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void procesa(NlInstr a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(NewInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		ref(a.exp.tipo()) = TPunt.getClass();
+		m.emit(m.alloc(a.exp.tipo().getTam()));
+		m.emit(m.store());
 	}
 
 	@Override
 	public void procesa(ReadInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		m.emit(m.read());
+		m.emit(m.store());
 	}
 
 	@Override
 	public void procesa(WriteInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		accVal(a.exp());
+		m.emit(m.write());
 	}
 
 	@Override
 	public void procesa(DeleteInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		m.emit(m.fetch());
+		m.emit(m.dealloc(a.exp().getTam()));
 	}
 
 	@Override
 	public void procesa(WhileInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		accVal(a.exp());
+		m.emit(m.irF(a.sig()));
+		a.bloq().procesa(this);
+		m.emit(m.irA(a.prim()));
 	}
 
 	@Override
 	public void procesa(IfElseInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		accVal(a.exp());
+		m.emit(m.irF(a.bloq2().prim()));
+		a.bloq1().procesa(this);
+		m.emit(m.irA(a.sig()));
+		a.bloq2().procesa(this);
 	}
 
 	@Override
 	public void procesa(IfInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		accVal(a.exp());
+		m.emit(m.irF(a.sig()));
+		a.bloq().procesa(this);
 	}
 
 	@Override
 	public void procesa(BloqueInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.bloq().procesa(this);
 	}
 
 	@Override
@@ -508,38 +516,38 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Menor a) {
-		// TODO Auto-generated method stub
-		
+		genCodBin(a.opnd0(), a.opnd1(), a);
+		m.emit(m.menor());
 	}
 
 	@Override
 	public void procesa(Mayor a) {
-		// TODO Auto-generated method stub
-		
+		genCodBin(a.opnd0(), a.opnd1(), a);
+		m.emit(m.mayor());
 	}
 
 	@Override
 	public void procesa(MenorIgual a) {
-		// TODO Auto-generated method stub
-		
+		genCodBin(a.opnd0(), a.opnd1(), a);
+		m.emit(m.menorIgual());
 	}
 
 	@Override
 	public void procesa(MayorIgual a) {
-		// TODO Auto-generated method stub
-		
+		genCodBin(a.opnd0(), a.opnd1(), a);
+		m.emit(m.mayorIgual());
 	}
 
 	@Override
 	public void procesa(Igual a) {
-		// TODO Auto-generated method stub
-		
+		genCodBin(a.opnd0(), a.opnd1(), a);
+		m.emit(m.igual());
 	}
 
 	@Override
 	public void procesa(Desigual a) {
-		// TODO Auto-generated method stub
-		
+		genCodBin(a.opnd0(), a.opnd1(), a);
+		m.emit(m.desigual());
 	}
 
 	@Override

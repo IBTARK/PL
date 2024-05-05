@@ -447,56 +447,86 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(NlInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(OK);
 	}
 
 	@Override
 	public void procesa(NewInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		if(ref(a.exp().tipo().getClass()) == TPunt.class)
+			a.setTipo(OK);
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override
 	public void procesa(ReadInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		if(esDesignador(a.exp) 
+				&& (ref(a.exp().tipo().getClass()) == TInt.class 
+				|| ref(a.exp().tipo().getClass()) == TReal.class 
+				|| ref(a.exp().tipo().getClass()) == TString.class))
+			a.setTipo(OK);
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override
 	public void procesa(WriteInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		if(ref(a.exp().tipo().getClass()) == TInt.class 
+				|| ref(a.exp().tipo().getClass()) == TReal.class 
+				|| ref(a.exp().tipo().getClass()) == TBool.class
+				|| ref(a.exp().tipo().getClass()) == TString.class)
+			a.setTipo(OK);
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override
 	public void procesa(DeleteInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		if(ref(a.exp().tipo().getClass()) == TPunt.class)
+			a.setTipo(OK);
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override
 	public void procesa(WhileInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		a.bloq().procesa(this);
+		if(a.bloq().tipo().getClass() == OK && ref(a.exp().tipo().getClass()) == TBool.class)
+			a.setTipo(OK);
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override
 	public void procesa(IfElseInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		a.bloq1().procesa(this);
+		a.bloq2().procesa(this);
+		if(a.bloq1().tipo().getClass() == OK && ref(a.exp().tipo().getClass()) == TBool.class && a.bloq2().tipo().getClass() == OK)
+			a.setTipo(OK);
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override
 	public void procesa(IfInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		a.bloq().procesa(this);
+		if(a.bloq().tipo().getClass() == OK && ref(a.exp().tipo().getClass()) == TBool.class)
+			a.setTipo(OK);
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override
 	public void procesa(BloqueInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.bloq().procesa(this);
+		a.setTipo(a.bloq().tipo().getClass());
 	}
 
 	@Override
@@ -563,38 +593,32 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Menor a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
 	public void procesa(Mayor a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
 	public void procesa(MenorIgual a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
 	public void procesa(MayorIgual a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
 	public void procesa(Igual a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinComp(a.opnd0(), a.opnd1()));
 	}
 
 	@Override
 	public void procesa(Desigual a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(tipadoBinComp(a.opnd0(), a.opnd1()));
 	}
 
 	@Override

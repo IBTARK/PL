@@ -88,6 +88,9 @@ public class Etiquetado implements Procesamiento {
 	private int etq = 0;
 	private List<DecProc> procPendientes = new ArrayList<>();
 	
+	private void apila(DecProc dp) {
+		procPendientes.add(dp);
+	}
 	
 	private boolean esDesignador(Exp e) {
 		Class<?> c = e.getClass();
@@ -223,20 +226,15 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(DecProc a) {
-		// TODO Auto-generated method stub
-		
+		apila(a);
 	}
 
 	@Override
 	public void procesa(DecType a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void procesa(DecVar a) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -337,68 +335,99 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(ArrobaInstr a) {
-		// TODO Auto-generated method stub
+		a.setPrim(etq);
+		a.exp().procesa(this);
+		etq++;
+		a.setSig(etq);
 		
 	}
 
 	@Override
 	public void procesa(ProcInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etq++;
+		etiquetadoPasoParams(EtiquetadoLiberaParam(((DecProc) a.getVinculo()).params(), a.paramReales()), a.paramReales());
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(NlInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(NewInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.exp().procesa(this);
+		etq += 2;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(ReadInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.exp().procesa(this);
+		etq += 2;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(WriteInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.exp().procesa(this);
+		accVal(a.exp());
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(DeleteInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.exp().procesa(this);
+		etq += 2;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(WhileInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.exp().procesa(this);
+		accVal(a.exp());
+		etq++;
+		a.bloq1().procesa(this);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(IfElseInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.exp().procesa(this);
+		accVal(a.exp());
+		etq++;
+		a.bloq1().procesa(this);
+		etq++;
+		a.bloq2().procesa(this);
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(IfInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.exp().procesa(this);
+		accVal(a.exp());
+		etq++;
+		a.bloq().procesa(this);
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(BloqueInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.bloq().procesa(this);
+		a.setSig(etq);
 	}
 
 	@Override
@@ -465,38 +494,50 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Menor a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(Mayor a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(MenorIgual a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(MayorIgual a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(Igual a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(Desigual a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
