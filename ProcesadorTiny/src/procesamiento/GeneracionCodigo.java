@@ -133,20 +133,15 @@ public class GeneracionCodigo implements Procesamiento {
 	private void genPasoParams(ParamForms params, ParamReales exps) {
 		if (params.getClass() == SiParam.class && exps.getClass() == SiExp.class)
 			genPasoParams(((SiParam) params).lparams(), ((SiExp) exps).lexps());
-		
-		else if (params.getClass() != NoParam.class && exps.getClass() != NoExp.class)
-			error
 	}
 	
 	private void genPasoParams(LParams params, LExp exps) {
 		if (params.getClass() == UnParam.class && exps.getClass() == UnaExp.class)
 			genPasoParam(((UnParam) params).param(), ((UnaExp) exps).exp());
-		else if (params.getClass() == MuchosParams.class && exps.getClass() == MuchasExp.class) {
+		else {
 			genPasoParams(((MuchosParams) params).lparam(), ((MuchasExp) exps).lexp());
 			genPasoParam(((MuchosParams) params).param(), ((MuchasExp) exps).exp());
 		}
-		else
-			error
 	}
 	
 	private void genPasoParam(ParamForm param, Exp exp) {
@@ -156,8 +151,6 @@ public class GeneracionCodigo implements Procesamiento {
 		m.emit(m.dup());
 		
 		if (param.getClass() == ParamFormRef.class) {
-			if (!esDesignador(exp))
-				error
 			m.emit(m.alloc(1));
 			m.emit(m.store());
 			m.emit(m.fetch());
