@@ -246,14 +246,23 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Prog a) {
-		// TODO Auto-generated method stub
-		
+		a.bloq().procesa(this);
+		m.emit(m.stop());
+		while(!procPendientes.isEmpty()) {
+			DecProc p = procPendientes.remove(0);
+			m.emit(m.desapilaDisp(p.getNivel()));
+			a.bloq().procesa(this);
+			GenLiberaParam gl = new GenLiberaParam();
+			gl.procesa();//npi
+			m.emit(m.desactiva(p.getNivel(), p.getTam()));
+			m.emit(m.irD());
+		}
 	}
 
 	@Override
 	public void procesa(Bloque a) {
-		// TODO Auto-generated method stub
-		
+		recolectaProcs(a.decs());
+		a.instrs().procesa(this);
 	}
 
 	@Override
@@ -306,16 +315,10 @@ public class GeneracionCodigo implements Procesamiento {
 	public void procesa(UnParam a) {}
 
 	@Override
-	public void procesa(ParamFormRef a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(ParamFormRef a) {}
 
 	@Override
-	public void procesa(ParamFormal a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(ParamFormal a) {}
 
 	@Override
 	public void procesa(TArray a) {
@@ -348,22 +351,13 @@ public class GeneracionCodigo implements Procesamiento {
 	public void procesa(TStruct a) {}
 
 	@Override
-	public void procesa(MuchosCamps a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(MuchosCamps a) {}
 
 	@Override
-	public void procesa(UnCamp a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(UnCamp a) {}
 
 	@Override
-	public void procesa(Campo a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Campo a) {}
 
 	@Override
 	public void procesa(SiInstrs a) {
@@ -498,14 +492,14 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(And a) {
-		// TODO Auto-generated method stub
-		
+		genCodBin(a.opnd0(), a.opnd1());
+		m.emit(m.and());
 	}
 
 	@Override
 	public void procesa(Or a) {
-		// TODO Auto-generated method stub
-		
+		genCodBin(a.opnd0(), a.opnd1());
+		m.emit(m.and());
 	}
 
 	@Override
@@ -570,8 +564,9 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Neg a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd().procesa(this);
+		accVal(a.opnd());
+		m.emit(m.neg());
 	}
 
 	@Override
@@ -598,49 +593,43 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Not a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd().procesa(this);
+		accVal(a.opnd());
+		m.emit(m.not());
 	}
 
 	@Override
 	public void procesa(LitEnt a) {
-		// TODO Auto-generated method stub
-		
+		m.emit(m.apilaInt(Integer.valueOf(a.lit())));
 	}
 
 	@Override
 	public void procesa(LitReal a) {
-		// TODO Auto-generated method stub
-		
+		m.emit(m.apilaReal(Double.valueOf(a.lit())));
 	}
 
 	@Override
 	public void procesa(Iden a) {
-		// TODO Auto-generated method stub
-		
+		accId(a.getVinculo());
 	}
 
 	@Override
 	public void procesa(True a) {
-		// TODO Auto-generated method stub
-		
+		m.emit(m.apilaBool(true));
 	}
 
 	@Override
 	public void procesa(False a) {
-		// TODO Auto-generated method stub
-		
+		m.emit(m.apilaBool(false));
 	}
 
 	@Override
 	public void procesa(LitCad a) {
-		// TODO Auto-generated method stub
-		
+		m.emit(m.apilaString(a.lit()));
 	}
 
 	@Override
 	public void procesa(Null a) {
-		// TODO Auto-generated method stub
-		
+		m.emit(m.apilaInt(-1));
 	}
 }

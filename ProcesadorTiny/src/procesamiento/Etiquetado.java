@@ -114,6 +114,13 @@ public class Etiquetado implements Procesamiento {
 			etq++;
 	}
 	
+	private void accId(DecVar a) {
+		etq++;
+		if(a.getNivel() > 0) {
+			etq += 2;
+		}
+	}
+	
 	private void etiquetadoBin(Exp e1, Exp e2) {
 		e1.procesa(this);
 		accVal(e1);
@@ -212,8 +219,20 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Prog a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.bloq().procesa(this);
+		etq++;
+		while(!procPendientes.isEmpty()) {
+			DecProc p = procPendientes.remove(0);
+			p.setPrim(etq);
+			etq++;
+			a.bloq().procesa(this);
+			EtiquetadoLiberaParam lp = new EtiquetadoLiberaParam();
+			lp.procesa();//npi
+			etq += 2;
+			p.setSig(etq);
+		}
+		a.setSig(etq);
 	}
 
 	@Override
@@ -262,22 +281,13 @@ public class Etiquetado implements Procesamiento {
 	public void procesa(UnParam a) {}
 
 	@Override
-	public void procesa(ParamFormRef a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(ParamFormRef a) {	}
 
 	@Override
-	public void procesa(ParamFormal a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(ParamFormal a) {}
 
 	@Override
-	public void procesa(TArray a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TArray a) {}
 
 	@Override
 	public void procesa(TPunt a) {
@@ -304,22 +314,13 @@ public class Etiquetado implements Procesamiento {
 	public void procesa(TStruct a) {}
 
 	@Override
-	public void procesa(MuchosCamps a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(MuchosCamps a) {}
 
 	@Override
-	public void procesa(UnCamp a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(UnCamp a) {}
 
 	@Override
-	public void procesa(Campo a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Campo a) {}
 
 	@Override
 	public void procesa(SiInstrs a) {
@@ -499,14 +500,18 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(And a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBin(a.opnd0(), a.opnd1());
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(Or a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBin(a.opnd0(), a.opnd1());
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
@@ -591,8 +596,11 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Neg a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.opnd().procesa(this);
+		accVal(a.opnd());
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
@@ -623,50 +631,60 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Not a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.opnd().procesa(this);
+		accVal(a.opnd());
+		etq++;
+		a.setSig(etq);	
 	}
 
 	@Override
 	public void procesa(LitEnt a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(LitReal a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(Iden a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		accId((DecVar) a.getVinculo());
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(True a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(False a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(LitCad a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(Null a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etq++;
+		a.setSig(etq);
 	}
 
 }

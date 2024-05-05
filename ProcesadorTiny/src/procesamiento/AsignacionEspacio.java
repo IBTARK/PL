@@ -323,16 +323,10 @@ public class AsignacionEspacio implements Procesamiento {
 	public void procesa(Suma a) {}
 
 	@Override
-	public void procesa(And a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(And a) {}
 
 	@Override
-	public void procesa(Or a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Or a) {}
 
 	@Override
 	public void procesa(Resta a) {}
@@ -384,52 +378,28 @@ public class AsignacionEspacio implements Procesamiento {
 	public void procesa(Punt a) {}
 
 	@Override
-	public void procesa(Not a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Not a) {}
 
 	@Override
-	public void procesa(LitEnt a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(LitEnt a) {}
 
 	@Override
-	public void procesa(LitReal a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(LitReal a) {}
 
 	@Override
-	public void procesa(Iden a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Iden a) {}
 
 	@Override
-	public void procesa(True a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(True a) {}
 
 	@Override
-	public void procesa(False a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(False a) {}
 
 	@Override
-	public void procesa(LitCad a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(LitCad a) {}
 
 	@Override
-	public void procesa(Null a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Null a) {}
 
 	
 	
@@ -437,8 +407,10 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(Bloque a) {
-			// TODO Auto-generated method stub
-			
+			int dirAnt = dir;
+			a.decs().procesa(this);
+			a.instrs().procesa(this);
+			dir = dirAnt;
 		}
 
 		@Override
@@ -502,14 +474,16 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(ParamFormRef a) {
-			// TODO Auto-generated method stub
-			
+			a.setDir(dir);
+			a.tipo().procesa(this);
+			dir++;
 		}
 
 		@Override
 		public void procesa(ParamFormal a) {
-			// TODO Auto-generated method stub
-			
+			a.setDir(dir);
+			a.tipo().procesa(this);
+			dir += a.tipo().getTam();
 		}
 
 		@Override
@@ -537,20 +511,25 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(MuchosCamps a) {
-			// TODO Auto-generated method stub
-			
+			a.lcampos().procesa(this);
+			a.campo().procesa(this);
+			a.setTam(a.lcampos().getTam() + a.campo().getTam());
 		}
 
 		@Override
 		public void procesa(UnCamp a) {
-			// TODO Auto-generated method stub
-			
+			a.campo().procesa(this);
+			a.setTam(a.campo().getTam());
 		}
 
 		@Override
 		public void procesa(Campo a) {
-			// TODO Auto-generated method stub
-			
+			if(a.tipo().getClass() != TIden.class) {
+				a.tipo().procesa(this);
+				a.setTam(a.tipo().getTam());
+			}
+			a.setDir(dir);
+			dir += a.getTam();
 		}
 
 		@Override
