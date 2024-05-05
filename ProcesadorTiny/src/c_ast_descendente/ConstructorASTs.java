@@ -12,11 +12,34 @@ public class ConstructorASTs implements ConstructorASTsConstants {
     try {
 Prog prog;
       prog = programa();
-      jj_consume_token(0);
+      fin();
 {if ("" != null) return prog;}
     throw new Error("Missing return statement in function");
     } finally {
       trace_return("analiza");
+    }
+}
+
+  final public void fin() throws ParseException {
+    trace_call("fin");
+    try {
+
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case 0:{
+        jj_consume_token(0);
+        break;
+        }
+      case 34:{
+        jj_consume_token(34);
+        break;
+        }
+      default:
+        jj_la1[0] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+    } finally {
+      trace_return("fin");
     }
 }
 
@@ -36,10 +59,10 @@ Bloque bloq;
     trace_call("bloque");
     try {
 Instrs instrs; Decs decs;
-      jj_consume_token(34);
+      jj_consume_token(35);
       decs = declaraciones();
       instrs = instrucciones();
-      jj_consume_token(35);
+      jj_consume_token(36);
 {if ("" != null) return sem.bloq(decs, instrs);}
     throw new Error("Missing return statement in function");
     } finally {
@@ -60,14 +83,14 @@ LDecs ldecsa;
       case proc_id:
       case type_id:
       case iden:
-      case 44:{
+      case 45:{
         ldecsa = lista_declaraciones();
-        jj_consume_token(36);
+        jj_consume_token(37);
 {if ("" != null) return sem.siDecs(ldecsa);}
         break;
         }
       default:
-        jj_la1[0] = jj_gen;
+        jj_la1[1] = jj_gen;
 {if ("" != null) return sem.noDecs();}
       }
     throw new Error("Missing return statement in function");
@@ -94,15 +117,15 @@ LDecs ldecsa; Dec dec;
     try {
 LDecs ldecsa; Dec dec;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 37:{
-        jj_consume_token(37);
+      case 38:{
+        jj_consume_token(38);
         dec = declaracion();
         ldecsa = r_lista_declaraciones(sem.muchasDecs(ldecsah,dec));
 {if ("" != null) return ldecsa;}
         break;
         }
       default:
-        jj_la1[1] = jj_gen;
+        jj_la1[2] = jj_gen;
 {if ("" != null) return ldecsah;}
       }
     throw new Error("Missing return statement in function");
@@ -137,14 +160,14 @@ Token id; ParamForms params; Bloque bloque; Tipo tipo;
       case string_id:
       case struct_id:
       case iden:
-      case 44:{
+      case 45:{
         tipo = tipo();
         id = jj_consume_token(iden);
 {if ("" != null) return (Dec) sem.decVar(tipo, id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
         }
       default:
-        jj_la1[2] = jj_gen;
+        jj_la1[3] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -158,9 +181,9 @@ Token id; ParamForms params; Bloque bloque; Tipo tipo;
     trace_call("parametros_formales");
     try {
 ParamForms a;
-      jj_consume_token(38);
-      a = lista_parametros_formales_e();
       jj_consume_token(39);
+      a = lista_parametros_formales_e();
+      jj_consume_token(40);
 {if ("" != null) return a;}
     throw new Error("Missing return statement in function");
     } finally {
@@ -179,13 +202,13 @@ LParams lparams;
       case string_id:
       case struct_id:
       case iden:
-      case 44:{
+      case 45:{
         lparams = lista_parametros_formales();
 {if ("" != null) return sem.siParam(lparams);}
         break;
         }
       default:
-        jj_la1[3] = jj_gen;
+        jj_la1[4] = jj_gen;
 {if ("" != null) return sem.noParam();}
       }
     throw new Error("Missing return statement in function");
@@ -212,15 +235,15 @@ LParams lparams; ParamForm param;
     try {
 LParams lparams; ParamForm param;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 40:{
-        jj_consume_token(40);
+      case 41:{
+        jj_consume_token(41);
         param = parametro_formal();
         lparams = r_lista_parametros_formales(sem.muchosParams(ah, param));
 {if ("" != null) return lparams;}
         break;
         }
       default:
-        jj_la1[4] = jj_gen;
+        jj_la1[5] = jj_gen;
 {if ("" != null) return ah;}
       }
     throw new Error("Missing return statement in function");
@@ -247,8 +270,8 @@ Tipo tipo; ParamForm param;
     try {
 Token id;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 41:{
-        jj_consume_token(41);
+      case 42:{
+        jj_consume_token(42);
         id = jj_consume_token(iden);
 {if ("" != null) return (ParamForm) sem.paramFormRef(tipoah ,id.image).ponFila(id.beginLine).ponCol(id.beginColumn);}
         break;
@@ -259,7 +282,7 @@ Token id;
         break;
         }
       default:
-        jj_la1[5] = jj_gen;
+        jj_la1[6] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -299,16 +322,16 @@ Tipo tipo1a; Tipo tipoa;
     try {
 Tipo tipoa; Token id;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 42:{
-        jj_consume_token(42);
-        id = jj_consume_token(literalEntero);
+      case 43:{
         jj_consume_token(43);
+        id = jj_consume_token(literalEntero);
+        jj_consume_token(44);
         tipoa = RT0((Tipo) sem.tArray(tipoah, id.image).ponFila(id.beginLine).ponCol(id.beginColumn));
 {if ("" != null) return tipoa;}
         break;
         }
       default:
-        jj_la1[6] = jj_gen;
+        jj_la1[7] = jj_gen;
 {if ("" != null) return tipoah;}
       }
     throw new Error("Missing return statement in function");
@@ -322,8 +345,8 @@ Tipo tipoa; Token id;
     try {
 Tipo tipoa;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 44:{
-        jj_consume_token(44);
+      case 45:{
+        jj_consume_token(45);
         tipoa = T1();
 {if ("" != null) return sem.tPunt(tipoa);}
         break;
@@ -339,7 +362,7 @@ Tipo tipoa;
         break;
         }
       default:
-        jj_la1[7] = jj_gen;
+        jj_la1[8] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -381,14 +404,14 @@ Token id; LCampos campos;
         }
       case struct_id:{
         jj_consume_token(struct_id);
-        jj_consume_token(34);
-        campos = lista_campos();
         jj_consume_token(35);
+        campos = lista_campos();
+        jj_consume_token(36);
 {if ("" != null) return sem.tStruct(campos);}
         break;
         }
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[9] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -416,15 +439,15 @@ Campo camp; LCampos lcampos;
     try {
 LCampos lcampos; Campo camp;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 40:{
-        jj_consume_token(40);
+      case 41:{
+        jj_consume_token(41);
         camp = campo();
         lcampos = r_lista_campos(sem.muchosCamps(lcamposah, camp));
 {if ("" != null) return lcampos;}
         break;
         }
       default:
-        jj_la1[9] = jj_gen;
+        jj_la1[10] = jj_gen;
 {if ("" != null) return lcamposah;}
       }
     throw new Error("Missing return statement in function");
@@ -459,14 +482,14 @@ LInstrs lInstrsa;
       case write_id:
       case delete_id:
       case while_id:
-      case 34:
-      case 45:{
+      case 35:
+      case 46:{
         lInstrsa = lista_instrucciones();
 {if ("" != null) return sem.siInstrs(lInstrsa);}
         break;
         }
       default:
-        jj_la1[10] = jj_gen;
+        jj_la1[11] = jj_gen;
 {if ("" != null) return sem.noInstrs();}
       }
     throw new Error("Missing return statement in function");
@@ -493,15 +516,15 @@ LInstrs lInstrsa; Instr instra;
     try {
 LInstrs lInstrsa; Instr instra;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 37:{
-        jj_consume_token(37);
+      case 38:{
+        jj_consume_token(38);
         instra = instruccion();
         lInstrsa = r_lista_instrucciones(sem.muchasInstrs(instrah,instra));
 {if ("" != null) return lInstrsa;}
         break;
         }
       default:
-        jj_la1[11] = jj_gen;
+        jj_la1[12] = jj_gen;
 {if ("" != null) return instrah;}
       }
     throw new Error("Missing return statement in function");
@@ -515,8 +538,8 @@ LInstrs lInstrsa; Instr instra;
     try {
 Exp exp; ParamReales param; Bloque bloq; Instr instr; Token id;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 45:{
-        jj_consume_token(45);
+      case 46:{
+        jj_consume_token(46);
         exp = expresion();
 {if ("" != null) return sem.arrobaInstr(exp);}
         break;
@@ -572,13 +595,13 @@ Exp exp; ParamReales param; Bloque bloq; Instr instr; Token id;
 {if ("" != null) return instr;}
         break;
         }
-      case 34:{
+      case 35:{
         bloq = bloque();
 {if ("" != null) return sem.bloqueInstr(bloq);}
         break;
         }
       default:
-        jj_la1[12] = jj_gen;
+        jj_la1[13] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -600,7 +623,7 @@ Bloque bloque;
         break;
         }
       default:
-        jj_la1[13] = jj_gen;
+        jj_la1[14] = jj_gen;
 {if ("" != null) return sem.ifInstr(exp, bloq);}
       }
     throw new Error("Missing return statement in function");
@@ -613,9 +636,9 @@ Bloque bloque;
     trace_call("parametros_reales");
     try {
 ParamReales lista;
-      jj_consume_token(38);
-      lista = lista_expresiones_e();
       jj_consume_token(39);
+      lista = lista_expresiones_e();
+      jj_consume_token(40);
 {if ("" != null) return lista;}
     throw new Error("Missing return statement in function");
     } finally {
@@ -636,14 +659,14 @@ LExp lista;
       case false_id:
       case null_id:
       case iden:
-      case 38:
-      case 47:{
+      case 39:
+      case 48:{
         lista = lista_expresiones();
 {if ("" != null) return sem.siExp(lista);}
         break;
         }
       default:
-        jj_la1[14] = jj_gen;
+        jj_la1[15] = jj_gen;
 {if ("" != null) return sem.noExp();}
       }
     throw new Error("Missing return statement in function");
@@ -670,15 +693,15 @@ LExp exps; Exp exp;
     try {
 LExp exps; Exp exp;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 40:{
-        jj_consume_token(40);
+      case 41:{
+        jj_consume_token(41);
         exp = expresion();
         exps = r_lista_expresiones(sem.muchasExp(ah, exp));
 {if ("" != null) return exps;}
         break;
         }
       default:
-        jj_la1[15] = jj_gen;
+        jj_la1[16] = jj_gen;
 {if ("" != null) return ah;}
       }
     throw new Error("Missing return statement in function");
@@ -717,14 +740,14 @@ Exp e1,e2;
     try {
 Exp e; Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 46:{
-        op = jj_consume_token(46);
+      case 47:{
+        op = jj_consume_token(47);
         e = E0();
 {if ("" != null) return (Exp) sem.asignacion(eh, e).ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       default:
-        jj_la1[16] = jj_gen;
+        jj_la1[17] = jj_gen;
 {if ("" != null) return eh;}
       }
     throw new Error("Missing return statement in function");
@@ -751,12 +774,12 @@ Exp e1,e2;
     try {
 Token op; Exp e2,e1;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 50:
       case 51:
       case 52:
       case 53:
       case 54:
-      case 55:{
+      case 55:
+      case 56:{
         op = OP1();
         e2 = E2();
         e1 = RE1((Exp) sem.mkop1(op.image,eh,e2).ponFila(op.beginLine).ponCol(op.beginColumn));
@@ -764,7 +787,7 @@ Token op; Exp e2,e1;
         break;
         }
       default:
-        jj_la1[17] = jj_gen;
+        jj_la1[18] = jj_gen;
 {if ("" != null) return eh;}
       }
     throw new Error("Missing return statement in function");
@@ -792,14 +815,14 @@ Exp e3,re2,rec2;
     try {
 Exp e3; Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 47:{
-        op = jj_consume_token(47);
+      case 48:{
+        op = jj_consume_token(48);
         e3 = E3();
 {if ("" != null) return (Exp) sem.resta(ah, e3).ponFila(op.beginLine).ponCol(op.beginColumn);}
         break;
         }
       default:
-        jj_la1[18] = jj_gen;
+        jj_la1[19] = jj_gen;
 {if ("" != null) return ah;}
       }
     throw new Error("Missing return statement in function");
@@ -813,15 +836,15 @@ Exp e3; Token op;
     try {
 Exp e3,rec2; Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 48:{
-        op = jj_consume_token(48);
+      case 49:{
+        op = jj_consume_token(49);
         e3 = E3();
         rec2 = REC2((Exp) sem.suma(ah, e3).ponFila(op.beginLine).ponCol(op.beginColumn));
 {if ("" != null) return rec2;}
         break;
         }
       default:
-        jj_la1[19] = jj_gen;
+        jj_la1[20] = jj_gen;
 {if ("" != null) return ah;}
       }
     throw new Error("Missing return statement in function");
@@ -861,7 +884,7 @@ Exp e3,e4,re3; Token op;
         break;
         }
       default:
-        jj_la1[20] = jj_gen;
+        jj_la1[21] = jj_gen;
 {if ("" != null) return ah;}
       }
     throw new Error("Missing return statement in function");
@@ -888,9 +911,9 @@ Exp e5,e4;
     try {
 Token op; Exp e5,e4;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 56:
       case 57:
-      case 58:{
+      case 58:
+      case 59:{
         op = OP4();
         e5 = E5();
         e4 = RE4((Exp) sem.mkop4(op.image,eh,e5).ponFila(op.beginLine).ponCol(op.beginColumn));
@@ -898,7 +921,7 @@ Token op; Exp e5,e4;
         break;
         }
       default:
-        jj_la1[21] = jj_gen;
+        jj_la1[22] = jj_gen;
 {if ("" != null) return eh;}
       }
     throw new Error("Missing return statement in function");
@@ -913,7 +936,7 @@ Token op; Exp e5,e4;
 Token op; Exp e5,e6;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case not_id:
-      case 47:{
+      case 48:{
         op = OP5();
         e5 = E5();
 {if ("" != null) return (Exp) sem.mkop5(op.image,e5).ponFila(op.beginLine).ponCol(op.beginColumn);}
@@ -926,13 +949,13 @@ Token op; Exp e5,e6;
       case false_id:
       case null_id:
       case iden:
-      case 38:{
+      case 39:{
         e6 = E6();
 {if ("" != null) return e6;}
         break;
         }
       default:
-        jj_la1[22] = jj_gen;
+        jj_la1[23] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -960,29 +983,29 @@ Exp e7,re6;
     try {
 Exp e0,re6; Token id,op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 42:{
-        op = jj_consume_token(42);
+      case 43:{
+        op = jj_consume_token(43);
         e0 = E0();
-        jj_consume_token(43);
+        jj_consume_token(44);
         re6 = RE6((Exp) sem.array(ah,e0).ponFila(op.beginLine).ponCol(op.beginColumn));
 {if ("" != null) return re6;}
         break;
         }
-      case 49:{
-        jj_consume_token(49);
+      case 50:{
+        jj_consume_token(50);
         id = jj_consume_token(iden);
         re6 = RE6((Exp) sem.expCampo(ah,id.image).ponFila(id.beginLine).ponCol(id.beginColumn));
 {if ("" != null) return re6;}
         break;
         }
-      case 44:{
-        op = jj_consume_token(44);
+      case 45:{
+        op = jj_consume_token(45);
         re6 = RE6((Exp) sem.punt(ah).ponFila(op.beginLine).ponCol(op.beginColumn));
 {if ("" != null) return re6;}
         break;
         }
       default:
-        jj_la1[23] = jj_gen;
+        jj_la1[24] = jj_gen;
 {if ("" != null) return ah;}
       }
     throw new Error("Missing return statement in function");
@@ -1031,15 +1054,15 @@ Token lit; Exp e0;
 {if ("" != null) return (Exp) sem._null().ponFila(lit.beginLine).ponCol(lit.beginColumn);}
         break;
         }
-      case 38:{
-        jj_consume_token(38);
-        e0 = E0();
+      case 39:{
         jj_consume_token(39);
+        e0 = E0();
+        jj_consume_token(40);
 {if ("" != null) return e0;}
         break;
         }
       default:
-        jj_la1[24] = jj_gen;
+        jj_la1[25] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1054,11 +1077,6 @@ Token lit; Exp e0;
     try {
 Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 50:{
-        op = jj_consume_token(50);
-{if ("" != null) return op;}
-        break;
-        }
       case 51:{
         op = jj_consume_token(51);
 {if ("" != null) return op;}
@@ -1084,8 +1102,13 @@ Token op;
 {if ("" != null) return op;}
         break;
         }
+      case 56:{
+        op = jj_consume_token(56);
+{if ("" != null) return op;}
+        break;
+        }
       default:
-        jj_la1[25] = jj_gen;
+        jj_la1[26] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1100,11 +1123,6 @@ Token op;
     try {
 Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 56:{
-        op = jj_consume_token(56);
-{if ("" != null) return op;}
-        break;
-        }
       case 57:{
         op = jj_consume_token(57);
 {if ("" != null) return op;}
@@ -1115,8 +1133,13 @@ Token op;
 {if ("" != null) return op;}
         break;
         }
+      case 59:{
+        op = jj_consume_token(59);
+{if ("" != null) return op;}
+        break;
+        }
       default:
-        jj_la1[26] = jj_gen;
+        jj_la1[27] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1131,8 +1154,8 @@ Token op;
     try {
 Token op;
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case 47:{
-        op = jj_consume_token(47);
+      case 48:{
+        op = jj_consume_token(48);
 {if ("" != null) return op;}
         break;
         }
@@ -1142,7 +1165,7 @@ op.image = "<not>"; {if ("" != null) return op;}
         break;
         }
       default:
-        jj_la1[27] = jj_gen;
+        jj_la1[28] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1161,7 +1184,7 @@ op.image = "<not>"; {if ("" != null) return op;}
   public Token jj_nt;
   private int jj_ntk;
   private int jj_gen;
-  final private int[] jj_la1 = new int[28];
+  final private int[] jj_la1 = new int[29];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -1169,10 +1192,10 @@ op.image = "<not>"; {if ("" != null) return op;}
 	   jj_la1_init_1();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x6f800,0x0,0x6f800,0xf800,0x0,0x0,0x0,0xf800,0xf800,0x0,0x7f80000,0x0,0x7f80000,0x8000000,0xc0010700,0x0,0x0,0x0,0x0,0x0,0x30000000,0x0,0xc0010700,0x0,0xc0000700,0x0,0x0,0x10000,};
+	   jj_la1_0 = new int[] {0x1,0x6f800,0x0,0x6f800,0xf800,0x0,0x0,0x0,0xf800,0xf800,0x0,0x7f80000,0x0,0x7f80000,0x8000000,0xc0010700,0x0,0x0,0x0,0x0,0x0,0x30000000,0x0,0xc0010700,0x0,0xc0000700,0x0,0x0,0x10000,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x1002,0x20,0x1002,0x1002,0x100,0x202,0x400,0x1002,0x2,0x100,0x2004,0x20,0x2004,0x0,0x8043,0x100,0x4000,0xfc0000,0x8000,0x10000,0x0,0x7000000,0x8043,0x21400,0x43,0xfc0000,0x7000000,0x8000,};
+	   jj_la1_1 = new int[] {0x4,0x2002,0x40,0x2002,0x2002,0x200,0x402,0x800,0x2002,0x2,0x200,0x4008,0x40,0x4008,0x0,0x10083,0x200,0x8000,0x1f80000,0x10000,0x20000,0x0,0xe000000,0x10083,0x42800,0x83,0x1f80000,0xe000000,0x10000,};
 	}
 
   {
@@ -1189,7 +1212,7 @@ op.image = "<not>"; {if ("" != null) return op;}
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 29; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1203,7 +1226,7 @@ op.image = "<not>"; {if ("" != null) return op;}
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 29; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -1213,7 +1236,7 @@ op.image = "<not>"; {if ("" != null) return op;}
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 29; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1231,7 +1254,7 @@ op.image = "<not>"; {if ("" != null) return op;}
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 29; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -1240,7 +1263,7 @@ op.image = "<not>"; {if ("" != null) return op;}
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 29; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -1249,7 +1272,7 @@ op.image = "<not>"; {if ("" != null) return op;}
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 28; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 29; i++) jj_la1[i] = -1;
   }
 
   private Token jj_consume_token(int kind) throws ParseException {
@@ -1302,12 +1325,12 @@ op.image = "<not>"; {if ("" != null) return op;}
   /** Generate ParseException. */
   public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[59];
+	 boolean[] la1tokens = new boolean[60];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
 	 }
-	 for (int i = 0; i < 28; i++) {
+	 for (int i = 0; i < 29; i++) {
 	   if (jj_la1[i] == jj_gen) {
 		 for (int j = 0; j < 32; j++) {
 		   if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1319,7 +1342,7 @@ op.image = "<not>"; {if ("" != null) return op;}
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 59; i++) {
+	 for (int i = 0; i < 60; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;

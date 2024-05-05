@@ -112,6 +112,7 @@ public interface ConstructorASTsConstants {
     "<false_id>",
     "<null_id>",
     "<iden>",
+    "\"$$\"",
     "\"{\"",
     "\"}\"",
     "\"&&\"",

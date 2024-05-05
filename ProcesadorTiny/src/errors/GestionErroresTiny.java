@@ -27,7 +27,7 @@ public class GestionErroresTiny {
 		throw new ErrorSintactico("ERROR fila "+unidadLexica.fila()+", columna "+unidadLexica.columna()+" : Elemento inesperado "+unidadLexica.lexema());
 	}
 	
-	List<String> errores = new ArrayList<>();;
+	List<String> errores = new ArrayList<>();
 	public void errorSemantico(int fila, int columna, String msg) {
 		errores.add("ERROR fila "+fila+", columna "+columna+" : " + msg);
 	}

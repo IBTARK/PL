@@ -715,7 +715,15 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Iden a) {
-		//TODO
+		Class<?> t = a.getVinculo().getClass();
+		if (t == DecVar.class)
+			a.setTipo(((DecVar) a.getVinculo()).tipo());
+		if (t == ParamFormal.class)
+			a.setTipo(((ParamFormal) a.getVinculo()).tipo());
+		if (t == ParamFormRef.class)
+			a.setTipo(new TInt());
+		else
+			a.setTipo(ERROR);
 	}
 
 	@Override

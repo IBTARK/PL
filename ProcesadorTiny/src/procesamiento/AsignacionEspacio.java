@@ -128,13 +128,13 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(DecType a) {
-		a.setTam(a.tipo().getTam());
+		a.tipo().procesa(this);
 		a.setNivel(nivel);
 	}
 
 	@Override
 	public void procesa(DecVar a) {
-		a.setTam(a.tipo().getTam());
+		a.tipo().procesa(this);
 		a.setNivel(nivel);
 	}
 
@@ -159,13 +159,13 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(ParamFormRef a) {
-		a.setTam(a.tipo().getTam());
+		a.tipo().procesa(this);
 		a.setNivel(nivel);
 	}
 
 	@Override
 	public void procesa(ParamFormal a) {
-		a.setTam(a.tipo().getTam());
+		a.tipo().procesa(this);
 		a.setNivel(nivel);
 	}
 
@@ -180,7 +180,7 @@ public class AsignacionEspacio implements Procesamiento {
 	@Override
 	public void procesa(TPunt a) {
 		if(a.tipo().getClass() != TIden.class) {
-			a.setTam(a.tipo().getTam());
+			a.tipo().procesa(this);
 		}
 		a.setTam(1);
 	}

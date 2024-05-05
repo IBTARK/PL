@@ -1,11 +1,14 @@
 package maquinap;
 
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
+
+import asint.SintaxisAbstracta.TInt;
+import asint.SintaxisAbstracta.TReal;
+import asint.SintaxisAbstracta.TString;
 
 
 public class MaquinaP {
@@ -67,7 +70,7 @@ public class MaquinaP {
       }
       public String valorString() {return valor;}
       public String toString() {
-        return String.valueOf(valor);
+        return valor.length() > 0 && valor.charAt(0) == '"' ? valor.substring(1, valor.length()-1) : valor;
       }
    }
 
@@ -201,7 +204,7 @@ public class MaquinaP {
    private class IStore implements Instruccion {
       public void ejecuta() {
         Valor valor = pilaEvaluacion.pop();
-        int dir = pilaEvaluacion.pop().valorInt();
+        int dir = valor.valorInt();
         if (dir >= datos.length) throw new EAccesoFueraDeRango();
         datos[dir] = valor;
         pc++;
@@ -532,17 +535,19 @@ public class MaquinaP {
       public String toString() {return "menosUnario";};
    }
 
-   private IRead IREAD;
    private class IRead implements Instruccion {
+	   Class<?> clase;
+	   public IRead(Class<?> clase) {
+		   this.clase = clase;
+	   }
       public void ejecuta() {
-         int dir = pilaEvaluacion.pop().valorInt();
-         if (datos[dir].getClass() == ValorString.class)
+         if (clase == TString.class)
         	 pilaEvaluacion.push(new ValorString(in.nextLine()));
-         else if (datos[dir].getClass() == ValorInt.class) {
+         else if (clase == TInt.class) {
         	 pilaEvaluacion.push(new ValorInt(in.nextInt()));
         	 in.nextLine();
          }
-         else if (datos[dir].getClass() == ValorReal.class) {
+         else if (clase == TReal.class) {
         	 pilaEvaluacion.push(new ValorReal(in.nextDouble()));
         	 in.nextLine();
          }
@@ -555,7 +560,7 @@ public class MaquinaP {
    private class IWrite implements Instruccion {
       public void ejecuta() {
          Valor val = pilaEvaluacion.pop();
-         System.out.println(val.toString());
+         System.out.print(val.toString());
          pc++;
       } 
       public String toString() {return "write";};
@@ -610,7 +615,7 @@ public class MaquinaP {
    public Instruccion desapilaDisp(int nivel) {return new IDesapilad(nivel);}
    public Instruccion dup() {return IDUP;}
    public Instruccion stop() {return ISTOP;}
-   public Instruccion read() {return IREAD;}
+   public Instruccion read(Class<?> c) {return new IRead(c);}
    public Instruccion write() {return IWRITE;}
    public Instruccion idx(int tam) {return new IIdx(tam);}
    public void emit(Instruccion i) {
@@ -651,6 +656,7 @@ public class MaquinaP {
       IDESIGUAL = new IDesigual();
       INOT = new INot();
       IMENOS = new INeg();
+      IWRITE = new IWrite();
       gestorPilaActivaciones = new GestorPilaActivaciones(tamdatos,(tamdatos+tampila)-1,ndisplays); 
       gestorMemoriaDinamica = new GestorMemoriaDinamica(tamdatos+tampila,(tamdatos+tampila+tamheap)-1);
       this.in = new Scanner(in);
@@ -683,39 +689,5 @@ public class MaquinaP {
         System.out.println(" "+i+":"+datos[i]);
      }
      System.out.println("PC:"+pc);
-   }
-   
-   public static void main(String[] args) {
-       MaquinaP m = new MaquinaP(new InputStreamReader(System.in), 5,10,10,2);
-        
-          /*
-            int x;
-            proc store(int v) {
-             x = v
-            }
-           &&
-            call store(5)
-          */
-            
-       
-       m.emit(m.activa(1,1,8));
-       m.emit(m.dup());
-       m.emit(m.apilaInt(0));
-       m.emit(m.suma());
-       m.emit(m.apilaInt(5));
-       m.emit(m.store());
-       m.emit(m.desapilaDisp(1));
-       m.emit(m.irA(9));
-       m.emit(m.stop());
-       m.emit(m.apilaInt(0));
-       m.emit(m.apilaDisp(1));
-       m.emit(m.apilaInt(0));
-       m.emit(m.suma());
-       m.emit(m.copia(1));
-       m.emit(m.desactiva(1,1));
-       m.emit(m.irD());       
-       m.muestraCodigo();
-       m.ejecuta();
-       m.muestraEstado();
    }
 }

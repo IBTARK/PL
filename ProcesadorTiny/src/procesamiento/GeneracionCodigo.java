@@ -189,7 +189,7 @@ public class GeneracionCodigo implements Procesamiento {
 		@Override
 		public void procesa(DecVar a) {
 			if (a.getNivel() == 0)
-				m.emit(m.apilaInt(a.getVinculo().getDir()));
+				m.emit(m.apilaInt(a.getDir()));
 			else
 				accVar(a);
 		}
@@ -415,7 +415,7 @@ public class GeneracionCodigo implements Procesamiento {
 	@Override
 	public void procesa(ReadInstr a) {
 		a.exp().procesa(this);
-		m.emit(m.read());
+		m.emit(m.read(a.exp().getTipo().getClass()));
 		m.emit(m.store());
 	}
 

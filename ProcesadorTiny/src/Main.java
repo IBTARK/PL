@@ -75,7 +75,7 @@ public class Main {
 	
  	public static void main(String[] args) throws Exception {
  		Reader r = new BISReader(new FileInputStream(args[0]));
- 		char constructor = args[1].charAt(0);
+ 		char constructor = (char) r.read();
  		Prog prog = construye_ast(r,constructor);
  		if(prog != null) {
  			procesa(prog, r);
