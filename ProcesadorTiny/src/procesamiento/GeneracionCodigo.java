@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import asint.Procesamiento;
+import asint.ProcesamientoAbstracto;
 import asint.SintaxisAbstracta.And;
 import asint.SintaxisAbstracta.Array;
 import asint.SintaxisAbstracta.ArrobaInstr;
@@ -14,7 +15,6 @@ import asint.SintaxisAbstracta.Campo;
 import asint.SintaxisAbstracta.DecProc;
 import asint.SintaxisAbstracta.DecType;
 import asint.SintaxisAbstracta.DecVar;
-import asint.SintaxisAbstracta.Decs;
 import asint.SintaxisAbstracta.DeleteInstr;
 import asint.SintaxisAbstracta.Desigual;
 import asint.SintaxisAbstracta.Div;
@@ -25,7 +25,6 @@ import asint.SintaxisAbstracta.Iden;
 import asint.SintaxisAbstracta.IfElseInstr;
 import asint.SintaxisAbstracta.IfInstr;
 import asint.SintaxisAbstracta.Igual;
-import asint.SintaxisAbstracta.LDecs;
 import asint.SintaxisAbstracta.LExp;
 import asint.SintaxisAbstracta.LParams;
 import asint.SintaxisAbstracta.LitCad;
@@ -114,6 +113,12 @@ public class GeneracionCodigo implements Procesamiento {
 			m.emit(m.fetch());
 	}
 	
+	private void accVar(Nodo n) {
+		m.emit(m.apilaDisp(n.getNivel()));
+		m.emit(m.apilaInt(n.getDir()));
+		m.emit(m.suma());
+	}
+	
 	private void genCodBin(Exp e1, Exp e2) {
 		e1.procesa(this);
 		accVal(e1);
@@ -133,24 +138,6 @@ public class GeneracionCodigo implements Procesamiento {
 		e2.procesa(this);
 		accVal(e2);
 		castAritm(e2, e);
-	}
-	
-	private void recolectaProcs(Decs decs) {
-		if (decs.getClass() == SiDecs.class)
-			recolectaProcs(((SiDecs) decs).ldecs());
-		else { 
-			//NoDecs
-		}
-	}
-	
-	private void recolectaProcs(LDecs ldecs) {
-		if (ldecs.getClass() == MuchasDecs.class) {
-			recolectaProcs(((MuchasDecs) ldecs).ldecs());
-			recolectaProcs(((MuchasDecs) ldecs).dec());
-		}
-		else if (ldecs.getClass() == UnaDec.class) {
-			recolectaProcs(((UnaDec) ldecs).dec());
-		}
 	}
 	
 	private void genPasoParams(ParamForms params, ParamReales exps) {
@@ -198,7 +185,26 @@ public class GeneracionCodigo implements Procesamiento {
 		}
 	}
 	
-	private class GenLiberaParam extends ProcesamientoAuxiliar<Object> {
+	private class GenAccId extends ProcesamientoAbstracto {
+		@Override
+		public void procesa(DecVar a) {
+			if (a.getNivel() == 0)
+				m.emit(m.apilaInt(a.getVinculo().getDir()));
+			else
+				accVar(a);
+		}
+		@Override
+		public void procesa(ParamFormal a) {
+			accVar(a);
+		}
+		@Override
+		public void procesa(ParamFormRef a) {
+			accVar(a);
+			m.emit(m.fetch());
+		}
+	}
+	
+	private class GenLiberaParam extends ProcesamientoAbstracto {
 		@Override
 		public void procesa(SiParam a) {
 			a.lparams().procesa(this);
@@ -227,10 +233,6 @@ public class GeneracionCodigo implements Procesamiento {
 			m.emit(m.suma());
 			m.emit(m.fetch());
 			m.emit(m.dealloc(a.getTipo().getTam()));
-		}
-		@Override
-		Object sol() {
-			return null;
 		}
 	}
 
@@ -272,8 +274,7 @@ public class GeneracionCodigo implements Procesamiento {
 			DecProc p = procPendientes.remove(0);
 			m.emit(m.desapilaDisp(p.getNivel()));
 			a.bloq().procesa(this);
-			GenLiberaParam gl = new GenLiberaParam();
-			gl.procesa();//npi
+			p.params().procesa(new GenLiberaParam());
 			m.emit(m.desactiva(p.getNivel(), p.getTam()));
 			m.emit(m.irD());
 		}
@@ -281,21 +282,26 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Bloque a) {
-		recolectaProcs(a.decs());
+		a.decs().procesa(this);
 		a.instrs().procesa(this);
 	}
 
-	@Override
-	public void procesa(SiDecs a) {}
+	public void procesa(SiDecs a) {
+		a.ldecs().procesa(this);
+	}
 
 	@Override
 	public void procesa(NoDecs a) {}
 
-	@Override
-	public void procesa(MuchasDecs a) {}
+	public void procesa(MuchasDecs a) {
+		a.ldecs().procesa(this);
+		a.dec().procesa(this);
+	}
 
 	@Override
-	public void procesa(UnaDec a) {}
+	public void procesa(UnaDec a) {
+		a.dec().procesa(this);
+	}
 
 	@Override
 	public void procesa(DecProc a) {
@@ -303,12 +309,10 @@ public class GeneracionCodigo implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(DecType a) {
-	}
+	public void procesa(DecType a) {}
 
 	@Override
-	public void procesa(DecVar a) {
-	}
+	public void procesa(DecVar a) {}
 
 	@Override
 	public void procesa(SiParam a) {}
@@ -332,10 +336,7 @@ public class GeneracionCodigo implements Procesamiento {
 	public void procesa(TArray a) {}
 
 	@Override
-	public void procesa(TPunt a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TPunt a) {}
 
 	@Override
 	public void procesa(TInt a) {}
@@ -391,20 +392,24 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(ProcInstr a) {
-		
+		m.emit(m.activa(a.getVinculo().getNivel(), a.getVinculo().getTam(), a.getSig()));
+		genPasoParams(((DecProc) a.getVinculo()).params(), a.paramReales());
+		m.emit(m.irA(((DecProc) a.getVinculo()).bloq().getPrim()));
 	}
 
 	@Override
 	public void procesa(NlInstr a) {
+		m.emit(m.apilaString("\n"));
+		m.emit(m.write());
 	}
 
 	@Override
 	public void procesa(NewInstr a) {
 		a.exp().procesa(this);
-		if (ref(a.exp().getTipo()).getClass() == TPunt.class) {
-			m.emit(m.alloc(a.exp().getTipo().getTam()));
-			m.emit(m.store());
-		}
+		Nodo t = ref(a.exp().getTipo());
+		if (t.getClass() == TPunt.class);
+			m.emit(m.alloc(((TPunt) t).getTam()));
+		m.emit(m.store());
 	}
 
 	@Override
@@ -579,7 +584,7 @@ public class GeneracionCodigo implements Procesamiento {
 	public void procesa(Neg a) {
 		a.opnd().procesa(this);
 		accVal(a.opnd());
-		m.emit(m.neg());
+		m.emit(m.menosUnario());
 	}
 
 	@Override
@@ -623,7 +628,7 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Iden a) {
-		accId(a.getVinculo());
+		a.getVinculo().procesa(new GenAccId());
 	}
 
 	@Override

@@ -1,4 +1,3 @@
-import java.io.InputStreamReader;
 import java.io.Reader;
 
 import alex.AnalizadorLexicoTiny;

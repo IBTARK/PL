@@ -453,7 +453,7 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(NewInstr a) {
 		a.exp().procesa(this);
-		if(ref(a.exp().tipo().getClass()) == TPunt.class)
+		if(ref(a.exp().getTipo()).getClass() == TPunt.class)
 			a.setTipo(OK);
 		else
 			a.setTipo(ERROR);
@@ -462,10 +462,11 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(ReadInstr a) {
 		a.exp().procesa(this);
-		if(esDesignador(a.exp) 
-				&& (ref(a.exp().tipo().getClass()) == TInt.class 
-				|| ref(a.exp().tipo().getClass()) == TReal.class 
-				|| ref(a.exp().tipo().getClass()) == TString.class))
+		Nodo t = ref(a.exp());
+		if(esDesignador(a.exp()) 
+				&& t.getClass() == TInt.class 
+				|| t.getClass() == TReal.class 
+				|| t.getClass() == TString.class)
 			a.setTipo(OK);
 		else
 			a.setTipo(ERROR);
@@ -474,10 +475,11 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(WriteInstr a) {
 		a.exp().procesa(this);
-		if(ref(a.exp().tipo().getClass()) == TInt.class 
-				|| ref(a.exp().tipo().getClass()) == TReal.class 
-				|| ref(a.exp().tipo().getClass()) == TBool.class
-				|| ref(a.exp().tipo().getClass()) == TString.class)
+		Nodo t = ref(a.exp());
+		if(t.getClass() == TInt.class 
+				|| t.getClass() == TReal.class 
+				|| t.getClass() == TBool.class
+				|| t.getClass() == TString.class)
 			a.setTipo(OK);
 		else
 			a.setTipo(ERROR);
@@ -486,7 +488,7 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(DeleteInstr a) {
 		a.exp().procesa(this);
-		if(ref(a.exp().tipo().getClass()) == TPunt.class)
+		if(ref(a.exp().getTipo()).getClass() == TPunt.class)
 			a.setTipo(OK);
 		else
 			a.setTipo(ERROR);
@@ -496,7 +498,7 @@ public class Tipado implements Procesamiento {
 	public void procesa(WhileInstr a) {
 		a.exp().procesa(this);
 		a.bloq().procesa(this);
-		if(a.bloq().tipo().getClass() == OK && ref(a.exp().tipo().getClass()) == TBool.class)
+		if(a.bloq().getTipo() == OK && ref(a.exp().getTipo()).getClass() == TBool.class)
 			a.setTipo(OK);
 		else
 			a.setTipo(ERROR);
@@ -507,7 +509,7 @@ public class Tipado implements Procesamiento {
 		a.exp().procesa(this);
 		a.bloq1().procesa(this);
 		a.bloq2().procesa(this);
-		if(a.bloq1().tipo().getClass() == OK && ref(a.exp().tipo().getClass()) == TBool.class && a.bloq2().tipo().getClass() == OK)
+		if(a.bloq1().getTipo() == OK && ref(a.exp().getTipo()).getClass() == TBool.class && a.bloq2().getTipo() == OK)
 			a.setTipo(OK);
 		else
 			a.setTipo(ERROR);
@@ -517,7 +519,7 @@ public class Tipado implements Procesamiento {
 	public void procesa(IfInstr a) {
 		a.exp().procesa(this);
 		a.bloq().procesa(this);
-		if(a.bloq().tipo().getClass() == OK && ref(a.exp().tipo().getClass()) == TBool.class)
+		if(a.bloq().getTipo() == OK && ref(a.exp().getTipo()).getClass() == TBool.class)
 			a.setTipo(OK);
 		else
 			a.setTipo(ERROR);
@@ -526,7 +528,7 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(BloqueInstr a) {
 		a.bloq().procesa(this);
-		a.setTipo(a.bloq().tipo().getClass());
+		a.setTipo(a.bloq().getTipo());
 	}
 
 	@Override

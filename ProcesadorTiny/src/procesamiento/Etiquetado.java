@@ -1,9 +1,10 @@
 package procesamiento;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import asint.Procesamiento;
+import asint.ProcesamientoAbstracto;
 import asint.SintaxisAbstracta.And;
 import asint.SintaxisAbstracta.Array;
 import asint.SintaxisAbstracta.ArrobaInstr;
@@ -11,11 +12,9 @@ import asint.SintaxisAbstracta.Asignacion;
 import asint.SintaxisAbstracta.Bloque;
 import asint.SintaxisAbstracta.BloqueInstr;
 import asint.SintaxisAbstracta.Campo;
-import asint.SintaxisAbstracta.Dec;
 import asint.SintaxisAbstracta.DecProc;
 import asint.SintaxisAbstracta.DecType;
 import asint.SintaxisAbstracta.DecVar;
-import asint.SintaxisAbstracta.Decs;
 import asint.SintaxisAbstracta.DeleteInstr;
 import asint.SintaxisAbstracta.Desigual;
 import asint.SintaxisAbstracta.Div;
@@ -26,7 +25,6 @@ import asint.SintaxisAbstracta.Iden;
 import asint.SintaxisAbstracta.IfElseInstr;
 import asint.SintaxisAbstracta.IfInstr;
 import asint.SintaxisAbstracta.Igual;
-import asint.SintaxisAbstracta.LDecs;
 import asint.SintaxisAbstracta.LExp;
 import asint.SintaxisAbstracta.LParams;
 import asint.SintaxisAbstracta.LitCad;
@@ -89,7 +87,7 @@ import asint.SintaxisAbstracta.WriteInstr;
 public class Etiquetado implements Procesamiento {
 	
 	private int etq = 0;
-	private List<DecProc> procPendientes = new ArrayList<>();
+	private List<DecProc> procPendientes = new LinkedList<>();
 	
 	private void apila(DecProc dp) {
 		procPendientes.add(dp);
@@ -142,25 +140,6 @@ public class Etiquetado implements Procesamiento {
 		castAritm(e2, e);
 	}
 	
-	private void recolectaProcs(Decs decs) {
-		if (decs.getClass() == SiDecs.class)
-			recolectaProcs(((SiDecs) decs).ldecs());
-		else { 
-			//NoDecs
-		}
-	}
-	
-	private void recolectaProcs(LDecs ldecs) {
-		if (ldecs.getClass() == MuchasDecs.class) {
-			recolectaProcs(((MuchasDecs) ldecs).ldecs());
-			recolectaProcs(((MuchasDecs) ldecs).dec());
-		}
-		else if (ldecs.getClass() == UnaDec.class) {
-			recolectaProcs(((UnaDec) ldecs).dec());
-		}
-	}
-	
-	
 	private void etiquetadoPasoParams(ParamForms params, ParamReales exps) {
 		if (params.getClass() == SiParam.class && exps.getClass() == SiExp.class)
 			etiquetadoPasoParams(((SiParam) params).lparams(), ((SiExp) exps).lexps());
@@ -187,7 +166,7 @@ public class Etiquetado implements Procesamiento {
 		etq++;
 	}
 	
-	private class EtiquetadoLiberaParam extends ProcesamientoAuxiliar<Object> {
+	private class EtiquetadoLiberaParam extends ProcesamientoAbstracto {
 		@Override
 		public void procesa(SiParam a) {
 			a.lparams().procesa(this);
@@ -209,10 +188,6 @@ public class Etiquetado implements Procesamiento {
 		public void procesa(ParamFormRef a) {
 			etq += 5;
 		}
-		@Override
-		Object sol() {
-			return null;
-		}
 	}
 	
 	
@@ -227,8 +202,7 @@ public class Etiquetado implements Procesamiento {
 			p.setPrim(etq);
 			etq++;
 			a.bloq().procesa(this);
-			EtiquetadoLiberaParam lp = new EtiquetadoLiberaParam();
-			lp.procesa();//npi
+			p.params().procesa(new EtiquetadoLiberaParam());
 			etq += 2;
 			p.setSig(etq);
 		}
@@ -238,22 +212,29 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(Bloque a) {
 		a.setPrim(etq);
-		recolectaProcs(a.decs());
+		a.decs().procesa(this);
 		a.instrs().procesa(this);
 		a.setSig(etq);
 	}
 
 	@Override
-	public void procesa(SiDecs a) {}
+	public void procesa(SiDecs a) {
+		a.ldecs().procesa(this);
+	}
 
 	@Override
 	public void procesa(NoDecs a) {}
 
 	@Override
-	public void procesa(MuchasDecs a) {}
-
+	public void procesa(UnaDec a) {
+		a.dec().procesa(this);
+	}
+	
 	@Override
-	public void procesa(UnaDec a) {}
+	public void procesa(MuchasDecs a) {
+		a.ldecs().procesa(this);
+		a.dec().procesa(this);
+	}
 
 	@Override
 	public void procesa(DecProc a) {
@@ -261,12 +242,10 @@ public class Etiquetado implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(DecType a) {
-	}
+	public void procesa(DecType a) {}
 
 	@Override
-	public void procesa(DecVar a) {
-	}
+	public void procesa(DecVar a) {}
 
 	@Override
 	public void procesa(SiParam a) {}
@@ -290,10 +269,7 @@ public class Etiquetado implements Procesamiento {
 	public void procesa(TArray a) {}
 
 	@Override
-	public void procesa(TPunt a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TPunt a) {}
 
 	@Override
 	public void procesa(TInt a) {}
@@ -363,7 +339,7 @@ public class Etiquetado implements Procesamiento {
 	public void procesa(ProcInstr a) {
 		a.setPrim(etq);
 		etq++;
-		etiquetadoPasoParams(EtiquetadoLiberaParam(((DecProc) a.getVinculo()).params(), a.paramReales()), a.paramReales());
+		etiquetadoPasoParams(((DecProc) a.getVinculo()).params(), a.paramReales());
 		etq++;
 		a.setSig(etq);
 	}
@@ -371,6 +347,7 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(NlInstr a) {
 		a.setPrim(etq);
+		etq += 2;
 		a.setSig(etq);
 	}
 

@@ -359,6 +359,20 @@ public class MaquinaP {
        }
    }
    
+   private class IApilaReal implements Instruccion {
+       private double val;
+       public IApilaReal(double val) {
+         this.val = val;  
+       }
+       public void ejecuta() {
+         pilaEvaluacion.push(new ValorReal(val));
+         pc++;
+       }
+       public String toString() {
+          return "apilaReal("+val+")";
+       }
+   }
+   
    private Instruccion ICASTREAL;
    private class ICastReal implements Instruccion {
        public void ejecuta() {
@@ -563,6 +577,7 @@ public class MaquinaP {
 
    public Instruccion desapila() {return DESAPILA;}
    public Instruccion apilaInt(int val) {return new IApilaInt(val);}
+   public Instruccion apilaReal(double val) {return new IApilaReal(val);}
    public Instruccion apilaBool(boolean val) {return new IApilaBool(val);}
    public Instruccion apilaString(String val) {return new IApilaString(val);}
    public Instruccion castReal() {return ICASTREAL;}

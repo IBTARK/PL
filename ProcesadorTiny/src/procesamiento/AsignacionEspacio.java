@@ -423,14 +423,13 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(MuchasDecs a) {
-			// TODO Auto-generated method stub
-			
+			a.ldecs().procesa(this);
+			a.dec().procesa(this);
 		}
 
 		@Override
 		public void procesa(UnaDec a) {
-			// TODO Auto-generated method stub
-			
+			a.dec().procesa(this);
 		}
 
 		@Override
@@ -549,48 +548,6 @@ public class AsignacionEspacio implements Procesamiento {
 		@Override
 		public void procesa(UnaInstr a) {
 			a.instr().procesa(this);
-		}
-
-		@Override
-		public void procesa(ArrobaInstr a) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void procesa(ProcInstr a) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void procesa(NlInstr a) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void procesa(NewInstr a) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void procesa(ReadInstr a) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void procesa(WriteInstr a) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void procesa(DeleteInstr a) {
-			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
