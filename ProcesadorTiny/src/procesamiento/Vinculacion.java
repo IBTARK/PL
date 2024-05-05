@@ -231,8 +231,8 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(TPunt a) {
-		// TODO Auto-generated method stub
-		
+		if(a.tipo().getClass() != TIden.class)
+			a.tipo().procesa(this);
 	}
 
 	@Override
@@ -295,68 +295,60 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(ArrobaInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
 	}
 
 	@Override
 	public void procesa(ProcInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setVinculo(ts.vinculoDe(a.iden()));
+		a.paramReales().procesa(this);
 	}
 
 	@Override
-	public void procesa(NlInstr a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NlInstr a) {}
 
 	@Override
 	public void procesa(NewInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
 	}
 
 	@Override
 	public void procesa(ReadInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
 	}
 
 	@Override
 	public void procesa(WriteInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
 	}
 
 	@Override
 	public void procesa(DeleteInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
 	}
 
 	@Override
 	public void procesa(WhileInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		a.bloq().procesa(this);
 	}
 
 	@Override
 	public void procesa(IfElseInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		a.bloq1().procesa(this);
+		a.bloq2().procesa(this);
 	}
 
 	@Override
 	public void procesa(IfInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		a.bloq().procesa(this);
 	}
 
 	@Override
 	public void procesa(BloqueInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.bloq().procesa(this);
 	}
 
 	@Override
@@ -410,38 +402,38 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Menor a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Mayor a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
 	}
 
 	@Override
 	public void procesa(MenorIgual a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
 	}
 
 	@Override
 	public void procesa(MayorIgual a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Igual a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
 	}
 
 	@Override
 	public void procesa(Desigual a) {
-		// TODO Auto-generated method stub
-		
+		a.opnd0().procesa(this);
+		a.opnd1().procesa(this);
 	}
 
 	@Override
@@ -579,8 +571,10 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(TPunt a) {
-			// TODO Auto-generated method stub
-			
+			if(a.tipo().getClass() == TIden.class)
+				a.setVinculo(ts.vinculoDe(((TIden) a.tipo()).iden()));
+			else
+				a.tipo().procesa(this);
 		}
 
 		@Override
