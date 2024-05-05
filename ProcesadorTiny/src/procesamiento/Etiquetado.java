@@ -11,9 +11,11 @@ import asint.SintaxisAbstracta.Asignacion;
 import asint.SintaxisAbstracta.Bloque;
 import asint.SintaxisAbstracta.BloqueInstr;
 import asint.SintaxisAbstracta.Campo;
+import asint.SintaxisAbstracta.Dec;
 import asint.SintaxisAbstracta.DecProc;
 import asint.SintaxisAbstracta.DecType;
 import asint.SintaxisAbstracta.DecVar;
+import asint.SintaxisAbstracta.Decs;
 import asint.SintaxisAbstracta.DeleteInstr;
 import asint.SintaxisAbstracta.Desigual;
 import asint.SintaxisAbstracta.Div;
@@ -24,6 +26,7 @@ import asint.SintaxisAbstracta.Iden;
 import asint.SintaxisAbstracta.IfElseInstr;
 import asint.SintaxisAbstracta.IfInstr;
 import asint.SintaxisAbstracta.Igual;
+import asint.SintaxisAbstracta.LDecs;
 import asint.SintaxisAbstracta.LExp;
 import asint.SintaxisAbstracta.LParams;
 import asint.SintaxisAbstracta.LitCad;
@@ -132,6 +135,25 @@ public class Etiquetado implements Procesamiento {
 		castAritm(e2, e);
 	}
 	
+	private void recolectaProcs(Decs decs) {
+		if (decs.getClass() == SiDecs.class)
+			recolectaProcs(((SiDecs) decs).ldecs());
+		else { 
+			//NoDecs
+		}
+	}
+	
+	private void recolectaProcs(LDecs ldecs) {
+		if (ldecs.getClass() == MuchasDecs.class) {
+			recolectaProcs(((MuchasDecs) ldecs).ldecs());
+			recolectaProcs(((MuchasDecs) ldecs).dec());
+		}
+		else if (ldecs.getClass() == UnaDec.class) {
+			recolectaProcs(((UnaDec) ldecs).dec());
+		}
+	}
+	
+	
 	private void etiquetadoPasoParams(ParamForms params, ParamReales exps) {
 		if (params.getClass() == SiParam.class && exps.getClass() == SiExp.class)
 			etiquetadoPasoParams(((SiParam) params).lparams(), ((SiExp) exps).lexps());
@@ -196,33 +218,23 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Bloque a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		recolectaProcs(a.decs());
+		a.instrs().procesa(this);
+		a.setSig(etq);
 	}
 
 	@Override
-	public void procesa(SiDecs a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(SiDecs a) {}
 
 	@Override
-	public void procesa(NoDecs a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NoDecs a) {}
 
 	@Override
-	public void procesa(MuchasDecs a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(MuchasDecs a) {}
 
 	@Override
-	public void procesa(UnaDec a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(UnaDec a) {}
 
 	@Override
 	public void procesa(DecProc a) {
@@ -311,26 +323,30 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(SiInstrs a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.linstrs().procesa(this);
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(NoInstrs a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(MuchasInstrs a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.linstrs().procesa(this);
+		a.instr().procesa(this);
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(UnaInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		a.instr().procesa(this);
+		a.setSig(etq);
 	}
 
 	@Override
@@ -396,7 +412,7 @@ public class Etiquetado implements Procesamiento {
 		a.exp().procesa(this);
 		accVal(a.exp());
 		etq++;
-		a.bloq1().procesa(this);
+		a.bloq().procesa(this);
 		etq++;
 		a.setSig(etq);
 	}
@@ -460,8 +476,17 @@ public class Etiquetado implements Procesamiento {
 
 	@Override
 	public void procesa(Asignacion a) {
-		// TODO Auto-generated method stub
+		a.setPrim(etq);
+		a.opnd0().procesa(this);
+		etq++;
+		a.opnd1().procesa(this);
 		
+		if(ref(a.opnd0().getTipo()).getClass() == TReal.class && ref(a.opnd1().getTipo()).getClass() == TInt.class) {
+			accVal(a.opnd1());
+			etq++;
+		}
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
@@ -495,7 +520,7 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(Menor a) {
 		a.setPrim(etq);
-		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etiquetadoBin(a.opnd0(), a.opnd1());
 		etq++;
 		a.setSig(etq);
 	}
@@ -503,7 +528,7 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(Mayor a) {
 		a.setPrim(etq);
-		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etiquetadoBin(a.opnd0(), a.opnd1());
 		etq++;
 		a.setSig(etq);
 	}
@@ -511,7 +536,7 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(MenorIgual a) {
 		a.setPrim(etq);
-		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etiquetadoBin(a.opnd0(), a.opnd1());
 		etq++;
 		a.setSig(etq);
 	}
@@ -519,7 +544,7 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(MayorIgual a) {
 		a.setPrim(etq);
-		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etiquetadoBin(a.opnd0(), a.opnd1());
 		etq++;
 		a.setSig(etq);
 	}
@@ -527,7 +552,7 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(Igual a) {
 		a.setPrim(etq);
-		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etiquetadoBin(a.opnd0(), a.opnd1());
 		etq++;
 		a.setSig(etq);
 	}
@@ -535,27 +560,33 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(Desigual a) {
 		a.setPrim(etq);
-		etiquetadoBin(a.opnd0(), a.opnd1(), a);
+		etiquetadoBin(a.opnd0(), a.opnd1());
 		etq++;
 		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(Mul a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBinAritm(a.opnd0(), a.opnd1(), a);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(Div a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBinAritm(a.opnd0(), a.opnd1(), a);
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override
 	public void procesa(Mod a) {
-		// TODO Auto-generated method stub
-		
+		a.setPrim(etq);
+		etiquetadoBin(a.opnd0(), a.opnd1());
+		etq++;
+		a.setSig(etq);
 	}
 
 	@Override

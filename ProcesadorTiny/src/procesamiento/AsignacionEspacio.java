@@ -100,26 +100,21 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(SiDecs a) {
-		// TODO Auto-generated method stub
-		
+		a.ldecs().procesa(this);
 	}
 
 	@Override
-	public void procesa(NoDecs a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NoDecs a) {}
 
 	@Override
 	public void procesa(MuchasDecs a) {
-		// TODO Auto-generated method stub
-		
+		a.ldecs().procesa(this);
+		a.dec().procesa(this);
 	}
 
 	@Override
 	public void procesa(UnaDec a) {
-		// TODO Auto-generated method stub
-		
+		a.dec().procesa(this);
 	}
 
 	@Override
@@ -176,16 +171,18 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(TArray a) {
-		// TODO Auto-generated method stub
-		
+		if(a.tipo().getClass() != TIden.class) {
+			a.tipo().procesa(this);
+			a.setTam(a.tipo().getTam()*Integer.valueOf(a.litEnt()));
+		}
 	}
 
 	@Override
 	public void procesa(TPunt a) {
-		if(a.tipo().getClass() != TIden.class)
+		if(a.tipo().getClass() != TIden.class) {
 			a.setTam(a.tipo().getTam());
-		else
-			a.setTam(1);
+		}
+		a.setTam(1);
 	}
 
 	@Override
@@ -241,26 +238,21 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(SiInstrs a) {
-		// TODO Auto-generated method stub
-		
+		a.linstrs().procesa(this);
 	}
 
 	@Override
-	public void procesa(NoInstrs a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(NoInstrs a) {}
 
 	@Override
 	public void procesa(MuchasInstrs a) {
-		// TODO Auto-generated method stub
-		
+		a.linstrs().procesa(this);
+		a.instr().procesa(this);
 	}
 
 	@Override
 	public void procesa(UnaInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.instr().procesa(this);
 	}
 
 	@Override
@@ -325,10 +317,7 @@ public class AsignacionEspacio implements Procesamiento {
 	public void procesa(UnaExp a) {}
 
 	@Override
-	public void procesa(Asignacion a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Asignacion a) {}
 
 	@Override
 	public void procesa(Suma a) {}
@@ -373,16 +362,13 @@ public class AsignacionEspacio implements Procesamiento {
 	}
 
 	@Override
-	public void procesa(Mul a) {
-	}
+	public void procesa(Mul a) {}
 
 	@Override
-	public void procesa(Div a) {
-	}
+	public void procesa(Div a) {}
 
 	@Override
-	public void procesa(Mod a) {
-	}
+	public void procesa(Mod a) {}
 
 	@Override
 	public void procesa(Neg a) {
@@ -457,15 +443,11 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(SiDecs a) {
-			// TODO Auto-generated method stub
-			
+			a.ldecs().procesa(this);
 		}
 
 		@Override
-		public void procesa(NoDecs a) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void procesa(NoDecs a) {}
 
 		@Override
 		public void procesa(MuchasDecs a) {
@@ -532,8 +514,10 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(TArray a) {
-			// TODO Auto-generated method stub
-			
+			if(a.tipo().getClass() != TIden.class) {
+				a.tipo().procesa(this);
+				a.setTam(a.tipo().getTam()*Integer.valueOf(a.litEnt()));
+			}
 		}
 
 		@Override
@@ -571,26 +555,21 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(SiInstrs a) {
-			// TODO Auto-generated method stub
-			
+			a.linstrs().procesa(this);
 		}
 
 		@Override
-		public void procesa(NoInstrs a) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void procesa(NoInstrs a) {}
 
 		@Override
 		public void procesa(MuchasInstrs a) {
-			// TODO Auto-generated method stub
-			
+			a.linstrs().procesa(this);
+			a.instr().procesa(this);
 		}
 
 		@Override
 		public void procesa(UnaInstr a) {
-			// TODO Auto-generated method stub
-			
+			a.instr().procesa(this);
 		}
 
 		@Override
