@@ -338,20 +338,18 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(DecProc a) {
-		// TODO Auto-generated method stub
-		
+		a.bloq().procesa(this);
+		a.setTipo(a.bloq().getTipo());
 	}
 
 	@Override
 	public void procesa(DecType a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(OK);
 	}
 
 	@Override
 	public void procesa(DecVar a) {
-		// TODO Auto-generated method stub
-		
+		a.setTipo(OK);
 	}
 
 	@Override
@@ -376,10 +374,7 @@ public class Tipado implements Procesamiento {
 	public void procesa(TArray a) {}
 
 	@Override
-	public void procesa(TPunt a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(TPunt a) {}
 
 	@Override
 	public void procesa(TInt a) {}
@@ -400,22 +395,13 @@ public class Tipado implements Procesamiento {
 	public void procesa(TStruct a) {}
 
 	@Override
-	public void procesa(MuchosCamps a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(MuchosCamps a) {}
 
 	@Override
-	public void procesa(UnCamp a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(UnCamp a) {}
 
 	@Override
-	public void procesa(Campo a) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void procesa(Campo a) {}
 
 	@Override
 	public void procesa(SiInstrs a) {
@@ -443,14 +429,20 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(ArrobaInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.exp().procesa(this);
+		if (a.exp().getTipo() == ERROR)
+			a.setTipo(ERROR);
+		else
+			a.setTipo(OK);
 	}
 
 	@Override
 	public void procesa(ProcInstr a) {
-		// TODO Auto-generated method stub
-		
+		a.paramReales().procesa(this);
+		if (a.paramReales().getTipo() != OK)
+			a.setTipo(ERROR);
+		else
+			a.setTipo(tipoParams(((DecProc) a.getVinculo()).params(), a.paramReales()));
 	}
 
 	@Override
