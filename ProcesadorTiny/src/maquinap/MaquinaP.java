@@ -204,7 +204,7 @@ public class MaquinaP {
    private class IStore implements Instruccion {
       public void ejecuta() {
         Valor valor = pilaEvaluacion.pop();
-        int dir = valor.valorInt();
+        int dir = pilaEvaluacion.pop().valorInt();
         if (dir >= datos.length) throw new EAccesoFueraDeRango();
         datos[dir] = valor;
         pc++;
@@ -575,6 +575,7 @@ public class MaquinaP {
     	  int idx = pilaEvaluacion.pop().valorInt();
     	  int dir = pilaEvaluacion.pop().valorInt();
     	  pilaEvaluacion.add(new ValorInt(dir + tam*idx));
+          pc++;
       } 
       public String toString() {return "idx("+tam+")";};
    }
@@ -663,6 +664,7 @@ public class MaquinaP {
    }
    public void ejecuta() {
       while(pc != codigoP.size()) {
+          System.out.println(" "+pc+":"+codigoP.get(pc));
           codigoP.get(pc).ejecuta();
       } 
    }

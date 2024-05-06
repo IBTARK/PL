@@ -172,14 +172,18 @@ public class GeneracionCodigo implements Procesamiento {
 			m.emit(m.store());
 			m.emit(m.fetch());
 			exp.procesa(this);
-			Class<?> t1 = ref(param.getTipo()).getClass(), t2 = exp.getTipo().getClass();
+			Nodo tipo1;
+			if (param.getClass() == ParamFormal.class)
+				tipo1 = ((ParamFormal) param).tipo();
+			else tipo1 = ((ParamFormRef) param).tipo();
+			Class<?> t1 = tipo1.getClass(), t2 = exp.getTipo().getClass();
 			if (t1 == TReal.class && t2 == TInt.class) {
 				accVal(exp);
 				m.emit(m.castReal());
 				m.emit(m.store());
 			}
 			else if (esDesignador(exp))
-				m.emit(m.copia(param.getTipo().getTam()));
+				m.emit(m.copia(tipo1.getTam()));
 			else
 				m.emit(m.store());
 		}
@@ -232,7 +236,7 @@ public class GeneracionCodigo implements Procesamiento {
 			m.emit(m.apilaInt(a.getDir()));
 			m.emit(m.suma());
 			m.emit(m.fetch());
-			m.emit(m.dealloc(a.getTipo().getTam()));
+			m.emit(m.dealloc(a.tipo().getTam()));
 		}
 	}
 
@@ -273,7 +277,7 @@ public class GeneracionCodigo implements Procesamiento {
 		while(!procPendientes.isEmpty()) {
 			DecProc p = procPendientes.remove(0);
 			m.emit(m.desapilaDisp(p.getNivel()));
-			a.bloq().procesa(this);
+			p.bloq().procesa(this);
 			p.params().procesa(new GenLiberaParam());
 			m.emit(m.desactiva(p.getNivel(), p.getTam()));
 			m.emit(m.irD());

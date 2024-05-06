@@ -1,0 +1,58 @@
+ 0:apila-int(0)
+ 1:dup
+ 2:apila-int(5)
+ 3:desapila-ind
+ 4:desapila
+ 5:apila-int(1)
+ 6:dup
+ 7:apila-int(6)
+ 8:desapila-ind
+ 9:desapila
+ 10:activa(1,2,30)
+ 11:dup
+ 12:apila-int(0)
+ 13:suma
+ 14:dup
+ 15:alloc(1)
+ 16:desapila-ind
+ 17:apila-ind
+ 18:apila-int(0)
+ 19:desapila-ind
+ 20:dup
+ 21:apila-int(1)
+ 22:suma
+ 23:dup
+ 24:alloc(1)
+ 25:desapila-ind
+ 26:apila-ind
+ 27:apila-int(1)
+ 28:copia(1)
+ 29:ir-a(37)
+ 37:activa(2,1,50)
+ 38:dup
+ 39:apila-int(0)
+ 40:suma
+ 41:dup
+ 42:alloc(1)
+ 43:desapila-ind
+ 44:apila-ind
+ 45:apilad(1)
+ 46:apila-int(1)
+ 47:suma
+ 48:copia(1)
+ 49:ir-a(63)
+ 63:apilad(1)
+ 64:apila-int(0)
+ 65:suma
+ 66:apila-ind
+ 67:dup
+ 68:apilad(1)
+ 69:apila-int(0)
+ 70:suma
+ 71:apila-ind
+ 72:apila-ind
+Exception in thread "main" maquinap.MaquinaP$EAccesoAMemoriaNoInicializada: pinst:72 dir:5
+	at maquinap.MaquinaP$IFetch.ejecuta(MaquinaP.java:196)
+	at maquinap.MaquinaP.ejecuta(MaquinaP.java:668)
+	at Main.procesa(Main.java:72)
+	at Main.main(Main.java:82)

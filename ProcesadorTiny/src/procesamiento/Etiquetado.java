@@ -112,10 +112,21 @@ public class Etiquetado implements Procesamiento {
 			etq++;
 	}
 	
-	private void accId(DecVar a) {
-		etq++;
-		if(a.getNivel() > 0) {
-			etq += 2;
+	private class EtiquetadoAccId extends ProcesamientoAbstracto {
+		@Override
+		public void procesa(DecVar a) {
+			if (a.getNivel() == 0)
+				etq++;
+			else
+				etq += 3;
+		}
+		@Override
+		public void procesa(ParamFormal a) {
+			etq += 3;
+		}
+		@Override
+		public void procesa(ParamFormRef a) {
+			etq += 4;
 		}
 	}
 	
@@ -158,7 +169,10 @@ public class Etiquetado implements Procesamiento {
 		etq += 7;
 		exp.procesa(this);
 		
-		Class<?> t1 = ref(param.getTipo()).getClass(), t2 = exp.getTipo().getClass();
+		Class<?> t1, t2 = exp.getTipo().getClass();
+		if (param.getClass() == ParamFormal.class)
+			t1 = ((ParamFormal) param).tipo().getClass();
+		else t1 = ((ParamFormRef) param).tipo().getClass();
 		if (param.getClass() == ParamFormal.class && t1 == TReal.class && t2 == TInt.class) {
 			accVal(exp);
 			etq++;
@@ -201,7 +215,7 @@ public class Etiquetado implements Procesamiento {
 			DecProc p = procPendientes.remove(0);
 			p.setPrim(etq);
 			etq++;
-			a.bloq().procesa(this);
+			p.bloq().procesa(this);
 			p.params().procesa(new EtiquetadoLiberaParam());
 			etq += 2;
 			p.setSig(etq);
@@ -632,7 +646,7 @@ public class Etiquetado implements Procesamiento {
 	@Override
 	public void procesa(Iden a) {
 		a.setPrim(etq);
-		accId((DecVar) a.getVinculo());
+		a.getVinculo().procesa(new EtiquetadoAccId());
 		a.setSig(etq);
 	}
 

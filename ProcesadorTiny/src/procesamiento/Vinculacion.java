@@ -488,10 +488,11 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Iden a) {
-		if(!ts.contiene(a.id()))
+		Nodo n = ts.vinculoDe(a.id());
+		if(n == null)
 			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: iden");
 		
-		a.setVinculo(ts.vinculoDe(a.id()));
+		a.setVinculo(n);
 	}
 
 	@Override

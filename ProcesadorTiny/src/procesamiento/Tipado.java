@@ -157,6 +157,8 @@ public class Tipado implements Procesamiento {
 	}
 	
 	private Nodo tipadoBinLog(Exp e0, Exp e1) {
+		e0.procesa(this);
+		e1.procesa(this);
 		Class<?> tt0 = ref(e0.getTipo()).getClass(), tt1 = ref(e1.getTipo()).getClass();
 		if (tt0 == tt1 && tt0 == TBool.class)
 			return new TBool();
@@ -165,6 +167,8 @@ public class Tipado implements Procesamiento {
 	}
 	
 	private Nodo tipadoBinRel(Exp e0, Exp e1) {
+		e0.procesa(this);
+		e1.procesa(this);
 		Class<?> tt0 = ref(e0.getTipo()).getClass(), tt1 = ref(e1.getTipo()).getClass();
 		if ((tt0 == TInt.class || tt0 == TReal.class) && (tt1 == TInt.class || tt1 == TReal.class))
 			return new TBool();
@@ -259,10 +263,10 @@ public class Tipado implements Procesamiento {
     }
     
     private Nodo tipoParam(ParamForm param, Exp exp) {
-    	if (param.getClass() == ParamFormal.class && compatibles(param.getTipo(), exp.getTipo()))
+    	if (param.getClass() == ParamFormal.class && compatibles(((ParamFormal) param).tipo(), exp.getTipo()))
     		return OK;
-    	else if (param.getClass() == ParamFormRef.class && esDesignador(exp) && compatibles(param.getTipo(), exp.getTipo())) {
-    		Class<?> t1 = ref(param.getTipo()).getClass(), t2 = ref(exp.getTipo()).getClass();
+    	else if (param.getClass() == ParamFormRef.class && esDesignador(exp) && compatibles(((ParamFormRef) param).tipo(), exp.getTipo())) {
+    		Class<?> t1 = ref(((ParamFormRef) param).tipo()).getClass(), t2 = ref(exp.getTipo()).getClass();
     		if (!(t1 == TReal.class && t2 == TReal.class) && (t1 == TReal.class || t2 == TReal.class))
     			return ERROR;
     		else
@@ -281,14 +285,14 @@ public class Tipado implements Procesamiento {
 		@Override
 		public void procesa(MuchosCamps a) {
 			if (a.campo().iden().equals(id))
-				sol = OK;
+				sol = a.campo().tipo();
 			else
 				a.lcampos().procesa(this);
 		}
 		@Override
 		public void procesa(UnCamp a) {
 			if (a.campo().iden().equals(id))
-				sol = OK;
+				sol = a.campo().tipo();
 			else
 				sol = ERROR;
 		}
@@ -462,11 +466,11 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(ReadInstr a) {
 		a.exp().procesa(this);
-		Nodo t = ref(a.exp());
+		Nodo t = ref(a.exp().getTipo());
 		if(esDesignador(a.exp()) 
-				&& t.getClass() == TInt.class 
+				&& (t.getClass() == TInt.class 
 				|| t.getClass() == TReal.class 
-				|| t.getClass() == TString.class)
+				|| t.getClass() == TString.class))
 			a.setTipo(OK);
 		else
 			a.setTipo(ERROR);
@@ -718,9 +722,9 @@ public class Tipado implements Procesamiento {
 		Class<?> t = a.getVinculo().getClass();
 		if (t == DecVar.class)
 			a.setTipo(((DecVar) a.getVinculo()).tipo());
-		if (t == ParamFormal.class)
+		else if (t == ParamFormal.class)
 			a.setTipo(((ParamFormal) a.getVinculo()).tipo());
-		if (t == ParamFormRef.class)
+		else if (t == ParamFormRef.class)
 			a.setTipo(new TInt());
 		else
 			a.setTipo(ERROR);

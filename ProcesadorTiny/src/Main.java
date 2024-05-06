@@ -71,6 +71,7 @@ public class Main {
  			new GeneracionCodigo(m).procesa(p);
  			m.ejecuta();
  		}
+ 		errores.mostrarErrores();
  	}
 	
  	public static void main(String[] args) throws Exception {
