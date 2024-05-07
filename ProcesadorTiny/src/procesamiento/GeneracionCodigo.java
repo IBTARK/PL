@@ -168,14 +168,11 @@ public class GeneracionCodigo implements Procesamiento {
 			m.emit(m.store());
 		}
 		else {
-			m.emit(m.alloc(1));
+			Nodo tipo1 = ((ParamFormal) param).tipo();
+			m.emit(m.alloc(tipo1.getTam()));
 			m.emit(m.store());
 			m.emit(m.fetch());
 			exp.procesa(this);
-			Nodo tipo1;
-			if (param.getClass() == ParamFormal.class)
-				tipo1 = ((ParamFormal) param).tipo();
-			else tipo1 = ((ParamFormRef) param).tipo();
 			Class<?> t1 = tipo1.getClass(), t2 = exp.getTipo().getClass();
 			if (t1 == TReal.class && t2 == TInt.class) {
 				accVal(exp);
@@ -224,7 +221,7 @@ public class GeneracionCodigo implements Procesamiento {
 		}
 		@Override
 		public void procesa(ParamFormal a) {
-			m.emit(m.dup());
+			m.emit(m.apilaDisp(a.getNivel()));
 			m.emit(m.apilaInt(a.getDir()));
 			m.emit(m.suma());
 			m.emit(m.fetch());
@@ -232,7 +229,7 @@ public class GeneracionCodigo implements Procesamiento {
 		}
 		@Override
 		public void procesa(ParamFormRef a) {
-			m.emit(m.dup());
+			m.emit(m.apilaDisp(a.getNivel()));
 			m.emit(m.apilaInt(a.getDir()));
 			m.emit(m.suma());
 			m.emit(m.fetch());
@@ -398,7 +395,7 @@ public class GeneracionCodigo implements Procesamiento {
 	public void procesa(ProcInstr a) {
 		m.emit(m.activa(a.getVinculo().getNivel(), a.getVinculo().getTam(), a.getSig()));
 		genPasoParams(((DecProc) a.getVinculo()).params(), a.paramReales());
-		m.emit(m.irA(((DecProc) a.getVinculo()).bloq().getPrim()));
+		m.emit(m.irA(((DecProc) a.getVinculo()).getPrim()));
 	}
 
 	@Override

@@ -197,7 +197,7 @@ public class MaquinaP {
         pilaEvaluacion.push(datos[dir]);
         pc++;
       } 
-      public String toString() {return "apila-ind";};
+      public String toString() {return "fetch";};
    }
 
    private IStore STORE;
@@ -209,7 +209,7 @@ public class MaquinaP {
         datos[dir] = valor;
         pc++;
       } 
-      public String toString() {return "desapila-ind";};
+      public String toString() {return "store";};
    }
 
    private class IAlloc implements Instruccion {
@@ -664,7 +664,7 @@ public class MaquinaP {
    }
    public void ejecuta() {
       while(pc != codigoP.size()) {
-          System.out.println(" "+pc+":"+codigoP.get(pc));
+//          System.out.println(" "+pc+":"+codigoP.get(pc));
           codigoP.get(pc).ejecuta();
       } 
    }

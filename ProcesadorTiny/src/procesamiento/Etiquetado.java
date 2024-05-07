@@ -346,7 +346,6 @@ public class Etiquetado implements Procesamiento {
 		a.exp().procesa(this);
 		etq++;
 		a.setSig(etq);
-		
 	}
 
 	@Override
@@ -475,7 +474,7 @@ public class Etiquetado implements Procesamiento {
 		
 		if(ref(a.opnd0().getTipo()).getClass() == TReal.class && ref(a.opnd1().getTipo()).getClass() == TInt.class) {
 			accVal(a.opnd1());
-			etq++;
+			etq += 2;
 		}
 		etq++;
 		a.setSig(etq);
