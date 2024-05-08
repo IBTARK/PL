@@ -122,11 +122,11 @@ public class Etiquetado implements Procesamiento {
 		}
 		@Override
 		public void procesa(ParamFormal a) {
-			etq += 3;
+			etq += 4;
 		}
 		@Override
 		public void procesa(ParamFormRef a) {
-			etq += 4;
+			etq += 5;
 		}
 	}
 	

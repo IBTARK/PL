@@ -197,10 +197,12 @@ public class GeneracionCodigo implements Procesamiento {
 		@Override
 		public void procesa(ParamFormal a) {
 			accVar(a);
+			m.emit(m.fetch());
 		}
 		@Override
 		public void procesa(ParamFormRef a) {
 			accVar(a);
+			m.emit(m.fetch());
 			m.emit(m.fetch());
 		}
 	}

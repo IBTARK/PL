@@ -596,9 +596,7 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(Campo a) {
-			if(a.tipo().getClass() != TIden.class)
-				a.setVinculo(ts.vinculoDe(a.iden()));
-			else
+			if(a.tipo().getClass() == TIden.class)
 				a.tipo().procesa(this);
 		}
 	}
