@@ -462,7 +462,7 @@ public class MaquinaP {
       public void ejecuta() {
          Valor opnd2 = pilaEvaluacion.pop(); 
          Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorInt(opnd1.valorInt() % opnd2.valorInt()));
+         pilaEvaluacion.push(new ValorBool(opnd1.valorBool() || opnd2.valorBool()));
          pc++;
       } 
       public String toString() {return "or";};

@@ -156,6 +156,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(DecProc a) {
 		ts.abreAmbito();
 		a.params().procesa(this);
+		a.params().procesa(new Vinculacion2());
 		a.bloq().procesa(this);
 		ts.cierraAmbito();
 		if (ts.contiene(a.iden()))
@@ -250,6 +251,8 @@ public class Vinculacion implements Procesamiento {
 	@Override
 	public void procesa(TIden a) {
 		a.setVinculo(ts.vinculoDe(a.iden()));
+		if (a.getVinculo() == null)
+			error.errorSemantico(a.leeFila(), a.leeCol(), "Tipo usado en declaración de tipo no declarado");
 	}
 
 	@Override
@@ -301,6 +304,8 @@ public class Vinculacion implements Procesamiento {
 	@Override
 	public void procesa(ProcInstr a) {
 		a.setVinculo(ts.vinculoDe(a.iden()));
+		if (a.getVinculo() == null)
+			error.errorSemantico(a.leeFila(), a.leeCol(), "Procedimiento no declarado");
 		a.paramReales().procesa(this);
 	}
 
@@ -488,11 +493,9 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Iden a) {
-		Nodo n = ts.vinculoDe(a.id());
-		if(n == null)
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: iden");
-		
-		a.setVinculo(n);
+		a.setVinculo(ts.vinculoDe(a.id()));
+		if (a.getVinculo() == null)
+			error.errorSemantico(a.leeFila(), a.leeCol(), "Identificador no declarado");
 	}
 
 	@Override
@@ -519,11 +522,6 @@ public class Vinculacion implements Procesamiento {
 		@Override
 		public void procesa(UnaDec a) {
 			a.dec().procesa(this);
-		}
-
-		@Override
-		public void procesa(DecProc a) {
-			a.params().procesa(this);
 		}
 
 		@Override
@@ -564,8 +562,11 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(TArray a) {
-			if(a.tipo().getClass() == TIden.class)
+			if(a.tipo().getClass() == TIden.class) {
 				a.setVinculo(ts.vinculoDe(a.litEnt()));
+				if (a.getVinculo() == null)
+					error.errorSemantico(a.leeFila(), a.leeCol(), "Tipo de array no declarado");
+			}
 			else
 				a.tipo().procesa(this);
 		}
@@ -576,6 +577,13 @@ public class Vinculacion implements Procesamiento {
 				a.setVinculo(ts.vinculoDe(((TIden) a.tipo()).iden()));
 			else
 				a.tipo().procesa(this);
+		}
+
+		@Override
+		public void procesa(TIden a) {
+			a.setVinculo(ts.vinculoDe(a.iden()));
+			if (a.getVinculo() == null)
+				error.errorSemantico(a.leeFila(), a.leeCol(), "Tipo usado en declaración de tipo no declarado");
 		}
 
 		@Override

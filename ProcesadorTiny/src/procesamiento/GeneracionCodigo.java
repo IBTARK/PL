@@ -140,6 +140,15 @@ public class GeneracionCodigo implements Procesamiento {
 		castAritm(e2, e);
 	}
 	
+	private void genCodBinRel(Exp e1, Exp e2) {
+		e1.procesa(this);
+		accVal(e1);
+		castAritm(e1, e2);
+		e2.procesa(this);
+		accVal(e2);
+		castAritm(e2, e1);
+	}
+	
 	private void genPasoParams(ParamForms params, ParamReales exps) {
 		if (params.getClass() == SiParam.class && exps.getClass() == SiExp.class)
 			genPasoParams(((SiParam) params).lparams(), ((SiExp) exps).lexps());
@@ -520,7 +529,7 @@ public class GeneracionCodigo implements Procesamiento {
 	@Override
 	public void procesa(Or a) {
 		genCodBin(a.opnd0(), a.opnd1());
-		m.emit(m.and());
+		m.emit(m.or());
 	}
 
 	@Override
@@ -531,37 +540,37 @@ public class GeneracionCodigo implements Procesamiento {
 
 	@Override
 	public void procesa(Menor a) {
-		genCodBin(a.opnd0(), a.opnd1());
+		genCodBinRel(a.opnd0(), a.opnd1());
 		m.emit(m.menor());
 	}
 
 	@Override
 	public void procesa(Mayor a) {
-		genCodBin(a.opnd0(), a.opnd1());
+		genCodBinRel(a.opnd0(), a.opnd1());
 		m.emit(m.mayor());
 	}
 
 	@Override
 	public void procesa(MenorIgual a) {
-		genCodBin(a.opnd0(), a.opnd1());
+		genCodBinRel(a.opnd0(), a.opnd1());
 		m.emit(m.menorIgual());
 	}
 
 	@Override
 	public void procesa(MayorIgual a) {
-		genCodBin(a.opnd0(), a.opnd1());
+		genCodBinRel(a.opnd0(), a.opnd1());
 		m.emit(m.mayorIgual());
 	}
 
 	@Override
 	public void procesa(Igual a) {
-		genCodBin(a.opnd0(), a.opnd1());
+		genCodBinRel(a.opnd0(), a.opnd1());
 		m.emit(m.igual());
 	}
 
 	@Override
 	public void procesa(Desigual a) {
-		genCodBin(a.opnd0(), a.opnd1());
+		genCodBinRel(a.opnd0(), a.opnd1());
 		m.emit(m.desigual());
 	}
 
@@ -595,7 +604,7 @@ public class GeneracionCodigo implements Procesamiento {
 		a.opnd().procesa(this);
 		a.idx().procesa(this);
 		accVal(a.idx());
-		m.emit(m.idx(ref(a.opnd()).getTipo().getTam()));
+		m.emit(m.idx(((TArray) ref(a.opnd().getTipo())).tipo().getTam()));
 	}
 
 	@Override

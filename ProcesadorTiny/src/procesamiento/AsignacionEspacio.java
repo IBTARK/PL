@@ -89,13 +89,15 @@ public class AsignacionEspacio implements Procesamiento {
 	public void procesa(Prog a) {
 		nivel = 0;
 		a.bloq().procesa(this);
-		a.bloq().procesa(new AsignacionEspacio2());
 	}
 
 	@Override
 	public void procesa(Bloque a) {
+		int dirAnt = dir;
 		a.decs().procesa(this);
+		a.decs().procesa(new AsignacionEspacio2());
 		a.instrs().procesa(this);
+		dir = dirAnt;
 	}
 
 	@Override
@@ -119,23 +121,32 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(DecProc a) {
+		int dirAnt = dir, maxAnt = maxDir;
+		dir = 0;
+		maxDir = 0;
+		a.setDir(dir);
 		nivel++;
 		a.setNivel(nivel);
 		a.params().procesa(this);
+		a.params().procesa(new AsignacionEspacio2());
 		a.bloq().procesa(this);
 		nivel--;
+		a.setTam(dir);
+		dir = dirAnt;
+		maxDir = maxAnt;
 	}
 
 	@Override
 	public void procesa(DecType a) {
 		a.tipo().procesa(this);
-		a.setNivel(nivel);
 	}
 
 	@Override
 	public void procesa(DecVar a) {
+		a.setDir(dir);
 		a.tipo().procesa(this);
 		a.setNivel(nivel);
+		incrDir(a.tipo().getTam());
 	}
 
 	@Override
@@ -159,29 +170,30 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(ParamFormRef a) {
+		a.setDir(dir);
 		a.tipo().procesa(this);
 		a.setNivel(nivel);
+		incrDir(1);
 	}
 
 	@Override
 	public void procesa(ParamFormal a) {
+		a.setDir(dir);
 		a.tipo().procesa(this);
 		a.setNivel(nivel);
+		incrDir(a.tipo().getTam());
 	}
 
 	@Override
 	public void procesa(TArray a) {
-		if(a.tipo().getClass() != TIden.class) {
-			a.tipo().procesa(this);
-			a.setTam(a.tipo().getTam()*Integer.valueOf(a.litEnt()));
-		}
+		a.tipo().procesa(this);
+		a.setTam(a.tipo().getTam() * Integer.valueOf(a.litEnt()));
 	}
 
 	@Override
 	public void procesa(TPunt a) {
-		if(a.tipo().getClass() != TIden.class) {
+		if(a.tipo().getClass() != TIden.class)
 			a.tipo().procesa(this);
-		}
 		a.setTam(1);
 	}
 
@@ -214,26 +226,32 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(TStruct a) {
+		int dirAnt = dir;
+		dir = 0;
 		a.lcampos().procesa(this);
+		a.setTam(dir);
+		dir = dirAnt;
 	}
 
 	@Override
 	public void procesa(MuchosCamps a) {
 		a.lcampos().procesa(this);
 		a.campo().procesa(this);
+		a.setTam(a.lcampos().getTam() + a.campo().getTam());
 	}
 
 	@Override
 	public void procesa(UnCamp a) {
 		a.campo().procesa(this);
+		a.setTam(a.campo().getTam());
 	}
 
 	@Override
 	public void procesa(Campo a) {
-		if(a.tipo().getClass() != TIden.class) {
-			a.tipo().procesa(this);
-			a.setTam(a.tipo().getTam());
-		}
+		a.tipo().procesa(this);
+		a.setTam(a.tipo().getTam());
+		a.setDir(dir);
+		dir += a.getTam();
 	}
 
 	@Override
@@ -406,20 +424,9 @@ public class AsignacionEspacio implements Procesamiento {
 	public class AsignacionEspacio2 extends ProcesamientoAbstracto {
 
 		@Override
-		public void procesa(Bloque a) {
-			int dirAnt = dir;
-			a.decs().procesa(this);
-			a.instrs().procesa(this);
-			dir = dirAnt;
-		}
-
-		@Override
 		public void procesa(SiDecs a) {
 			a.ldecs().procesa(this);
 		}
-
-		@Override
-		public void procesa(NoDecs a) {}
 
 		@Override
 		public void procesa(MuchasDecs a) {
@@ -433,26 +440,13 @@ public class AsignacionEspacio implements Procesamiento {
 		}
 
 		@Override
-		public void procesa(DecProc a) {
-			int dirAnt = dir;
-			dir = 0;
-			a.setDir(dir);
-			a.params().procesa(this);
-			a.bloq().procesa(this);
-			a.setTam(dir);
-			dir = dirAnt;
-		}
-
-		@Override
 		public void procesa(DecType a) {
 			a.tipo().procesa(this);
 		}
 
 		@Override
 		public void procesa(DecVar a) {
-			a.setDir(dir);
 			a.tipo().procesa(this);
-			incrDir(a.tipo().getTam());
 		}
 
 		@Override
@@ -473,102 +467,20 @@ public class AsignacionEspacio implements Procesamiento {
 
 		@Override
 		public void procesa(ParamFormRef a) {
-			a.setDir(dir);
 			a.tipo().procesa(this);
-			dir++;
 		}
 
 		@Override
 		public void procesa(ParamFormal a) {
-			a.setDir(dir);
 			a.tipo().procesa(this);
-			dir += a.tipo().getTam();
-		}
-
-		@Override
-		public void procesa(TArray a) {
-			if(a.tipo().getClass() != TIden.class) {
-				a.tipo().procesa(this);
-				a.setTam(a.tipo().getTam()*Integer.valueOf(a.litEnt()));
-			}
 		}
 
 		@Override
 		public void procesa(TPunt a) {
 			if(a.tipo().getClass() == TIden.class)
+				a.tipo().setTam(((DecType) a.getVinculo()).tipo().getTam());
+			else
 				a.tipo().procesa(this);
-		}
-
-		@Override
-		public void procesa(TStruct a) {
-			int dirAnt = dir;
-			dir = 0;
-			a.lcampos().procesa(this);
-			a.setTam(dir);
-			dir = dirAnt;
-		}
-
-		@Override
-		public void procesa(MuchosCamps a) {
-			a.lcampos().procesa(this);
-			a.campo().procesa(this);
-			a.setTam(a.lcampos().getTam() + a.campo().getTam());
-		}
-
-		@Override
-		public void procesa(UnCamp a) {
-			a.campo().procesa(this);
-			a.setTam(a.campo().getTam());
-		}
-
-		@Override
-		public void procesa(Campo a) {
-			if(a.tipo().getClass() != TIden.class) {
-				a.tipo().procesa(this);
-				a.setTam(a.tipo().getTam());
-			}
-			a.setDir(dir);
-			dir += a.getTam();
-		}
-
-		@Override
-		public void procesa(SiInstrs a) {
-			a.linstrs().procesa(this);
-		}
-
-		@Override
-		public void procesa(NoInstrs a) {}
-
-		@Override
-		public void procesa(MuchasInstrs a) {
-			a.linstrs().procesa(this);
-			a.instr().procesa(this);
-		}
-
-		@Override
-		public void procesa(UnaInstr a) {
-			a.instr().procesa(this);
-		}
-
-		@Override
-		public void procesa(WhileInstr a) {
-			a.bloq().procesa(this);
-		}
-
-		@Override
-		public void procesa(IfElseInstr a) {
-			a.bloq1().procesa(this);
-			a.bloq2().procesa(this);
-		}
-
-		@Override
-		public void procesa(IfInstr a) {
-			a.bloq().procesa(this);
-		}
-
-		@Override
-		public void procesa(BloqueInstr a) {
-			a.bloq().procesa(this);
 		}
 	}
 }

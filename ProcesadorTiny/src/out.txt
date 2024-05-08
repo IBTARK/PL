@@ -1,1 +1,12 @@
-5632
+Numero de valores?(0-20)
+Introduce los valores de la lista
+Los valores introducidos son: 
+7
+-6
+9
+-60
+345
+56
+43
+1
+
