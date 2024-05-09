@@ -6,19 +6,25 @@ import java.util.Stack;
 
 import asint.ProcesamientoAbstracto;
 import asint.SintaxisAbstracta.Bloque;
+import asint.SintaxisAbstracta.BloqueInstr;
 import asint.SintaxisAbstracta.Campo;
 import asint.SintaxisAbstracta.DecProc;
 import asint.SintaxisAbstracta.DecType;
 import asint.SintaxisAbstracta.DecVar;
+import asint.SintaxisAbstracta.IfElseInstr;
+import asint.SintaxisAbstracta.IfInstr;
 import asint.SintaxisAbstracta.MuchasDecs;
+import asint.SintaxisAbstracta.MuchasInstrs;
 import asint.SintaxisAbstracta.MuchosCamps;
 import asint.SintaxisAbstracta.MuchosParams;
 import asint.SintaxisAbstracta.NoDecs;
+import asint.SintaxisAbstracta.NoInstrs;
 import asint.SintaxisAbstracta.NoParam;
 import asint.SintaxisAbstracta.ParamFormRef;
 import asint.SintaxisAbstracta.ParamFormal;
 import asint.SintaxisAbstracta.Prog;
 import asint.SintaxisAbstracta.SiDecs;
+import asint.SintaxisAbstracta.SiInstrs;
 import asint.SintaxisAbstracta.SiParam;
 import asint.SintaxisAbstracta.TArray;
 import asint.SintaxisAbstracta.TBool;
@@ -31,6 +37,8 @@ import asint.SintaxisAbstracta.TStruct;
 import asint.SintaxisAbstracta.UnCamp;
 import asint.SintaxisAbstracta.UnParam;
 import asint.SintaxisAbstracta.UnaDec;
+import asint.SintaxisAbstracta.UnaInstr;
+import asint.SintaxisAbstracta.WhileInstr;
 import errors.GestionErroresTiny;
 
 public class Pretipado extends ProcesamientoAbstracto {
@@ -50,6 +58,7 @@ public class Pretipado extends ProcesamientoAbstracto {
 	@Override
 	public void procesa(Bloque a) {
 		a.decs().procesa(this);
+		a.instrs().procesa(this);
 	}
 
 	@Override
@@ -120,7 +129,7 @@ public class Pretipado extends ProcesamientoAbstracto {
 	public void procesa(TArray a) {
 		a.tipo().procesa(this);
 		if (a.litEnt().charAt(0) == '-')
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Pretipado: entero negativo en array");
+			error.errorPretipado(a.leeFila(), a.leeCol(), "Pretipado: entero negativo en array");
 	}
 
 	@Override
@@ -145,7 +154,7 @@ public class Pretipado extends ProcesamientoAbstracto {
 		if (a.getVinculo() == null)
 			System.out.print("");
 		if (a.getVinculo().getClass() != DecType.class)
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Pretipado: tIden no vinculado a decType");
+			error.errorPretipado(a.leeFila(), a.leeCol(), "Pretipado: tIden no vinculado a decType");
 	}
 
 	@Override
@@ -172,8 +181,48 @@ public class Pretipado extends ProcesamientoAbstracto {
 		Set<String> top = pilaConjCampos.pop();
 		pilaConjCampos.add(top);
 		if (top.contains(a.iden()))
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Pretipado: Campo "+ a.iden() +" duplicado");
+			error.errorPretipado(a.leeFila(), a.leeCol(), "Pretipado: Campo "+ a.iden() +" duplicado");
 		else
 			top.add(a.iden());
+	}
+
+	@Override
+	public void procesa(SiInstrs a) {
+		a.linstrs().procesa(this);
+	}
+
+	@Override
+	public void procesa(NoInstrs a) {}
+
+	@Override
+	public void procesa(MuchasInstrs a) {
+		a.linstrs().procesa(this);
+		a.instr().procesa(this);
+	}
+
+	@Override
+	public void procesa(UnaInstr a) {
+		a.instr().procesa(this);
+	}
+
+	@Override
+	public void procesa(WhileInstr a) {
+		a.bloq().procesa(this);
+	}
+
+	@Override
+	public void procesa(IfElseInstr a) {
+		a.bloq1().procesa(this);
+		a.bloq2().procesa(this);
+	}
+
+	@Override
+	public void procesa(IfInstr a) {
+		a.bloq().procesa(this);
+	}
+
+	@Override
+	public void procesa(BloqueInstr a) {
+		a.bloq().procesa(this);
 	}
 }

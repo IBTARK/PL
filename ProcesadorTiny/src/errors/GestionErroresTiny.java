@@ -1,6 +1,7 @@
 package errors;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import alex.UnidadLexica;
@@ -27,9 +28,28 @@ public class GestionErroresTiny {
 		throw new ErrorSintactico("ERROR fila "+unidadLexica.fila()+", columna "+unidadLexica.columna()+" : Elemento inesperado "+unidadLexica.lexema());
 	}
 	
-	List<String> errores = new ArrayList<>();
-	public void errorSemantico(int fila, int columna, String msg) {
-		errores.add("ERROR fila "+fila+", columna "+columna+" : " + msg);
+	private class ErrorSemantico {
+		int fila, col;
+		String msg;
+		public ErrorSemantico(int f, int c, String s) {
+			fila = f;
+			col = c;
+			msg = s;
+		}
+	}
+	
+	List<ErrorSemantico> errores = new ArrayList<>();
+	boolean domJudge = false;
+	public void errorVinculacion(int fila, int columna, String msg) {
+		errores.add(new ErrorSemantico(fila, columna, "Errores_vinculacion fila:"+fila+" col:"+columna+ (domJudge ? "" : " : " + msg)));
+	}
+
+	public void errorPretipado(int fila, int columna, String msg) {
+		errores.add(new ErrorSemantico(fila, columna, "Errores_pretipado fila:"+fila+" col:"+columna+ (domJudge ? "" : " : " + msg)));
+	}
+
+	public void errorTipado(int fila, int columna, String msg) {
+		errores.add(new ErrorSemantico(fila, columna, "Errores_tipado fila:"+fila+" col:"+columna+ (domJudge ? "" : " : " + msg)));
 	}
 	
 	public boolean hayError() {
@@ -37,11 +57,22 @@ public class GestionErroresTiny {
 	}
 	
 	public void mostrarErrores() {
-		for (String str : errores)
-			System.out.println(str);
+		errores.sort(new Comparator<ErrorSemantico>() {
+			@Override
+			public int compare(ErrorSemantico o1, ErrorSemantico o2) {
+				int aux = Integer.compare(o1.fila, o2.fila);
+				return aux != 0 ? aux : Integer.compare(o1.col, o2.col);
+			}
+		});
+		for (ErrorSemantico str : errores)
+			System.out.println(str.msg);
 	}
 	
 	public void cancelarUltimo() {
 		errores.remove(errores.size()-1);
+	}
+	
+	public void modoDomJudge(boolean b) {
+		domJudge = b;
 	}
 }

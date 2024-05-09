@@ -155,7 +155,7 @@ public class Vinculacion implements Procesamiento {
 	@Override
 	public void procesa(DecProc a) {
 		if (ts.contiene(a.iden()))
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: decProc");
+			error.errorVinculacion(a.leeFila(), a.leeCol(), "Vinculacion: decProc");
 		else
 			ts.inserta(a.iden(), a);
 		ts.abreAmbito();
@@ -169,7 +169,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(DecType a) {
 		a.tipo().procesa(this);
 		if (ts.contiene(a.iden()))
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: decType");
+			error.errorVinculacion(a.leeFila(), a.leeCol(), "Vinculacion: decType");
 		else
 			ts.inserta(a.iden(), a);
 	}
@@ -178,7 +178,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(DecVar a) {
 		a.tipo().procesa(this);
 		if (ts.contiene(a.iden()))
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: decVar");
+			error.errorVinculacion(a.leeFila(), a.leeCol(), "Vinculacion: decVar");
 		else
 			ts.inserta(a.iden(), a);
 	}
@@ -206,7 +206,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(ParamFormRef a) {
 		a.tipo().procesa(this);
 		if(ts.contiene(a.id())) {
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: paramFormRef");
+			error.errorVinculacion(a.leeFila(), a.leeCol(), "Vinculacion: paramFormRef");
 		}
 		else {
 			ts.inserta(a.id(), a);
@@ -217,7 +217,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(ParamFormal a) {
 		a.tipo().procesa(this);
 		if(ts.contiene(a.id())) {
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: paramFormal");
+			error.errorVinculacion(a.leeFila(), a.leeCol(), "Vinculacion: paramFormal");
 		}
 		else {
 			ts.inserta(a.id(), a);
@@ -252,7 +252,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(TIden a) {
 		a.setVinculo(ts.vinculoDe(a.iden()));
 		if (a.getVinculo() == null)
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Tipo usado en declaración de tipo no declarado");
+			error.errorVinculacion(a.leeFila(), a.leeCol(), "Tipo usado en declaración de tipo no declarado");
 	}
 
 	@Override
@@ -304,7 +304,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(ProcInstr a) {
 		a.setVinculo(ts.vinculoDe(a.iden()));
 		if (a.getVinculo() == null)
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Procedimiento no declarado");
+			error.errorVinculacion(a.leeFila(), a.leeCol(), "Procedimiento no declarado");
 		a.paramReales().procesa(this);
 	}
 
@@ -494,7 +494,7 @@ public class Vinculacion implements Procesamiento {
 	public void procesa(Iden a) {
 		a.setVinculo(ts.vinculoDe(a.id()));
 		if (a.getVinculo() == null)
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Identificador no declarado");
+			error.errorVinculacion(a.leeFila(), a.leeCol(), "Identificador no declarado");
 	}
 
 	@Override
@@ -565,7 +565,7 @@ public class Vinculacion implements Procesamiento {
 			if(a.tipo().getClass() == TIden.class) {
 				a.setVinculo(a.tipo().getVinculo());
 				if (a.getVinculo() == null)
-					error.errorSemantico(a.leeFila(), a.leeCol(), "Tipo de array no declarado");
+					error.errorVinculacion(a.leeFila(), a.leeCol(), "Tipo de array no declarado");
 			}
 		}
 
@@ -573,9 +573,7 @@ public class Vinculacion implements Procesamiento {
 		public void procesa(TPunt a) {
 			a.tipo().procesa(this);
 			if(a.tipo().getClass() == TIden.class) {
-				a.setVinculo(ts.vinculoDe(((TIden) a.tipo()).iden()));
-				if (a.getVinculo() == null)
-					error.errorSemantico(a.leeFila(), a.leeCol(), "Tipo de puntero no declarado");
+				a.setVinculo(a.tipo().getVinculo());
 			}
 		}
 
@@ -583,7 +581,7 @@ public class Vinculacion implements Procesamiento {
 		public void procesa(TIden a) {
 			a.setVinculo(ts.vinculoDe(a.iden()));
 			if (a.getVinculo() == null)
-				error.errorSemantico(a.leeFila(), a.leeCol(), "Tipo usado en declaración de tipo no declarado");
+				error.errorVinculacion(a.leeFila(), a.leeCol(), "Tipo usado en declaración de tipo no declarado");
 		}
 
 		@Override

@@ -57,6 +57,7 @@ public class Main {
 	
 	public static void procesa(Prog p, Reader datos) throws Exception {
  		GestionErroresTiny errores = new GestionErroresTiny();
+ 		errores.modoDomJudge(true);
  		new Vinculacion(errores).procesa(p);
  		if(!errores.hayError()) {
  			new Pretipado(errores).procesa(p);

@@ -126,13 +126,13 @@ public class Tipado implements Procesamiento {
 	
 	private Nodo avisoError(Nodo t1, Nodo t2, int fila, int col, String msg) {
 		if (t1 != ERROR && t2 != ERROR)
-			error.errorSemantico(fila, col, msg);
+			error.errorTipado(fila, col, msg);
 		return ERROR;
 	}
 	
 	private Nodo avisoError(Nodo t, int fila, int col, String msg) {
 		if (t != ERROR)
-			error.errorSemantico(fila, col, msg);
+			error.errorTipado(fila, col, msg);
 		return ERROR;
 	}
 	
@@ -262,40 +262,40 @@ public class Tipado implements Procesamiento {
     		return false;
     }
     
-    private Nodo tipoParams(ParamForms pform, ParamReales preales) {
+    private Nodo tipoParams(ParamForms pform, ParamReales preales, Nodo a) {
     	if (pform.getClass() == SiParam.class && preales.getClass() == SiExp.class)
-    		return tipoSiParams(((SiParam) pform).lparams(), ((SiExp) preales).lexps());
+    		return tipoSiParams(((SiParam) pform).lparams(), ((SiExp) preales).lexps(), a);
     	else if (pform.getClass() == NoParam.class && preales.getClass() == NoExp.class)
     		return OK;
     	else
-    		return avisoError(pform.getTipo(), preales.getTipo(), preales.leeFila(), preales.leeCol(), "Distinto número de parámetros");
+    		return avisoError(pform.getTipo(), preales.getTipo(), a.leeFila(), a.leeCol(), "Distinto número de parámetros");
     }
     
-    private Nodo tipoSiParams(LParams params, LExp exps) {
+    private Nodo tipoSiParams(LParams params, LExp exps, Nodo a) {
     	if (params.getClass() == UnParam.class && exps.getClass() == UnaExp.class)
-    		return tipoParam(((UnParam) params).param(), ((UnaExp) exps).exp());
+    		return tipoParam(((UnParam) params).param(), ((UnaExp) exps).exp(), a);
     	
     	else if (params.getClass() == MuchosParams.class && exps.getClass() == MuchasExp.class) {
-    		Nodo t1 = tipoSiParams(((MuchosParams) params).lparam(), ((MuchasExp) exps).lexp());
-    		Nodo t2 = tipoParam(((MuchosParams) params).param(), ((MuchasExp) exps).exp());
+    		Nodo t1 = tipoSiParams(((MuchosParams) params).lparam(), ((MuchasExp) exps).lexp(), a);
+    		Nodo t2 = tipoParam(((MuchosParams) params).param(), ((MuchasExp) exps).exp(), a);
     		return ambosOk(t1, t2);
     	}
     	else
-    		return avisoError(params.getTipo(), exps.getTipo(), exps.leeFila(), exps.leeCol(), "Distinto número de parámetros");
+    		return avisoError(params.getTipo(), exps.getTipo(), a.leeFila(), a.leeCol(), "Distinto número de parámetros");
     }
     
-    private Nodo tipoParam(ParamForm param, Exp exp) {
+    private Nodo tipoParam(ParamForm param, Exp exp, Nodo a) {
     	if (param.getClass() == ParamFormal.class && compatibles(((ParamFormal) param).tipo(), exp.getTipo()))
     		return OK;
     	else if (param.getClass() == ParamFormRef.class && esDesignador(exp) && compatibles(((ParamFormRef) param).tipo(), exp.getTipo())) {
     		Class<?> t1 = ref(((ParamFormRef) param).tipo()).getClass(), t2 = ref(exp.getTipo()).getClass();
     		if (!(t1 == TReal.class && t2 == TReal.class) && (t1 == TReal.class || t2 == TReal.class))
-        		return avisoError(param.getTipo(), exp.getTipo(), exp.leeFila(), exp.leeCol(), "Tipos incompatibles en parámetro");
+        		return avisoError(param.getTipo(), exp.getTipo(), a.leeFila(), a.leeCol(), "Tipos incompatibles en parámetro");
     		else
     			return OK;
     	}
     	else
-    		return avisoError(param.getTipo(), exp.getTipo(), exp.leeFila(), exp.leeCol(), "Tipos incompatibles en parámetro");
+    		return avisoError(param.getTipo(), exp.getTipo(), a.leeFila(), a.leeCol(), "Tipos incompatibles en parámetro");
     }
 
 	private static class TieneCampo extends ProcesamientoAuxiliar<Nodo> {
@@ -465,10 +465,12 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(ProcInstr a) {
 		a.paramReales().procesa(this);
-		if (a.paramReales().getTipo() != OK)
+		if (a.getVinculo().getClass() != DecProc.class)
+			avisoError(OK, a.leeFila(), a.leeCol(), "Tipo incompatible en new");
+		else if (a.paramReales().getTipo() != OK)
 			a.setTipo(ERROR);
 		else
-			a.setTipo(tipoParams(((DecProc) a.getVinculo()).params(), a.paramReales()));
+			a.setTipo(tipoParams(((DecProc) a.getVinculo()).params(), a.paramReales(), a));
 	}
 
 	@Override
@@ -535,20 +537,20 @@ public class Tipado implements Procesamiento {
 		a.exp().procesa(this);
 		a.bloq1().procesa(this);
 		a.bloq2().procesa(this);
-		if(a.bloq1().getTipo() == OK && accTipo(a.exp()).getClass() == TBool.class && a.bloq2().getTipo() == OK)
-			a.setTipo(OK);
+		if(accTipo(a.exp()).getClass() == TBool.class && a.bloq2().getTipo() == OK)
+			a.setTipo(a.bloq1().getTipo() == a.bloq2().getTipo() ? a.bloq1().getTipo() : ERROR);
 		else
-			a.setTipo(avisoError(a.exp().getTipo(), a.bloq1().getTipo() == a.bloq2().getTipo() ? a.bloq1().getTipo() : ERROR, a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en if"));
+			a.setTipo(avisoError(a.exp().getTipo(), a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en if"));
 	}
 
 	@Override
 	public void procesa(IfInstr a) {
 		a.exp().procesa(this);
 		a.bloq().procesa(this);
-		if(a.bloq().getTipo() == OK && accTipo(a.exp()).getClass() == TBool.class)
-			a.setTipo(OK);
+		if(accTipo(a.exp()).getClass() == TBool.class)
+			a.setTipo(a.bloq().getTipo());
 		else
-			a.setTipo(avisoError(a.exp().getTipo(), a.bloq().getTipo(), a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en if"));
+			a.setTipo(avisoError(a.exp().getTipo(), a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en if"));
 	}
 
 	@Override
@@ -664,7 +666,7 @@ public class Tipado implements Procesamiento {
 		a.opnd1().procesa(this);
 		Nodo t0 = accTipo(a.opnd0());
 		Nodo t1 = accTipo(a.opnd1());
-        if (t0 == t1 && t0.getClass() == TInt.class)
+        if (t0.getClass() == TInt.class && t1.getClass() == TInt.class)
              a.setTipo(t0);
         else
         	a.setTipo(avisoError(a.opnd0().getTipo(), a.opnd1().getTipo(), a.leeFila(), a.leeCol(), "Tipos incompatibles en mod"));
@@ -675,10 +677,10 @@ public class Tipado implements Procesamiento {
 		a.opnd().procesa(this);
 		Nodo t = accTipo(a.opnd());
 		if(t.getClass() == TInt.class) {
-			a.setTipo(t.getTipo());
+			a.setTipo(t);
 		}
 		else if(t.getClass() == TReal.class) {
-			a.setTipo(t.getTipo());
+			a.setTipo(t);
 		}
 		else
 			a.setTipo(avisoError(a.opnd().getTipo(), a.leeFila(), a.leeCol(), "Tipo incompatible en neg"));
@@ -699,8 +701,11 @@ public class Tipado implements Procesamiento {
 	public void procesa(ExpCampo a) {
 		a.opnd().procesa(this);
 		Nodo t = accTipo(a.opnd());
-		if (t.getClass() == TStruct.class)
+		if (t.getClass() == TStruct.class) {
 			a.setTipo(new TieneCampo(a.campo()).resuelve(((TStruct) t).lcampos()));
+			if (a.getTipo() == ERROR)
+				avisoError(a.opnd().getTipo(), a.leeFila(), a.leeCol(), "Tipo incompatible en acceso a campo");
+		}
 		else
 			a.setTipo(avisoError(a.opnd().getTipo(), a.leeFila(), a.leeCol(), "Tipo incompatible en acceso a campo"));
 	}
