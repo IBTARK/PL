@@ -1,1 +1,14 @@
-29
+Introduce el número de nombres a ordenar (max 50): 
+Introduce un nombre en cada línea: 
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAListado de nombres ordenado
+---------------------------
+Amalia
+Ana
+Bernarda
+Carla
+Maria
+Martin
+Pedro
+Petra
+Roberto
+Rodrigo

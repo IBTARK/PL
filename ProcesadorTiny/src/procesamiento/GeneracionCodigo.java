@@ -427,7 +427,7 @@ public class GeneracionCodigo implements Procesamiento {
 		a.exp().procesa(this);
 		Nodo t = accTipo(a.exp());
 		if (t.getClass() == TPunt.class);
-			m.emit(m.alloc(((TPunt) t).getTam()));
+			m.emit(m.alloc(((TPunt) t).tipo().getTam()));
 		m.emit(m.store());
 	}
 
@@ -519,6 +519,7 @@ public class GeneracionCodigo implements Procesamiento {
 	    else {
 	    	m.emit(m.store());
 	    }
+		accVal(a.opnd0());
 	}
 
 	@Override

@@ -87,7 +87,7 @@ proc construye_arbol() {
                 @ padre^.der^.izq = padre^.der^.der = null
              } 
              
-            else {                                 ## insertar como hijo derecho 
+            else {write "AAAAAAAAAAAAAAAAA";                                 ## insertar como hijo derecho 
                 new padre^.izq;
                 @ padre^.izq^.nombre = nombres.nombres[i];
                 @ padre^.izq^.izq= padre^.izq^.der = null

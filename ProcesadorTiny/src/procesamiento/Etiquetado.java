@@ -477,6 +477,7 @@ public class Etiquetado implements Procesamiento {
 			etq += 2;
 		}
 		etq++;
+		accVal(a.opnd0());
 		a.setSig(etq);
 	}
 

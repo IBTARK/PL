@@ -699,7 +699,7 @@ public class MaquinaP {
        while(pc != codigoP.size()) {
 //    	   System.out.println(i+" "+pc+":"+codigoP.get(pc));
            codigoP.get(pc).ejecuta();
-           if (i == 713)
+           if (i == 788)
         	   System.out.print("");
            i++;
        } 
