@@ -154,15 +154,15 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(DecProc a) {
+		if (ts.contiene(a.iden()))
+			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: decProc");
+		else
+			ts.inserta(a.iden(), a);
 		ts.abreAmbito();
 		a.params().procesa(this);
 		a.params().procesa(new Vinculacion2());
 		a.bloq().procesa(this);
 		ts.cierraAmbito();
-		if (ts.contiene(a.iden()))
-			error.errorSemantico(a.leeFila(), a.leeCol(), "Vinculacion: decProc");
-		else
-			ts.inserta(a.iden(), a);
 	}
 
 	@Override
@@ -573,10 +573,12 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(TPunt a) {
-			if(a.tipo().getClass() == TIden.class)
+			a.tipo().procesa(this);
+			if(a.tipo().getClass() == TIden.class) {
 				a.setVinculo(ts.vinculoDe(((TIden) a.tipo()).iden()));
-			else
-				a.tipo().procesa(this);
+				if (a.getVinculo() == null)
+					error.errorSemantico(a.leeFila(), a.leeCol(), "Tipo de puntero no declarado");
+			}
 		}
 
 		@Override

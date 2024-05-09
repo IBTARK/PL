@@ -142,6 +142,13 @@ public class Tipado implements Procesamiento {
 		return t;
 	}
 	
+	private Nodo accTipo(Nodo n) {
+		if (n.getVinculo() != null && n.getVinculo().getClass() == ParamFormRef.class)
+			return ref(((ParamFormRef) n.getVinculo()).tipo());
+		else
+			return ref(n.getTipo());
+	}
+	
 	private boolean esDesignador(Exp e) {
 		Class<?> c = e.getClass();
 		return c == Iden.class
@@ -156,51 +163,54 @@ public class Tipado implements Procesamiento {
 		return ERROR;
 	}
 	
-	private Nodo tipadoBinArit(Exp e0, Exp e1) {
+	private Nodo tipadoBinArit(Exp e0, Exp e1, Exp e) {
 		e0.procesa(this);
 		e1.procesa(this);
-		Class<?> tt0 = ref(e0.getTipo()).getClass(), tt1 = ref(e1.getTipo()).getClass();
+		Class<?> tt0 = accTipo(e0).getClass(), tt1 = accTipo(e1).getClass();
 		if (tt0 == tt1 && tt0 == TInt.class)
 			return new TInt();
 		else if ((tt0 == TReal.class || tt0 == TInt.class)
 			  && (tt1 == TReal.class || tt1 == TInt.class))
 			return new TReal();
-		return avisoError(e0.getTipo(), e1.getTipo(), 0, 0, "Tipos incompatibles en operacion");
+		return avisoError(e0.getTipo(), e1.getTipo(), e.leeFila(), e.leeCol(), "Tipos incompatibles en operacion aritmética");
 	}
 	
-	private Nodo tipadoBinLog(Exp e0, Exp e1) {
+	private Nodo tipadoBinLog(Exp e0, Exp e1, Exp e) {
 		e0.procesa(this);
 		e1.procesa(this);
-		Class<?> tt0 = ref(e0.getTipo()).getClass(), tt1 = ref(e1.getTipo()).getClass();
+		Class<?> tt0 = accTipo(e0).getClass(), tt1 = accTipo(e1).getClass();
 		if (tt0 == tt1 && tt0 == TBool.class)
 			return new TBool();
 		else
-			return avisoError(e0.getTipo(), e1.getTipo(), 0, 0, "Tipos incompatibles en operacion");
+			return avisoError(e0.getTipo(), e1.getTipo(), e.leeFila(), e.leeCol(), "Tipos incompatibles en operacion lógica");
 	}
 	
-	private Nodo tipadoBinRel(Exp e0, Exp e1) {
+	private Nodo tipadoBinRel(Exp e0, Exp e1, Exp e) {
 		e0.procesa(this);
 		e1.procesa(this);
-		Class<?> tt0 = ref(e0.getTipo()).getClass(), tt1 = ref(e1.getTipo()).getClass();
+		Class<?> tt0 = accTipo(e0).getClass(), tt1 = accTipo(e1).getClass();
 		if ((tt0 == TInt.class || tt0 == TReal.class) && (tt1 == TInt.class || tt1 == TReal.class))
 			return new TBool();
 		else if (tt0 == tt1 && tt0 == TBool.class)
 			return new TBool();
 		else if (tt0 == tt1 && tt0 == TString.class)
 			return new TBool();
+		else if ((tt0 == TPunt.class || tt0 == Null.class) && (tt1 == TPunt.class || tt1 == Null.class))
+			return new TBool();
 		else
-			return avisoError(e0.getTipo(), e1.getTipo(), 0, 0, "Tipos incompatibles en operacion");
+			return avisoError(e0.getTipo(), e1.getTipo(), e.leeFila(), e.leeCol(), "Tipos incompatibles en operacion relacional");
 	}
 	
-	private Nodo tipadoBinComp(Exp e0, Exp e1) {
-		if (tipadoBinRel(e0, e1) != ERROR)
+	private Nodo tipadoBinComp(Exp e0, Exp e1, Exp e) {
+		if (tipadoBinRel(e0, e1, e) != ERROR)
 			return new TBool();
-
-		Class<?> tt0 = ref(e0.getTipo()).getClass(), tt1 = ref(e1.getTipo()).getClass();
+		error.cancelarUltimo();
+		
+		Class<?> tt0 = accTipo(e0).getClass(), tt1 = accTipo(e1).getClass();
 		if ((tt0 == TPunt.class || tt0 == Null.class) && (tt1 == TPunt.class || tt1 == Null.class))
 			return new TBool();
 		else
-			return avisoError(e0.getTipo(), e1.getTipo(), 0, 0, "Tipos incompatibles en operacion");
+			return avisoError(e0.getTipo(), e1.getTipo(), e.leeFila(), e.leeCol(), "Tipos incompatibles en operacion de comparación");
 	}
 	
 	private boolean compatibles(Nodo t0, Nodo t1) {
@@ -234,7 +244,7 @@ public class Tipado implements Procesamiento {
         }
         else if (tt0 == TStruct.class && tt1 == TStruct.class)
             return compatibles(((TStruct) tipo0).lcampos(), ((TStruct) tipo1).lcampos());
-        else if (tt0 == TPunt.class && t1.getClass() == Null.class)
+        else if (tt0 == TPunt.class && tt1 == Null.class)
             return true;
         else if (tt0 == TPunt.class && tt1 == TPunt.class)
             return sonUnificables(((TPunt) tipo0).tipo(), ((TPunt) tipo1).tipo());
@@ -244,9 +254,9 @@ public class Tipado implements Procesamiento {
     
     private boolean compatibles(LCampos lc1, LCampos lc2) {
     	if (lc1.getClass() == lc2.getClass() && lc1.getClass() == UnCamp.class)
-    		return unificables(((UnCamp) lc1).campo(), ((UnCamp) lc2).campo());
+    		return unificables(((UnCamp) lc1).campo().tipo(), ((UnCamp) lc2).campo().tipo());
     	else if (lc1.getClass() == lc2.getClass())
-    		return unificables(((MuchosCamps) lc1).campo(), ((MuchosCamps) lc2).campo())
+    		return unificables(((MuchosCamps) lc1).campo().tipo(), ((MuchosCamps) lc2).campo().tipo())
     			&& compatibles(((MuchosCamps) lc1).lcampos(), ((MuchosCamps) lc2).lcampos());
     	else
     		return false;
@@ -469,7 +479,7 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(NewInstr a) {
 		a.exp().procesa(this);
-		if(ref(a.exp().getTipo()).getClass() == TPunt.class)
+		if(accTipo(a.exp()).getClass() == TPunt.class)
 			a.setTipo(OK);
 		else
 			a.setTipo(avisoError(a.exp().getTipo(), a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en new"));
@@ -478,7 +488,7 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(ReadInstr a) {
 		a.exp().procesa(this);
-		Nodo t = ref(a.exp().getTipo());
+		Nodo t = accTipo(a.exp());
 		if(esDesignador(a.exp()) 
 				&& (t.getClass() == TInt.class 
 				|| t.getClass() == TReal.class 
@@ -491,7 +501,7 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(WriteInstr a) {
 		a.exp().procesa(this);
-		Nodo t = ref(a.exp().getTipo());
+		Nodo t = accTipo(a.exp());
 		if(t.getClass() == TInt.class 
 				|| t.getClass() == TReal.class 
 				|| t.getClass() == TBool.class
@@ -504,7 +514,7 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(DeleteInstr a) {
 		a.exp().procesa(this);
-		if(ref(a.exp().getTipo()).getClass() == TPunt.class)
+		if(accTipo(a.exp()).getClass() == TPunt.class)
 			a.setTipo(OK);
 		else
 			a.setTipo(avisoError(a.exp().getTipo(), a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en delete"));
@@ -514,10 +524,10 @@ public class Tipado implements Procesamiento {
 	public void procesa(WhileInstr a) {
 		a.exp().procesa(this);
 		a.bloq().procesa(this);
-		if(a.bloq().getTipo() == OK && ref(a.exp().getTipo()).getClass() == TBool.class)
+		if(a.bloq().getTipo() == OK && accTipo(a.exp()).getClass() == TBool.class)
 			a.setTipo(OK);
 		else
-			a.setTipo(avisoError(a.exp().getTipo(), a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en while"));
+			a.setTipo(avisoError(a.exp().getTipo(), a.bloq().getTipo(), a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en while"));
 	}
 
 	@Override
@@ -525,20 +535,20 @@ public class Tipado implements Procesamiento {
 		a.exp().procesa(this);
 		a.bloq1().procesa(this);
 		a.bloq2().procesa(this);
-		if(a.bloq1().getTipo() == OK && ref(a.exp().getTipo()).getClass() == TBool.class && a.bloq2().getTipo() == OK)
+		if(a.bloq1().getTipo() == OK && accTipo(a.exp()).getClass() == TBool.class && a.bloq2().getTipo() == OK)
 			a.setTipo(OK);
 		else
-			a.setTipo(avisoError(a.exp().getTipo(), a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en if"));
+			a.setTipo(avisoError(a.exp().getTipo(), a.bloq1().getTipo() == a.bloq2().getTipo() ? a.bloq1().getTipo() : ERROR, a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en if"));
 	}
 
 	@Override
 	public void procesa(IfInstr a) {
 		a.exp().procesa(this);
 		a.bloq().procesa(this);
-		if(a.bloq().getTipo() == OK && ref(a.exp().getTipo()).getClass() == TBool.class)
+		if(a.bloq().getTipo() == OK && accTipo(a.exp()).getClass() == TBool.class)
 			a.setTipo(OK);
 		else
-			a.setTipo(avisoError(a.exp().getTipo(), a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en if"));
+			a.setTipo(avisoError(a.exp().getTipo(), a.bloq().getTipo(), a.exp().leeFila(), a.exp().leeCol(), "Tipo incompatible en if"));
 	}
 
 	@Override
@@ -581,7 +591,7 @@ public class Tipado implements Procesamiento {
 	public void procesa(Asignacion a) {
 		a.opnd0().procesa(this);
 		a.opnd1().procesa(this);
-	    if (esDesignador(a.opnd0()) && compatibles(a.opnd0().getTipo(), a.opnd1().getTipo())){
+	    if (esDesignador(a.opnd0()) && compatibles(accTipo(a.opnd0()), accTipo(a.opnd1()))) {
 			a.setTipo(a.opnd0().getTipo());
 		}
 	    else
@@ -590,73 +600,72 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Suma a) {
-		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(And a) {
-		a.setTipo(tipadoBinLog(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinLog(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(Or a) {
-		a.setTipo(tipadoBinLog(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinLog(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(Resta a) {
-		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(Menor a) {
-		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(Mayor a) {
-		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(MenorIgual a) {
-		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(MayorIgual a) {
-		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinRel(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(Igual a) {
-		a.setTipo(tipadoBinComp(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinComp(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(Desigual a) {
-		a.setTipo(tipadoBinComp(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinComp(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(Mul a) {
-		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(Div a) {
-		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1()));
+		a.setTipo(tipadoBinArit(a.opnd0(), a.opnd1(), a));
 	}
 
 	@Override
 	public void procesa(Mod a) {
 		a.opnd0().procesa(this);
 		a.opnd1().procesa(this);
-		Nodo t0 = ref(a.opnd0().getTipo());
-		Nodo t1 = ref(a.opnd1().getTipo());
-        if (t0 == t1 && t0.getClass() == TInt.class){
-             a.setTipo(t0.getTipo());
-        }
+		Nodo t0 = accTipo(a.opnd0());
+		Nodo t1 = accTipo(a.opnd1());
+        if (t0 == t1 && t0.getClass() == TInt.class)
+             a.setTipo(t0);
         else
         	a.setTipo(avisoError(a.opnd0().getTipo(), a.opnd1().getTipo(), a.leeFila(), a.leeCol(), "Tipos incompatibles en mod"));
 	}
@@ -664,7 +673,7 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(Neg a) {
 		a.opnd().procesa(this);
-		Nodo t = ref(a.opnd().getTipo());
+		Nodo t = accTipo(a.opnd());
 		if(t.getClass() == TInt.class) {
 			a.setTipo(t.getTipo());
 		}
@@ -679,8 +688,8 @@ public class Tipado implements Procesamiento {
 	public void procesa(Array a) {
 		a.opnd().procesa(this);
 		a.idx().procesa(this);
-		Nodo t = ref(a.opnd().getTipo());
-		if (t.getClass() == TArray.class && ref(a.idx().getTipo()).getClass() == TInt.class)
+		Nodo t = accTipo(a.opnd());
+		if (t.getClass() == TArray.class && accTipo(a.idx()).getClass() == TInt.class)
 			a.setTipo(((TArray) t).tipo());
 		else
 			a.setTipo(avisoError(a.opnd().getTipo(), a.leeFila(), a.leeCol(), "Tipo incompatible en idx"));
@@ -689,7 +698,7 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(ExpCampo a) {
 		a.opnd().procesa(this);
-		Nodo t = ref(a.opnd().getTipo());
+		Nodo t = accTipo(a.opnd());
 		if (t.getClass() == TStruct.class)
 			a.setTipo(new TieneCampo(a.campo()).resuelve(((TStruct) t).lcampos()));
 		else
@@ -699,7 +708,7 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(Punt a) {
 		a.opnd().procesa(this);
-		Nodo t = ref(a.opnd().getTipo());
+		Nodo t = accTipo(a.opnd());
 		if (t.getClass() == TPunt.class)
 			a.setTipo(((TPunt) t).tipo());
 		else 
@@ -709,9 +718,9 @@ public class Tipado implements Procesamiento {
 	@Override
 	public void procesa(Not a) {
 		a.opnd().procesa(this);
-		Nodo t = ref(a.opnd().getTipo());
+		Nodo t = accTipo(a.opnd());
 		if(t.getClass() == TBool.class) {
-			a.setTipo(t.getTipo());
+			a.setTipo(t);
 		}
 		else
 			a.setTipo(avisoError(a.opnd().getTipo(), a.leeFila(), a.leeCol(), "Tipo incompatible en not"));
@@ -757,6 +766,6 @@ public class Tipado implements Procesamiento {
 
 	@Override
 	public void procesa(Null a) {
-		a.setTipo(OK);
+		a.setTipo(new Null());
 	}
 }

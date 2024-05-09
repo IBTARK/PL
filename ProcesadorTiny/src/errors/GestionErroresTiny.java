@@ -40,4 +40,8 @@ public class GestionErroresTiny {
 		for (String str : errores)
 			System.out.println(str);
 	}
+	
+	public void cancelarUltimo() {
+		errores.remove(errores.size()-1);
+	}
 }

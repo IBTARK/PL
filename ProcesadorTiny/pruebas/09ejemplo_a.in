@@ -64,7 +64,7 @@ proc construye_arbol() {
 	     if act^.nombre < nombres.nombres[i] { ##insertar en el hijo derecho
 	        @ act = act^.der
             } 
-	     else { 
+	     else {
               if act^.nombre > nombres.nombres[i] { ##insertar en el hijo izquierdo
                  @ act = act^.izq
               }
@@ -100,7 +100,7 @@ proc construye_arbol() {
       ## cuerpo del procedimiento construye_arbol  
      @ arbol = null;
      @ i=0;
-     while i < nombres.cont { 
+     while i < nombres.cont {
        call inserta_nombre(arbol);
        @ i = i + 1
      }

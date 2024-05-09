@@ -108,6 +108,13 @@ public class GeneracionCodigo implements Procesamiento {
 		return t;
 	}
 	
+	private Nodo accTipo(Nodo n) {
+		if (n.getVinculo() != null && n.getVinculo().getClass() == ParamFormRef.class)
+			return ref(((ParamFormRef) n.getVinculo()).tipo());
+		else
+			return ref(n.getTipo());
+	}
+	
 	private void accVal(Exp e) {
 		if (esDesignador(e))
 			m.emit(m.fetch());
@@ -418,7 +425,7 @@ public class GeneracionCodigo implements Procesamiento {
 	@Override
 	public void procesa(NewInstr a) {
 		a.exp().procesa(this);
-		Nodo t = ref(a.exp().getTipo());
+		Nodo t = accTipo(a.exp());
 		if (t.getClass() == TPunt.class);
 			m.emit(m.alloc(((TPunt) t).getTam()));
 		m.emit(m.store());
@@ -501,13 +508,13 @@ public class GeneracionCodigo implements Procesamiento {
 		a.opnd0().procesa(this);
 		m.emit(m.dup());
 		a.opnd1().procesa(this);
-		if (ref(a.opnd0().getTipo()).getClass() == TReal.class && ref(a.opnd1().getTipo()).getClass() == TInt.class) {
+		if (accTipo(a.opnd0()).getClass() == TReal.class && accTipo(a.opnd1()).getClass() == TInt.class) {
 		        accVal(a.opnd1());
 		        m.emit(m.castReal());
 		        m.emit(m.store());
 		}
 	    else if (esDesignador(a.opnd1())) {
-	        m.emit(m.copia(a.opnd1().getTipo().getTam()));
+	        m.emit(m.copia(accTipo(a.opnd1()).getTam()));
 	    }
 	    else {
 	    	m.emit(m.store());
@@ -604,13 +611,13 @@ public class GeneracionCodigo implements Procesamiento {
 		a.opnd().procesa(this);
 		a.idx().procesa(this);
 		accVal(a.idx());
-		m.emit(m.idx(((TArray) ref(a.opnd().getTipo())).tipo().getTam()));
+		m.emit(m.idx(((TArray) accTipo(a.opnd())).tipo().getTam()));
 	}
 
 	@Override
 	public void procesa(ExpCampo a) {
 		a.opnd().procesa(this);
-		TStruct t = (TStruct) ref(a.opnd().getTipo());
+		TStruct t = (TStruct) accTipo(a.opnd());
 		m.emit(m.apilaInt(new Desplazamiento(a.campo()).resuelve(t.lcampos())));
 		m.emit(m.suma());
 	}

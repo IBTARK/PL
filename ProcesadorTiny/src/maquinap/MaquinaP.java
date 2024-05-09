@@ -433,7 +433,9 @@ public class MaquinaP {
          if (opnd1.getClass() == ValorBool.class)
         	 pilaEvaluacion.push(new ValorBool(opnd1.valorBool() == opnd2.valorBool()));
          else if (opnd1.getClass() == ValorString.class)
-        	 pilaEvaluacion.push(new ValorBool(opnd1.valorString() == opnd2.valorString()));
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorString().equals(opnd2.valorString())));
+         else if (opnd1.getClass() == ValorInt.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorInt() == opnd2.valorInt()));
          else
         	 pilaEvaluacion.push(new ValorBool(opnd1.valorReal() == opnd2.valorReal()));
          pc++;
@@ -449,7 +451,9 @@ public class MaquinaP {
          if (opnd1.getClass() == ValorBool.class)
         	 pilaEvaluacion.push(new ValorBool(opnd1.valorBool() != opnd2.valorBool()));
          else if (opnd1.getClass() == ValorString.class)
-        	 pilaEvaluacion.push(new ValorBool(opnd1.valorString() != opnd2.valorString()));
+        	 pilaEvaluacion.push(new ValorBool(!opnd1.valorString().equals(opnd2.valorString())));
+         else if (opnd1.getClass() == ValorInt.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorInt() != opnd2.valorInt()));
          else
         	 pilaEvaluacion.push(new ValorBool(opnd1.valorReal() != opnd2.valorReal()));
          pc++;
@@ -473,7 +477,14 @@ public class MaquinaP {
       public void ejecuta() {
          Valor opnd2 = pilaEvaluacion.pop(); 
          Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorBool(opnd1.valorReal() > opnd2.valorReal()));
+         if (opnd1.getClass() == ValorReal.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorReal() > opnd2.valorReal()));
+         else if (opnd1.getClass() == ValorInt.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorInt() > opnd2.valorInt()));
+         else if (opnd1.getClass() == ValorString.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorString().compareToIgnoreCase(opnd2.valorString()) > 0));
+         else if (opnd1.getClass() == ValorBool.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorBool() && !opnd2.valorBool()));
          pc++;
       } 
       public String toString() {return "mayor";};
@@ -484,7 +495,14 @@ public class MaquinaP {
       public void ejecuta() {
          Valor opnd2 = pilaEvaluacion.pop(); 
          Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorBool(opnd1.valorReal() < opnd2.valorReal()));
+         if (opnd1.getClass() == ValorReal.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorReal() < opnd2.valorReal()));
+         else if (opnd1.getClass() == ValorInt.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorInt() < opnd2.valorInt()));
+         else if (opnd1.getClass() == ValorString.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorString().compareToIgnoreCase(opnd2.valorString()) < 0));
+         else if (opnd1.getClass() == ValorBool.class)
+        	 pilaEvaluacion.push(new ValorBool(!opnd1.valorBool() && opnd2.valorBool()));
          pc++;
       } 
       public String toString() {return "menor";};
@@ -495,7 +513,14 @@ public class MaquinaP {
       public void ejecuta() {
          Valor opnd2 = pilaEvaluacion.pop(); 
          Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorBool(opnd1.valorReal() >= opnd2.valorReal()));
+         if (opnd1.getClass() == ValorReal.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorReal() >= opnd2.valorReal()));
+         else if (opnd1.getClass() == ValorInt.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorInt() >= opnd2.valorInt()));
+         else if (opnd1.getClass() == ValorString.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorString().compareToIgnoreCase(opnd2.valorString()) >= 0));
+         else if (opnd1.getClass() == ValorBool.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorBool() || !opnd2.valorBool()));
          pc++;
       } 
       public String toString() {return "mayorIgual";};
@@ -506,7 +531,14 @@ public class MaquinaP {
       public void ejecuta() {
          Valor opnd2 = pilaEvaluacion.pop(); 
          Valor opnd1 = pilaEvaluacion.pop();
-         pilaEvaluacion.push(new ValorBool(opnd1.valorReal() <= opnd2.valorReal()));
+         if (opnd1.getClass() == ValorReal.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorReal() <= opnd2.valorReal()));
+         else if (opnd1.getClass() == ValorInt.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorInt() <= opnd2.valorInt()));
+         else if (opnd1.getClass() == ValorString.class)
+        	 pilaEvaluacion.push(new ValorBool(opnd1.valorString().compareToIgnoreCase(opnd2.valorString()) <= 0));
+         else if (opnd1.getClass() == ValorBool.class)
+        	 pilaEvaluacion.push(new ValorBool(!opnd1.valorBool() || opnd2.valorBool()));
          pc++;
       } 
       public String toString() {return "menorIgual";};
@@ -663,10 +695,14 @@ public class MaquinaP {
       this.in = new Scanner(in);
    }
    public void ejecuta() {
-      while(pc != codigoP.size()) {
-//          System.out.println(" "+pc+":"+codigoP.get(pc));
-          codigoP.get(pc).ejecuta();
-      } 
+	   int i = 0;
+       while(pc != codigoP.size()) {
+//    	   System.out.println(i+" "+pc+":"+codigoP.get(pc));
+           codigoP.get(pc).ejecuta();
+           if (i == 713)
+        	   System.out.print("");
+           i++;
+       } 
    }
    public void muestraCodigo() {
      System.out.println("CodigoP");

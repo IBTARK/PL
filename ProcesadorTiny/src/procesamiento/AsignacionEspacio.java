@@ -93,11 +93,9 @@ public class AsignacionEspacio implements Procesamiento {
 
 	@Override
 	public void procesa(Bloque a) {
-		int dirAnt = dir;
 		a.decs().procesa(this);
 		a.decs().procesa(new AsignacionEspacio2());
 		a.instrs().procesa(this);
-		dir = dirAnt;
 	}
 
 	@Override
