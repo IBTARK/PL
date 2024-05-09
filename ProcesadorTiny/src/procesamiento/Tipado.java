@@ -290,12 +290,12 @@ public class Tipado implements Procesamiento {
     	else if (param.getClass() == ParamFormRef.class && esDesignador(exp) && compatibles(((ParamFormRef) param).tipo(), exp.getTipo())) {
     		Class<?> t1 = ref(((ParamFormRef) param).tipo()).getClass(), t2 = ref(exp.getTipo()).getClass();
     		if (!(t1 == TReal.class && t2 == TReal.class) && (t1 == TReal.class || t2 == TReal.class))
-        		return avisoError(param.getTipo(), exp.getTipo(), a.leeFila(), a.leeCol(), "Tipos incompatibles en parámetro");
+        		return avisoError(param.getTipo(), exp.getTipo(), exp.leeFila(), exp.leeCol(), "Tipos incompatibles en parámetro");
     		else
     			return OK;
     	}
     	else
-    		return avisoError(param.getTipo(), exp.getTipo(), a.leeFila(), a.leeCol(), "Tipos incompatibles en parámetro");
+    		return avisoError(param.getTipo(), exp.getTipo(), exp.leeFila(), exp.leeCol(), "Tipos incompatibles en parámetro");
     }
 
 	private static class TieneCampo extends ProcesamientoAuxiliar<Nodo> {
