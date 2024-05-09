@@ -273,8 +273,7 @@ public class Vinculacion implements Procesamiento {
 
 	@Override
 	public void procesa(Campo a) {
-		if(a.tipo().getClass() != TIden.class)
-			a.tipo().procesa(this);
+		a.tipo().procesa(this);
 	}
 
 	@Override
@@ -562,13 +561,12 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(TArray a) {
+			a.tipo().procesa(this);
 			if(a.tipo().getClass() == TIden.class) {
-				a.setVinculo(ts.vinculoDe(a.litEnt()));
+				a.setVinculo(a.tipo().getVinculo());
 				if (a.getVinculo() == null)
 					error.errorSemantico(a.leeFila(), a.leeCol(), "Tipo de array no declarado");
 			}
-			else
-				a.tipo().procesa(this);
 		}
 
 		@Override
@@ -606,8 +604,7 @@ public class Vinculacion implements Procesamiento {
 
 		@Override
 		public void procesa(Campo a) {
-			if(a.tipo().getClass() == TIden.class)
-				a.tipo().procesa(this);
+			a.tipo().procesa(this);
 		}
 	}
 }

@@ -694,13 +694,17 @@ public class MaquinaP {
       gestorMemoriaDinamica = new GestorMemoriaDinamica(tamdatos+tampila,(tamdatos+tampila+tamheap)-1);
       this.in = new Scanner(in);
    }
+//   boolean parada = false;
    public void ejecuta() {
 	   int i = 0;
        while(pc != codigoP.size()) {
+    	   if (i >= 1113)
 //    	   System.out.println(i+" "+pc+":"+codigoP.get(pc));
            codigoP.get(pc).ejecuta();
-           if (i == 788)
-        	   System.out.print("");
+//           if (i == 5616)
+//        	   System.out.print("");
+//           if (parada)
+//        	   parada = false;
            i++;
        } 
    }

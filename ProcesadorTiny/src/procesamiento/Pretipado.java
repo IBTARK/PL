@@ -142,6 +142,8 @@ public class Pretipado extends ProcesamientoAbstracto {
 
 	@Override
 	public void procesa(TIden a) {
+		if (a.getVinculo() == null)
+			System.out.print("");
 		if (a.getVinculo().getClass() != DecType.class)
 			error.errorSemantico(a.leeFila(), a.leeCol(), "Pretipado: tIden no vinculado a decType");
 	}

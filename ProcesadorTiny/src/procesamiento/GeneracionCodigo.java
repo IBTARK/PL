@@ -238,7 +238,7 @@ public class GeneracionCodigo implements Procesamiento {
 			a.param().procesa(this);
 		}
 		@Override
-		public void procesa(ParamFormal a) {
+		public void procesa(ParamFormRef a) {
 			m.emit(m.apilaDisp(a.getNivel()));
 			m.emit(m.apilaInt(a.getDir()));
 			m.emit(m.suma());
@@ -246,7 +246,7 @@ public class GeneracionCodigo implements Procesamiento {
 			m.emit(m.dealloc(1));
 		}
 		@Override
-		public void procesa(ParamFormRef a) {
+		public void procesa(ParamFormal a) {
 			m.emit(m.apilaDisp(a.getNivel()));
 			m.emit(m.apilaInt(a.getDir()));
 			m.emit(m.suma());
