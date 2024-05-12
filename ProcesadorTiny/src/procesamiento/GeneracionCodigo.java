@@ -597,7 +597,7 @@ public class GeneracionCodigo implements Procesamiento {
 	@Override
 	public void procesa(Mod a) {
 		genCodBin(a.opnd0(), a.opnd1());
-		m.emit(m.div());
+		m.emit(m.mod());
 	}
 
 	@Override
